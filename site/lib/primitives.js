@@ -190,9 +190,32 @@ window.Motion = (function () {
     return { opacity: Math.max(edge, 0), scale: 0.97 + 0.03 * edge };
   }
 
+  // Attention wiggle: a decaying rotational shake ("look at this one!",
+  // also the classic wrong-answer shake when amp is fast and short).
+  // Returns a CSS transform value: 'rotate(..deg) translateX(..px)'.
+  function wiggle(frame, o) {
+    o = o || {};
+    const lf = frame - (o.at || 0), dur = o.dur || 26;
+    if (lf < 0 || lf >= dur) return 'rotate(0deg) translateX(0px)';
+    const env = 1 - lf / dur;
+    const a = Math.sin(lf * (o.freq || 0.85)) * (o.amp || 9) * env;
+    return 'rotate(' + a.toFixed(2) + 'deg) translateX(' + (a * 0.9).toFixed(1) + 'px)';
+  }
+
+  // Typewriter: the visible substring of `text` at this frame.
+  // cpf = frames per character (default 2). caret:true appends a blinking ▍.
+  function typewriter(frame, o) {
+    o = o || {};
+    const lf = Math.max(frame - (o.at || 0), 0);
+    const n = Math.min(Math.floor(lf / (o.cpf || 2)), o.text.length);
+    let s = o.text.slice(0, n);
+    if (o.caret && Math.floor(frame / 15) % 2 === 0) s += '▍';
+    return s;
+  }
+
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, squash,
-    dot, ripple, burst, badge, targetSlot, scene, transition,
+    dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     clamp01, Easing,
   };
 })();

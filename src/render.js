@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * mini-remotion —— 从零复刻 Remotion 核心机制
+ * motion-primitives renderer —— 从零实现的逐帧渲染管线（源自 mini-remotion）
  *
  * 机制（对照 Remotion 源码逆向结论）：
  *   renderMedia      -> main()
@@ -18,7 +18,7 @@ const path = require('path');
 const { spawn } = require('child_process');
 const puppeteer = require('puppeteer-core');
 
-const CHROME = '/opt/meta-chromium/chrome';
+const CHROME = process.env.CHROME_PATH || '/opt/meta-chromium/chrome';
 const SRC = __dirname;
 
 function parseArgs() {
@@ -97,7 +97,7 @@ async function main() {
       const out = path.resolve(opts.out);
       fs.mkdirSync(path.dirname(out), { recursive: true });
       await page.screenshot({ path: out });
-      console.log(`[mini-remotion] 单帧导出：${out}（第 ${f} 帧）`);
+      console.log(`[motion-primitives] 单帧导出：${out}（第 ${f} 帧）`);
       return;
     }
 
@@ -123,7 +123,7 @@ async function main() {
       await page.setViewport({ width: meta.width, height: meta.height, deviceScaleFactor: 1 });
       workers.push({ browser, page });
     }
-    console.log(`[mini-remotion] ${meta.width}x${meta.height} @${meta.fps}fps, ${frameList.length} 帧，并发 ${concurrency}（独立浏览器进程）`);
+    console.log(`[motion-primitives] ${meta.width}x${meta.height} @${meta.fps}fps, ${frameList.length} 帧，并发 ${concurrency}（独立浏览器进程）`);
     let done = 0;
     // 注意：每个 worker 的页面是"有状态"的（__setFrame 直接改 DOM），同一 worker 的
     // 帧任务必须串行执行，否则任务 A 的 seek(f1)→screenshot 之间会被任务 B 的
@@ -142,7 +142,7 @@ async function main() {
       workerLocks[w] = task.catch(() => {}); // 链条不断，错误仍向上传递给 Promise.all
       return task;
     }));
-    console.log('\n[mini-remotion] 截图完成，ffmpeg 缝合中…');
+    console.log('\n[motion-primitives] 截图完成，ffmpeg 缝合中…');
 
     // ---- ffmpeg 缝合 ----
     const out = path.resolve(opts.out);
@@ -159,7 +159,7 @@ async function main() {
       fs.renameSync(tmpVideo, out);
     }
     const size = (fs.statSync(out).size / 1024).toFixed(0);
-    console.log(`[mini-remotion] 完成：${out} (${size} KB, ${((Date.now() - t0) / 1000).toFixed(1)}s)`);
+    console.log(`[motion-primitives] 完成：${out} (${size} KB, ${((Date.now() - t0) / 1000).toFixed(1)}s)`);
     fs.rmSync(framesDir, { recursive: true, force: true });
   } finally {
     await browser.close();
@@ -170,4 +170,4 @@ async function main() {
   }
 }
 
-main().catch((e) => { console.error('[mini-remotion] 失败:', e.message); process.exit(1); });
+main().catch((e) => { console.error('[motion-primitives] 失败:', e.message); process.exit(1); });

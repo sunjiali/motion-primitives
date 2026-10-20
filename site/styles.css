@@ -65,7 +65,7 @@ main { max-width: 1180px; margin: 0 auto; padding: 0 24px 40px; }
 /* live demo grid */
 .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
 .demo { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
-.demo-stage { position: relative; height: 260px; background: linear-gradient(180deg, #FFFDF8, #FBF6EC); overflow: hidden; }
+.demo-stage { position: relative; background: linear-gradient(180deg, #FFFDF8, #FBF6EC); overflow: hidden; }
 .demo-meta { padding: 14px 18px 16px; border-top: 1px solid var(--line); }
 .demo-meta h3 { margin: 0 0 4px; font-size: 17px; }
 .demo-meta p { margin: 0 0 8px; color: #57503F; font-size: 14.5px; }
@@ -74,7 +74,7 @@ main { max-width: 1180px; margin: 0 auto; padding: 0 24px 40px; }
 /* playground */
 .play { display: grid; grid-template-columns: 1.5fr 1fr; gap: 18px; align-items: start; }
 .play-stage-wrap { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
-.play-stage { position: relative; height: 340px; background: linear-gradient(180deg, #FFFDF8, #FBF6EC); overflow: hidden; }
+.play-stage { position: relative; background: linear-gradient(180deg, #FFFDF8, #FBF6EC); overflow: hidden; }
 .play-code { margin: 0; background: #2E2A24; padding: 16px 18px; overflow-x: auto; }
 .play-code code { color: #F3E9D2; font-size: 13.5px; white-space: pre; }
 .play-controls { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; }
@@ -102,8 +102,11 @@ table.api code { background: #F6EFE0; padding: 2px 8px; border-radius: 8px; colo
 footer { margin-top: 64px; padding: 26px 0 10px; border-top: 1px solid var(--line); color: var(--soft); font-size: 14px; }
 footer p { margin: 4px 0; }
 
+pre { max-width: 100%; overflow-x: auto; }
+
 @media (max-width: 900px) {
   .hero, .cards, .grid, .play, .examples, .docs-grid { grid-template-columns: 1fr; }
+  .hero-text, .hero-video, .docs-grid > div, .play-panel { min-width: 0; }
   .hero h1 { font-size: 36px; }
   .nav nav a:not(.nav-gh) { display: none; }
 }

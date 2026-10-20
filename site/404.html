@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>404 — motion-primitives</title>
+<style>
+  body { margin: 0; font-family: ui-rounded, 'SF Pro Rounded', system-ui, sans-serif; background: #FBF6EC; color: #33302B;
+         display: flex; min-height: 100vh; align-items: center; justify-content: center; }
+  .card { text-align: center; padding: 32px; }
+  .ball { width: 92px; height: 92px; border-radius: 50%; background: #FF8A4C; margin: 0 auto 22px;
+          box-shadow: inset -10px -12px 0 #00000014; position: relative; }
+  .ball::before, .ball::after { content: ''; position: absolute; top: 36px; width: 9px; height: 12px; border-radius: 50%; background: #33302B; }
+  .ball::before { left: 28px; } .ball::after { right: 28px; }
+  h1 { font-size: 44px; margin: 0 0 10px; }
+  p { color: #5c574e; margin: 0 0 26px; }
+  a { display: inline-block; background: #33302B; color: #FBF6EC; text-decoration: none; font-weight: 700;
+      padding: 12px 26px; border-radius: 999px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="ball"></div>
+    <h1>404.</h1>
+    <p>This frame doesn't exist — the ball bounced somewhere else.</p>
+    <a href="https://sunjiali.github.io/motion-primitives/">Back to motion-primitives</a>
+  </div>
+</body>
+</html>

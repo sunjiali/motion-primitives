@@ -1,5 +1,10 @@
 # motion-primitives
 
+[![Website](https://img.shields.io/badge/website-live-brightgreen)](https://sunjiali.github.io/motion-primitives/)
+[![Deploy site](https://github.com/sunjiali/motion-primitives/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/sunjiali/motion-primitives/actions/workflows/deploy-pages.yml)
+[![CI](https://github.com/sunjiali/motion-primitives/actions/workflows/ci.yml/badge.svg)](https://github.com/sunjiali/motion-primitives/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 🌐 **Website, live demos & playground:** https://sunjiali.github.io/motion-primitives/
 
 **Motion primitives for AI-generated videos.** An LLM is bad at hand-writing

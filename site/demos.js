@@ -9,11 +9,34 @@
   const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const runners = []; // {stage, cycle, draw(f) -> html}
+  const visibility = new Map(); // inner stage -> on screen?
   function apply(r, f) { r.stage.innerHTML = r.draw(((f % r.cycle) + r.cycle) % r.cycle); }
   function addRunner(stage, cycle, draw) {
     const r = { stage, cycle, draw };
     runners.push(r);
     apply(r, reduced ? Math.floor(cycle * 0.45) : 0);
+  }
+  // Fixed-coordinate stage that scales to its container (mobile-safe) and
+  // reports on-screen visibility so off-screen demos stop redrawing.
+  function makeStage(outer, baseW, baseH) {
+    const inner = document.createElement('div');
+    inner.style.cssText = 'position:absolute;left:0;top:0;width:' + baseW + 'px;height:' + baseH +
+      'px;transform-origin:0 0;overflow:hidden;';
+    outer.insertBefore(inner, outer.firstChild); // stay under overlays like the code bar
+    const fit = () => {
+      const s = outer.clientWidth / baseW;
+      inner.style.transform = 'scale(' + s + ')';
+      outer.style.height = (baseH * s) + 'px';
+    };
+    fit();
+    if (window.ResizeObserver) new ResizeObserver(fit).observe(outer);
+    visibility.set(inner, true);
+    if (window.IntersectionObserver) {
+      new IntersectionObserver((es) => {
+        es.forEach((e) => visibility.set(inner, e.isIntersecting));
+      }, { rootMargin: '80px' }).observe(outer);
+    }
+    return inner;
   }
 
   // ---------- gallery demos (stage coordinate space: 560 x 260) ----------
@@ -110,6 +133,25 @@
         return s;
       },
     },
+    {
+      name: 'wiggle', desc: 'A decaying rotational shake — “look at this one”, or the wrong-answer wobble.',
+      code: "transform: M.wiggle(frame, { at: 12, amp: 10 })", cycle: 110,
+      draw(f) {
+        const t = M.wiggle(f, { at: 12, dur: 30, amp: 10 });
+        return '<div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) ' + t + ';">' +
+          '<span style="display:inline-block;background:' + C.orange + ';color:#fff;font:800 26px sans-serif;' +
+          'padding:18px 34px;border-radius:999px;box-shadow:0 10px 26px #FF8A4C55;">Look here</span></div>';
+      },
+    },
+    {
+      name: 'typewriter', desc: 'Text that types itself, character by character, with a blinking caret.',
+      code: "M.typewriter(frame, { text, cpf: 3, caret: true })", cycle: 150,
+      draw(f) {
+        const s = M.typewriter(f, { at: 8, cpf: 3, text: 'Hello, primitives.', caret: true });
+        return '<div style="position:absolute;left:56px;top:104px;font:700 34px ui-monospace,Menlo,monospace;color:' +
+          INK + ';">' + s + '</div>';
+      },
+    },
   ];
 
   const grid = document.getElementById('demo-grid');
@@ -120,7 +162,7 @@
       el.innerHTML = '<div class="demo-stage" id="demo-' + i + '"></div>' +
         '<div class="demo-meta"><h3>' + d.name + '</h3><p>' + d.desc + '</p><code>' + d.code + '</code></div>';
       grid.appendChild(el);
-      addRunner(el.querySelector('.demo-stage'), d.cycle, d.draw);
+      addRunner(makeStage(el.querySelector('.demo-stage'), W, H), d.cycle, d.draw);
     });
   }
 
@@ -194,6 +236,7 @@
     playState[k] = {};
     playDefs[k].params.forEach((pr) => { playState[k][pr.k] = pr.val; });
   });
+  const playInner = playStage ? makeStage(playStage, PW, PH) : null;
   let playRunner = null;
 
   function renderControls() {
@@ -228,7 +271,7 @@
       if (i >= 0) runners.splice(i, 1);
     }
     const def = playDefs[playKey];
-    playRunner = { stage: playStage, cycle: def.cycle, draw: (f) => def.draw(f, playState[playKey]) };
+    playRunner = { stage: playInner, cycle: def.cycle, draw: (f) => def.draw(f, playState[playKey]) };
     runners.push(playRunner);
     apply(playRunner, reduced ? Math.floor(def.cycle * 0.45) : 0);
     updatePlayCode();
@@ -243,7 +286,10 @@
     const t0 = performance.now();
     (function tick(now) {
       const f = Math.floor((now - t0) / (1000 / 30));
-      for (const r of runners) apply(r, f);
+      for (const r of runners) {
+        if (visibility.get(r.stage) === false) continue; // off-screen: don't redraw
+        apply(r, f);
+      }
       requestAnimationFrame(tick);
     })(t0);
   }
