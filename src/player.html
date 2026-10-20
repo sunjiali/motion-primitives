@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; padding: 0; overflow: hidden; background: #fff; }
+  #stage { position: relative; overflow: hidden; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<!-- render.js 会把选中的 composition 内联到 /*__COMPOSITION__*/ 处（走 file:// 协议，免网络） -->
+<script>
+/*__LIBS__*/
+</script>
+<script>
+/*__COMPOSITION_CODE__*/
+</script>
+<script>
+  const stage = document.getElementById('stage');
+  const meta = window.Composition.meta;
+  stage.style.width = meta.width + 'px';
+  stage.style.height = meta.height + 'px';
+
+  // 对应 Remotion 的 seekToFrame：让页面渲染第 f 帧
+  // 注意：多 tab 并发时后台页面的 rAF 可能被 Chrome 节流，用 setTimeout 做兜底保证进度
+  window.__setFrame = async (f) => {
+    window.Composition.render(f, stage);
+    await Promise.race([
+      new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))),
+      new Promise((r) => setTimeout(r, 300)),
+    ]);
+  };
+  window.__meta = meta;
+</script>
+</body>
+</html>
