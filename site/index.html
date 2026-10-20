@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>motion-primitives — Motion primitives for AI-generated videos</title>
+<meta name="description" content="Tiny frame-pure motion building blocks (pop, fly, trail, ripple, burst, count-up) that an AI composes instead of hand-writing animation math. Built-in headless-Chrome + ffmpeg renderer.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='42' fill='%23FF8A4C'/></svg>">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="nav">
+  <a class="brand" href="#top"><span class="brand-dot"></span>motion-primitives</a>
+  <nav>
+    <a href="#why">Why</a>
+    <a href="#primitives">Primitives</a>
+    <a href="#playground">Playground</a>
+    <a href="#examples">Examples</a>
+    <a href="#docs">Docs</a>
+    <a class="nav-gh" href="https://github.com/sunjiali/motion-primitives">GitHub</a>
+  </nav>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Motion primitives<br>for AI-generated videos.</h1>
+      <p class="lede">An LLM is bad at hand-writing animation math — easing curves, spring
+      constants, arc interpolation — but good at <em>composing named building blocks</em>.
+      motion-primitives wraps the motions explainer &amp; teaching videos need again and
+      again into tiny, frame-pure primitives, so the AI writes intent, not math.</p>
+      <div class="hero-code"><pre><code>const p = M.fly(frame, { at: 60, dur: 90, from, to, arc: 170 });
+stage.innerHTML =
+  M.dot({ x: p.x, y: p.y, r: 44, color: '#3FB6FF', candy: true });</code></pre></div>
+      <div class="hero-cta">
+        <a class="btn primary" href="#playground">Try the playground</a>
+        <a class="btn" href="https://github.com/sunjiali/motion-primitives">Star on GitHub</a>
+      </div>
+      <p class="hero-note">Zero build step · No React · Renders to MP4 with headless Chrome + ffmpeg · MIT</p>
+    </div>
+    <div class="hero-video">
+      <video src="assets/showcase.mp4" autoplay muted loop playsinline></video>
+      <p class="caption">The primitives showcase — rendered by the built-in pipeline, not recorded.</p>
+    </div>
+  </section>
+
+  <section id="why" class="section">
+    <h2>Why primitives?</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>Frame-pure by design</h3>
+        <p>Every primitive is a pure function of the frame number — same frame, same picture.
+        That is what makes parallel screenshot rendering correct, and live browser previews trivial.</p>
+      </div>
+      <div class="card">
+        <h3>Compose, don't calculate</h3>
+        <p>One call per motion: <code>pop()</code> for a springy entrance, <code>fly()</code> for an arc,
+        <code>burst()</code> for confetti. Springs, easings and arcs live inside the library, where they belong.</p>
+      </div>
+      <div class="card">
+        <h3>A renderer included</h3>
+        <p>A from-scratch pipeline (headless Chrome screenshots + ffmpeg, in the spirit of Remotion's
+        architecture) turns a plain JS composition into an MP4. No framework, no bundler.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="primitives" class="section">
+    <h2>The primitives, live</h2>
+    <p class="section-lede">Every demo below is running <em>right now in your browser</em> on the exact
+    library that renders the videos — driven by a virtual frame counter instead of a screenshot camera.</p>
+    <div class="grid" id="demo-grid"></div>
+  </section>
+
+  <section id="playground" class="section">
+    <h2>Playground</h2>
+    <p class="section-lede">Pick a primitive, drag the parameters, and watch both the animation and the
+    generated call update. This is the whole workflow: intent in, motion out.</p>
+    <div class="play">
+      <div class="play-stage-wrap">
+        <div class="play-stage" id="play-stage"></div>
+        <pre class="play-code"><code id="play-code"></code></pre>
+      </div>
+      <div class="play-controls" id="play-controls"></div>
+    </div>
+  </section>
+
+  <section id="examples" class="section">
+    <h2>Examples</h2>
+    <div class="examples">
+      <div class="example">
+        <video src="assets/showcase.mp4" controls muted loop playsinline></video>
+        <h3>showcase</h3>
+        <p>Six scenes, one primitive (or pair) each, labeled with the exact call that produced it.
+        Source: <code>src/compositions/showcase.js</code></p>
+      </div>
+      <div class="example">
+        <video src="assets/math-make-ten.mp4" controls muted loop playsinline></video>
+        <h3>math-make-ten</h3>
+        <p>A real teaching clip — the “make-ten” addition method (9 + 4) for first-graders — built with
+        <em>only</em> primitives: staggered pop-ins, one arc flight with a trail, a squash-and-ripple landing,
+        a badge, and a count-up answer. Source: <code>src/compositions/math-make-ten.js</code></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="docs" class="section">
+    <h2>Docs</h2>
+    <div class="docs-grid">
+      <div>
+        <h3>Quick start</h3>
+        <div class="hero-code"><pre><code>npm install
+node src/render.js --comp showcase \
+  --out out/showcase.mp4 --concurrency 4
+node src/render.js --comp showcase \
+  --still 250 --out out/frame.png</code></pre></div>
+        <p>Requirements: Node.js ≥ 18, Chrome/Chromium, ffmpeg.</p>
+        <h3>Write a composition</h3>
+        <div class="hero-code"><pre><code>window.Composition = {
+  meta: { width: 1280, height: 720,
+          fps: 30, durationInFrames: 300 },
+  render(frame, stage) {
+    const M = window.Motion;
+    stage.innerHTML = M.dot({
+      x: 640, y: 360, r: 80, color: '#FF8A4C',
+      scale: M.pop(frame, { at: 10 }), candy: true });
+  },
+};</code></pre></div>
+      </div>
+      <div>
+        <h3>API at a glance</h3>
+        <table class="api">
+          <tr><td><code>pop</code></td><td>Springy scale-in with physical overshoot</td></tr>
+          <tr><td><code>fadeUp</code></td><td>Fade + rise entrance (style string)</td></tr>
+          <tr><td><code>pulse</code></td><td>Breathing scale for “look here” targets</td></tr>
+          <tr><td><code>countUp</code></td><td>Integer count-up (scores, totals)</td></tr>
+          <tr><td><code>stagger</code></td><td>Start-frame helper for staggered groups</td></tr>
+          <tr><td><code>fly</code></td><td>Eased arc flight between two points</td></tr>
+          <tr><td><code>trail</code></td><td>Ghost positions trailing a flight</td></tr>
+          <tr><td><code>squash</code></td><td>Squash-and-settle after a landing</td></tr>
+          <tr><td><code>dot</code></td><td>A circle, optional glossy candy look</td></tr>
+          <tr><td><code>ripple</code></td><td>Expanding ring after an event</td></tr>
+          <tr><td><code>burst</code></td><td>Confetti / particle burst</td></tr>
+          <tr><td><code>badge</code></td><td>Pill badge that pops in</td></tr>
+          <tr><td><code>targetSlot</code></td><td>Breathing dashed target ring</td></tr>
+          <tr><td><code>scene / transition</code></td><td>Scene bookkeeping + edge fades</td></tr>
+        </table>
+        <p>Full signatures and defaults live in <code>src/lib/primitives.js</code> in the repo —
+        it is heavily commented and doubles as the manual.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>motion-primitives · MIT License ·
+    <a href="https://github.com/sunjiali/motion-primitives">github.com/sunjiali/motion-primitives</a></p>
+    <p class="foot-note">This site is deployed automatically by GitHub Actions on every push to <code>site/</code>.</p>
+  </footer>
+
+</main>
+
+<script src="lib/animation.js"></script>
+<script src="lib/primitives.js"></script>
+<script src="demos.js"></script>
+</body>
+</html>
