@@ -1,5 +1,7 @@
 # motion-primitives
 
+🌐 **Website, live demos & playground:** https://sunjiali.github.io/motion-primitives/
+
 **Motion primitives for AI-generated videos.** An LLM is bad at hand-writing
 animation math — easing curves, spring constants, arc interpolation — but good
 at *composing named building blocks*. This library wraps the motions that
