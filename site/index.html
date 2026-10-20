@@ -112,6 +112,13 @@ stage.innerHTML =
         <em>only</em> primitives: staggered pop-ins, one arc flight with a trail, a squash-and-ripple landing,
         a badge, and a count-up answer. Source: <code>src/compositions/math-make-ten.js</code></p>
       </div>
+      <div class="example">
+        <video src="assets/fx-showcase.mp4" poster="assets/poster-fx.jpg" preload="metadata" controls muted loop playsinline></video>
+        <h3>fx-showcase — the advanced reel</h3>
+        <p>The v0.3 effects stack in one 18-second dark reel: gradient-mesh background, a virtual
+        camera, self-drawing charts, directed physics (beat / drop / shake / punch / flash) and a
+        film-grain finish. Source: <code>src/compositions/fx-showcase.js</code></p>
+      </div>
     </div>
   </section>
 
@@ -157,6 +164,13 @@ node src/render.js --comp showcase \
           <tr><td><code>scene / transition</code></td><td>Scene bookkeeping + edge fades</td></tr>
           <tr><td><code>wiggle</code></td><td>Decaying rotational shake (attention / wrong-answer)</td></tr>
           <tr><td><code>typewriter</code></td><td>Self-typing text, optional blinking caret</td></tr>
+          <tr><td><code>beat / drop / travel</code></td><td>Directed motion: anticipation entrance, gravity fall, fast-start glide</td></tr>
+          <tr><td><code>shake / punch / flash</code></td><td>The impact trio: screen shake, camera punch-in, white flash</td></tr>
+          <tr><td><code>camera</code></td><td>Virtual camera — keyframed focus + zoom over a still world</td></tr>
+          <tr><td><code>meshBg</code></td><td>Animated gradient-mesh background (no more flat voids)</td></tr>
+          <tr><td><code>drawOn / bars</code></td><td>Self-drawing strokes and animated bar charts</td></tr>
+          <tr><td><code>scramble</code></td><td>Text that decodes out of a glyph pool</td></tr>
+          <tr><td><code>kenBurns / breathe / fx</code></td><td>Slow zoom for stills, idle micro-motion, film grain + vignette</td></tr>
         </table>
         <p>Full signatures and defaults live in <code>src/lib/primitives.js</code> in the repo —
         it is heavily commented and doubles as the manual.</p>

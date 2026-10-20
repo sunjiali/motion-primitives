@@ -2,6 +2,22 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.3.0] — 2026-10-20
+
+### Added
+- Advanced effects batch (see EFFECTS.md): `beat`, `drop`, `travel`,
+  `shake`, `punch`, `flash`, `camera` (virtual camera), `meshBg`
+  (animated gradient mesh), `drawOn` + `poly` (self-drawing strokes),
+  `bars` (animated bar chart), `scramble` (text decode), `kenBurns`,
+  `breathe`, `fx` (film grain + vignette), `hash` (deterministic random).
+  Motion vocabulary adapted from the code-video-director skill; layer
+  stack from remotion-motion-graphics.
+- `fx-showcase` composition: an 18-second dark premium reel exercising
+  the whole advanced stack, frame-verified (540 frames).
+- EFFECTS.md: the living effects ledger and backlog for future rounds.
+- Site: four new live demo cards (scramble, camera, drawOn + bars,
+  beat + drop) and API table rows for the advanced effects.
+
 ## [0.2.0] — 2026-10-20
 
 ### Added

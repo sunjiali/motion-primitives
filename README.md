@@ -89,6 +89,10 @@ ever need to drop below the primitives layer.
   9 + 4, for first-graders) built with *only* primitives: ten-frame dots pop
   in staggered, one dot flies into the empty slot with a trail, lands with
   squash + ripple + badge, and the answer counts up.
+- **`fx-showcase`** — the advanced reel (dark, premium): gradient-mesh
+  background, a virtual camera, self-drawing charts, directed physics
+  (beat/drop/shake/punch/flash) and a grain + vignette finish. The full
+  effects ledger lives in [EFFECTS.md](EFFECTS.md).
 
 ## 中文简介
 

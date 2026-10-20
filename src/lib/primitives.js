@@ -213,9 +213,214 @@ window.Motion = (function () {
     return s;
   }
 
+  /* ------------------------------------------------------------------
+     Advanced effects (v0.3). Motion vocabulary adapted from the
+     code-video-director skill (beat/drop/punch/shake/flash, pacing
+     tiers) and the layer stack from remotion-motion-graphics
+     (mesh background -> content -> grade -> grain + vignette).
+     All frame-pure and deterministic: hash() is the only "random".
+     ------------------------------------------------------------------ */
+  function hash(n) { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
+
+  // beat(): entrance with anticipation — pull back a touch, rush in,
+  // overshoot ~8%, settle with two small oscillations. Returns {x, s}:
+  // x = pixel offset along the travel direction, s = scale.
+  function beat(frame, o) {
+    o = o || {};
+    const lf = frame - (o.at || 0), dist = o.dist || 90;
+    if (lf < 0) return { x: -dist, s: 0.9 };
+    if (lf > 40) return { x: 0, s: 1 };
+    const x = -dist * Math.exp(-lf / 7) * Math.cos(lf * 0.5);
+    return { x, s: 1 - (x / dist) * 0.1 };
+  }
+
+  // drop(): gravity fall — slow start, fastest at the end, hard stop.
+  // Returns the y offset (<= 0). Pair with squash() at the landing frame.
+  function drop(frame, o) {
+    o = o || {};
+    const lf = frame - (o.at || 0), from = o.from || 320, dur = o.dur || 11;
+    if (lf < 0) return -from;
+    if (lf >= dur) return 0;
+    const p = lf / dur;
+    return -from * (1 - p * p);
+  }
+
+  // travel(): A->B gliding with a fast start and a soft stop.
+  function travel(frame, o) {
+    o = o || {};
+    const lf = frame - (o.at || 0), dur = o.dur || 18;
+    const t = clamp01(lf / dur), p = 1 - Math.pow(1 - t, 3);
+    return {
+      x: o.from.x + (o.to.x - o.from.x) * p,
+      y: o.from.y + (o.to.y - o.from.y) * p,
+      p, done: lf >= dur,
+    };
+  }
+
+  // shake(): decaying screen shake {x, y} inside [at, at+dur].
+  function shake(frame, o) {
+    o = o || {};
+    const lf = frame - (o.at || 0), dur = o.dur || 14, amp = o.amp || 10, seed = o.seed || 0;
+    if (lf < 0 || lf >= dur) return { x: 0, y: 0 };
+    const env = 1 - lf / dur;
+    return {
+      x: (hash(lf * 2 + seed) - 0.5) * 2 * amp * env,
+      y: (hash(lf * 2 + 1 + seed) - 0.5) * 2 * amp * env,
+    };
+  }
+
+  // punch(): a quick camera punch-in that settles back. Returns a scale
+  // multiplier (1 = neutral). Compose with camera().
+  function punch(frame, o) {
+    o = o || {};
+    const lf = frame - (o.at || 0), amp = o.amp || 0.07;
+    if (lf < 0) return 1;
+    return 1 + amp * Math.min(lf / 2, 1) * Math.exp(-lf / 4.5);
+  }
+
+  // flash(): full-stage flash overlay (impact frames). Returns HTML.
+  function flash(frame, o) {
+    o = o || {};
+    const lf = frame - (o.at || 0), dur = o.dur || 3;
+    if (lf < 0 || lf >= dur) return '';
+    const op = (1 - lf / dur) * (o.opacity || 0.9);
+    return '<div style="position:absolute;inset:0;background:' + (o.color || '#FFFFFF') +
+      ';opacity:' + op.toFixed(3) + ';pointer-events:none;"></div>';
+  }
+
+  // camera(): a virtual camera over a world wrapper. keys = [{f, x, y, z}]
+  // (focus point in stage coords + zoom), eased between keyframes.
+  // Returns a CSS transform for a stage-sized wrapper div.
+  function camera(frame, keys, stage) {
+    const W = stage.w, H = stage.h;
+    let a = keys[0], b = keys[keys.length - 1];
+    for (let i = 0; i < keys.length - 1; i++) {
+      if (frame >= keys[i].f && frame <= keys[i + 1].f) { a = keys[i]; b = keys[i + 1]; break; }
+    }
+    if (frame <= keys[0].f) { a = b = keys[0]; }
+    if (frame >= keys[keys.length - 1].f) { a = b = keys[keys.length - 1]; }
+    const span = Math.max(b.f - a.f, 1);
+    const t = Easing.cubicInOut(clamp01((frame - a.f) / span));
+    const x = a.x + (b.x - a.x) * t, y = a.y + (b.y - a.y) * t;
+    const z = Math.exp(Math.log(a.z) + (Math.log(b.z) - Math.log(a.z)) * t);
+    return 'translate(' + (W / 2) + 'px,' + (H / 2) + 'px) scale(' + z.toFixed(4) +
+      ') translate(' + (-x).toFixed(1) + 'px,' + (-y).toFixed(1) + 'px)';
+  }
+
+  // meshBg(): an animated gradient-mesh background value (drifting blobs).
+  // blobs = [{c, x, y, r, dx, dy, sp}] in % — returns a CSS background value.
+  function meshBg(frame, o) {
+    o = o || {};
+    const blobs = o.blobs || [
+      { c: '#3B2FBF', x: 18, y: 22, r: 55, dx: 6, dy: 4, sp: 0.011 },
+      { c: '#B83A8C', x: 82, y: 16, r: 48, dx: -5, dy: 6, sp: 0.009 },
+      { c: '#1F7A8C', x: 62, y: 84, r: 52, dx: 4, dy: -5, sp: 0.013 },
+      { c: '#0E0B26', x: 30, y: 78, r: 60, dx: -4, dy: -3, sp: 0.007 },
+    ];
+    const parts = blobs.map((b, i) => {
+      const cx = b.x + Math.sin(frame * b.sp + i * 1.7) * b.dx;
+      const cy = b.y + Math.cos(frame * b.sp * 0.9 + i * 2.3) * b.dy;
+      return 'radial-gradient(circle at ' + cx.toFixed(1) + '% ' + cy.toFixed(1) + '%, ' +
+        b.c + ' 0%, transparent ' + b.r + '%)';
+    });
+    parts.push('linear-gradient(160deg, ' + (o.base || '#14101F') + ', ' + (o.base2 || '#0B0916') + ')');
+    return parts.join(', ');
+  }
+
+  // drawOn(): stroke-dasharray value that draws a path of length `len`.
+  function drawOn(frame, o) {
+    o = o || {};
+    const lf = frame - (o.at || 0), dur = o.dur || 40;
+    const p = Easing.cubicInOut(clamp01(lf / dur));
+    return (o.len * p).toFixed(1) + ' ' + o.len;
+  }
+  // Polyline helpers for drawOn: points [[x,y],...] -> {attr, len}.
+  function poly(points) {
+    let len = 0;
+    for (let i = 1; i < points.length; i++) {
+      len += Math.hypot(points[i][0] - points[i - 1][0], points[i][1] - points[i - 1][1]);
+    }
+    return { attr: points.map((p) => p[0] + ',' + p[1]).join(' '), len: Math.round(len) };
+  }
+
+  // bars(): an animated bar chart (HTML). Values grow with a stagger.
+  function bars(frame, o) {
+    const max = Math.max.apply(null, o.data.map((d) => d.v));
+    let s = '';
+    o.data.forEach((d, i) => {
+      const at = (o.at || 0) + i * (o.stagger || 5);
+      const t = clamp01((frame - at) / (o.dur || 22));
+      const p = 1 - Math.pow(1 - t, 3);
+      const h = Math.max((d.v / max) * o.h * p, 0);
+      const x = o.x + i * (o.bw + o.gap), y = o.y - h;
+      s += '<div style="position:absolute;left:' + x + 'px;top:' + y.toFixed(1) + 'px;width:' + o.bw +
+        'px;height:' + h.toFixed(1) + 'px;background:' + (d.c || o.color || '#FF8A4C') +
+        ';border-radius:10px 10px 0 0;"></div>';
+      if (t > 0.5) {
+        s += '<div style="position:absolute;left:' + (x - 10) + 'px;top:' + (y - 40) + 'px;width:' + (o.bw + 20) +
+          'px;text-align:center;font:800 26px sans-serif;color:' + (o.label || '#33302B') + ';">' +
+          Math.round(d.v * p) + '</div>';
+        s += '<div style="position:absolute;left:' + (x - 16) + 'px;top:' + (o.y + 12) + 'px;width:' + (o.bw + 32) +
+          'px;text-align:center;font:600 20px sans-serif;color:' + (o.label || '#33302B') + ';opacity:.75;">' + d.k + '</div>';
+      }
+    });
+    return s;
+  }
+
+  // scramble(): text that resolves out of a glyph pool, left to right.
+  // Deterministic per frame; glyphs reshuffle every 2 frames until resolved.
+  function scramble(frame, o) {
+    o = o || {};
+    const pool = o.chars || 'ABCDEFGHJKMNPQRSTUVWXYZ23456789#%&';
+    const lf = frame - (o.at || 0);
+    if (lf < 0) return '';
+    const cpf = o.cpf || 3;
+    let out = '';
+    for (let i = 0; i < o.text.length; i++) {
+      const ch = o.text[i];
+      if (ch === ' ') { out += ' '; continue; }
+      if (lf >= (i + 1) * cpf) out += ch;
+      else out += pool[Math.floor(hash(i * 131 + Math.floor(frame / 2) * 17) * pool.length)];
+    }
+    return out;
+  }
+
+  // kenBurns(): the slow zoom + pan every still asset deserves.
+  function kenBurns(frame, o) {
+    o = o || {};
+    const t = clamp01((frame - (o.at || 0)) / (o.dur || 300));
+    const z = (o.from || 1) + ((o.to || 1.08) - (o.from || 1)) * t;
+    const x = (o.panX || 0) * t, y = (o.panY || 0) * t;
+    return 'scale(' + z.toFixed(4) + ') translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)';
+  }
+
+  // breathe(): idle micro-motion for anything on screen a while.
+  // Returns a scale multiplier around 1.
+  function breathe(frame, o) {
+    o = o || {};
+    return 1 + (o.amp || 0.02) * Math.sin(frame * (o.speed || 0.08) + (o.phase || 0));
+  }
+
+  // fx(): the texture stack that ends the "flat AI look" — animated film
+  // grain (re-seeded every 3 frames) + vignette, as overlay HTML.
+  function fx(frame, o) {
+    o = o || {};
+    const jx = Math.floor(hash(Math.floor(frame / 3) * 3) * 140);
+    const jy = Math.floor(hash(Math.floor(frame / 3) * 7 + 1) * 140);
+    const svg = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E\")";
+    let s = '<div style="position:absolute;inset:0;background-image:' + svg +
+      ';background-position:' + jx + 'px ' + jy + 'px;opacity:' + (o.grain || 0.07) +
+      ';mix-blend-mode:overlay;pointer-events:none;"></div>';
+    s += '<div style="position:absolute;inset:0;background:radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,' +
+      (o.vignette || 0.28) + ') 100%);pointer-events:none;"></div>';
+    return s;
+  }
+
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, squash,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
+    beat, drop, travel, shake, punch, flash, camera, meshBg, drawOn, poly, bars,
+    scramble, kenBurns, breathe, fx, hash,
     clamp01, Easing,
   };
 })();

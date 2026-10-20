@@ -152,6 +152,71 @@
           INK + ';">' + s + '</div>';
       },
     },
+    {
+      name: 'scramble', desc: 'Text that decodes out of a glyph pool — the launch-video title move.',
+      code: "M.scramble(frame, { text: 'MOTION', cpf: 3 })", cycle: 130,
+      dark: true,
+      draw(f) {
+        const s = M.scramble(f, { at: 10, cpf: 3, text: 'MOTION' });
+        return '<div style="position:absolute;inset:0;background:' + M.meshBg(f, {}) + ';">' +
+          '<div style="position:absolute;left:0;top:96px;width:' + W + 'px;text-align:center;' +
+          'font:800 54px ui-monospace,Menlo,monospace;color:#F5EFE2;letter-spacing:4px;">' + s + '</div></div>';
+      },
+    },
+    {
+      name: 'camera', desc: 'A virtual camera: keyframed focus and zoom over a still world.',
+      code: 'M.camera(frame, [{f, x, y, z}, …], stage)', cycle: 180,
+      draw(f) {
+        const keys = [
+          { f: 0, x: 280, y: 130, z: 1 }, { f: 60, x: 280, y: 130, z: 1 },
+          { f: 105, x: 400, y: 120, z: 1.9 }, { f: 140, x: 400, y: 120, z: 1.9 },
+          { f: 175, x: 280, y: 130, z: 1 },
+        ];
+        let inner = '';
+        const pts = [[120, 70], [280, 170], [430, 80]];
+        const pl = M.poly(pts);
+        inner += '<svg style="position:absolute;left:0;top:0;" width="' + W + '" height="' + H + '">' +
+          '<polyline points="' + pl.attr + '" fill="none" stroke="#B83A8C" stroke-width="5" stroke-linejoin="round"/></svg>';
+        pts.forEach((p, i) => { inner += M.dot({ x: p[0], y: p[1], r: 15, color: ['#FF8A4C', '#3ED97E', '#4CC9F0'][i], candy: true }); });
+        inner += '<div style="position:absolute;left:330px;top:150px;font:800 25px sans-serif;color:' + INK + ';">zoom target</div>';
+        return '<div style="position:absolute;left:0;top:0;width:' + W + 'px;height:' + H +
+          'px;transform-origin:0 0;transform:' + M.camera(f, keys, { w: W, h: H }) + ';">' + inner + '</div>';
+      },
+    },
+    {
+      name: 'drawOn + bars', desc: 'A line that draws itself and bars that grow — data, drawn by code.',
+      code: 'M.drawOn(frame, { len }) · M.bars(frame, { data, … })', cycle: 170,
+      draw(f) {
+        let s = M.bars(f, {
+          at: 8, data: [{ k: 'A', v: 35 }, { k: 'B', v: 70 }, { k: 'C', v: 52 }],
+          x: 58, y: 218, h: 130, bw: 44, gap: 30, stagger: 5, dur: 18, color: '#4CC9F0', label: INK,
+        });
+        const pts = [[330, 200], [400, 130], [462, 158], [522, 74]];
+        const pl = M.poly(pts);
+        s += '<svg style="position:absolute;left:0;top:0;" width="' + W + '" height="' + H + '">' +
+          '<polyline points="' + pl.attr + '" fill="none" stroke="#FF8A4C" stroke-width="5" ' +
+          'stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="' +
+          M.drawOn(f, { at: 16, dur: 55, len: pl.len }) + '"/></svg>';
+        return s;
+      },
+    },
+    {
+      name: 'beat + drop', desc: 'Anticipation entrance, then a gravity drop that lands with squash and shake.',
+      code: 'M.beat(frame, { at }) · M.drop(...) + M.squash(...)', cycle: 170,
+      draw(f) {
+        let s = '';
+        const b = M.beat(f, { at: 10, dist: 130 });
+        s += M.dot({ x: 130 + b.x, y: 130, r: 30, color: C.orange, scale: Math.max(b.s, 0.001), candy: true });
+        const sh = M.shake(f, { at: 96, amp: 7, dur: 12, seed: 2 });
+        const dy = M.drop(f, { at: 84, from: 150, dur: 11 });
+        const sq = M.squash(f - 95);
+        s += '<div style="position:absolute;inset:0;transform:translate(' + sh.x.toFixed(1) + 'px,' + sh.y.toFixed(1) + 'px);">' +
+          M.dot({ x: 400, y: 168 + dy, r: 30, color: C.yellow, sx: sq.sx, sy: sq.sy, candy: true }) + '</div>';
+        s += M.ripple(f, { x: 400, y: 178, at: 95, color: C.yellow });
+        s += '<div style="position:absolute;left:290px;top:196px;width:220px;height:4px;border-radius:2px;background:#33302B22;"></div>';
+        return s;
+      },
+    },
   ];
 
   const grid = document.getElementById('demo-grid');
