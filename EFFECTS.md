@@ -27,10 +27,12 @@ slow zoom/pan · `breathe` idle micro-motion · `fx` film grain + vignette ·
 Showcase: `src/compositions/fx-showcase.js` (dark premium reel using the
 whole v0.3 stack).
 
-## Style pack backlog: paper-cut collage (from @flxrnc's "Paper Cuts")
+## Style pack backlog: paper-cut collage
 
-Reference: Fable brand film «Paper Cuts» (@flxrnc, 2026-09, ~60s,
-Midjourney + After Effects per commenters; author is a motion designer).
+Reference: a paper-cut collage brand film («Paper Cuts», ~60s) seen in an
+earlier research read in the same round; its attribution to the @flxrnc
+link Robin shared turned out to be wrong (that link is the Motion Lab
+article below) — the style pack stays, provenance corrected.
 The look is fully procedural and fits this pipeline:
 
 - Every element reads as cut colored paper: flat fills, a consistent
@@ -61,8 +63,16 @@ Primitives to build for it:
 - `particleField` — ambient drifting particle layer (stars/dust/snow)
 - `morphShape` — shape A→B morph (circle→star→heart…) for icons
 - `glitch` — RGB-split glitch transition (short, tasteful)
-- SFX synth kit — deterministic WAV one-shots (pop/whoosh/thump) + `--sfx` mixing
+- SFX synth kit — deterministic WAV one-shots (pop/whoosh/thump) + `--sfx` mixing.
+  Recipes validated by @flxrnc's «Opus 5.5 Motion Lab» article (Web Audio,
+  all synthesized): lay a BPM grid first (their pieces run 120 BPM), one
+  event sound per visual event landing **1 frame after** the picture
+  (squash inhale, stretch glide, droplet bloops, metal ting, stereo
+  shimmer, liquid swell); no voice needed for short loops.
 - Beat tools — BPM/beat detection for music-synced cuts (from code-video-director beats.py)
+- (Future track, not committed) WebGL/three.js liquid-metal logo sting —
+  the Motion Lab opener is raymarched SDF chrome with smooth-min blending;
+  out of scope for this 2D stack, revisit only if a 3D need appears.
 
 ## Rules for new effects
 
