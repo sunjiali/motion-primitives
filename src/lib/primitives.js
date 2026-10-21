@@ -524,9 +524,37 @@ __root.Motion = (function () {
     };
   }
 
+  // Flight along an arbitrary polyline at constant speed (arc-length
+  // parameterized), with heading. pts: [[x, y], ...] — feed it a sampled
+  // curve for smooth paths. Easing shapes the distance profile, so the
+  // traveler neither surges on long legs nor crawls on short ones.
+  // Returns {x, y, angle (deg), p, done}.
+  function pathFly(frame, o) {
+    const pts = o.pts || [];
+    if (pts.length < 2) { const q = pts[0] || [0, 0]; return { x: q[0], y: q[1], angle: 0, p: 0, done: false }; }
+    const raw = clamp01((frame - (o.at || 0)) / (o.dur || 90));
+    const p = (Easing[o.fn || 'cubicInOut'] || Easing.cubicInOut)(raw);
+    const segs = [];
+    let total = 0;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const len = Math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]);
+      segs.push(len); total += len;
+    }
+    let d = p * total;
+    for (let i = 0; i < segs.length; i++) {
+      const a = pts[i], b = pts[i + 1];
+      const angle = Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI;
+      if (d <= segs[i] || i === segs.length - 1) {
+        const t = segs[i] === 0 ? 0 : Math.min(d / segs[i], 1);
+        return { x: a[0] + (b[0] - a[0]) * t, y: a[1] + (b[1] - a[1]) * t, angle, p, done: raw >= 1 };
+      }
+      d -= segs[i];
+    }
+  }
+
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip,
+    paperEl, pivot, stepped, onTwos, whip, pathFly,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,

@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -101,6 +101,22 @@ test('whip: strip travels one width, blur peaks mid-pan', () => {
   assert.ok(mid.active && mid.blur > 13, `mid blur ${mid.blur}`);
   assert.ok(M.whip(12, o).blur < mid.blur, 'blur rises toward the middle');
   assert.equal(M.whip(24, { ...o, dir: -1 }).x, 560);
+});
+
+test('pathFly: constant speed along the path, with heading', () => {
+  const L = { at: 0, dur: 60, fn: 'linear', pts: [[0, 0], [100, 0], [100, 100]] };
+  const corner = M.pathFly(30, L); // halfway along 200px of path
+  assert.equal(corner.x, 100); assert.equal(corner.y, 0);
+  const down = M.pathFly(45, L);
+  assert.equal(down.x, 100); assert.equal(down.y, 50);
+  assert.ok(Math.abs(down.angle - 90) < 1e-9, `angle ${down.angle}`);
+  assert.equal(M.pathFly(60, L).done, true);
+  // Equal progress steps cover equal distances on a straight diagonal.
+  const D = { at: 0, dur: 100, fn: 'linear', pts: [[0, 0], [300, 400]] };
+  const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  const d1 = dist(M.pathFly(25, D), M.pathFly(50, D));
+  const d2 = dist(M.pathFly(50, D), M.pathFly(75, D));
+  assert.ok(Math.abs(d1 - d2) < 1e-6 && Math.abs(d1 - 125) < 1e-6, `${d1} vs ${d2}`);
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

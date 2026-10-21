@@ -2,6 +2,16 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.8.0] — 2026-10-21
+
+### Added
+- `pathFly` — flight along an arbitrary polyline at constant speed:
+  arc-length parameterization means long legs don't surge and short ones
+  don't crawl; returns `{x, y, angle, p, done}` so the traveler can be
+  rotated into its heading. Feed it sampled curve points for smooth
+  paths. Site demo card included (18 cards). Unit-tested: corner
+  accuracy, heading, equal-distance progress steps.
+
 ## [0.7.0] — 2026-10-21
 
 ### Added

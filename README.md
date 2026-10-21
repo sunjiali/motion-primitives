@@ -81,6 +81,7 @@ Requirements: Node.js ≥ 18, Chrome/Chromium, ffmpeg.
 | `M.pivot(frame, {from, to, steps})` | Paper-puppet joint rotation (CSS transform value) |
 | `M.stepped(frame, {steps})` · `M.onTwos(frame)` | Stop-motion timing: quantized progress, shot-on-twos frames |
 | `M.whip(frame, {at, dur, dir, width})` | Whip-pan transition: strip offset + mid-pan blur peak |
+| `M.pathFly(frame, {pts, at, dur})` | Constant-speed flight along a path, with heading |
 | `M.squash(framesSinceLanding)` | Squash-and-settle after a landing |
 | `M.dot({x, y, r, color, candy, glow})` | A circle (optional glossy candy look) |
 | `M.ripple(frame, {x, y, at, color})` | Expanding ring after an event |

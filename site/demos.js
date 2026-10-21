@@ -123,6 +123,22 @@
       },
     },
     {
+      name: 'pathFly', desc: 'Constant-speed flight along any path — the paper plane holds its pace through every curve.',
+      code: 'M.pathFly(frame, { pts: loop, dur: 108 })', cycle: 120,
+      draw(f) {
+        const pts = [];
+        for (let i = 0; i <= 40; i++) {
+          const a = (i / 40) * Math.PI * 2;
+          pts.push([280 + Math.cos(a) * 190, 130 + Math.sin(a) * 82]);
+        }
+        let s = '';
+        for (let i = 0; i < pts.length - 1; i += 2) s += M.dot({ x: pts[i][0], y: pts[i][1], r: 3, color: INK, opacity: 0.22 });
+        const pos = M.pathFly(f, { at: 4, dur: 108, pts, fn: 'linear' });
+        s += M.paperEl({ x: pos.x, y: pos.y, w: 36, h: 20, color: C.orange, radius: 9, rot: pos.angle });
+        return s + M.dot({ x: pos.x, y: pos.y, r: 5, color: '#FFF6E8' });
+      },
+    },
+    {
       name: 'whip', desc: 'Whip-pan transition: the strip slingshots sideways, blur peaking where the cut hides.',
       code: 'M.whip(frame, { at, dur: 16, width: 560 })', cycle: 120,
       draw(f) {

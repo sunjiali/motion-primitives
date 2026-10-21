@@ -27,6 +27,11 @@ slow zoom/pan · `breathe` idle micro-motion · `fx` film grain + vignette ·
 Showcase: `src/compositions/fx-showcase.js` (dark premium reel using the
 whole v0.3 stack).
 
+### Path flight (v0.8)
+- `pathFly(frame, {pts, at, dur, fn})` — constant-speed flight along a
+  polyline (arc-length parameterized), returns position + heading angle
+  + done. Corners don't surge; easing shapes the distance profile.
+
 ### Transitions (v0.7)
 - `whip(frame, {at, dur, dir, width, maxBlur})` — whip-pan: strip offset
   on a cubicInOut curve (fastest mid-pan, where the cut hides) plus a
@@ -88,7 +93,6 @@ Primitives to build for it:
 
 ## Backlog (next rounds, roughly in order)
 
-- `pathFly` — flight along an arbitrary bezier/polyline path with heading
 - `flipIn` — 3D flip entrance (perspective rotateX/rotateY)
 - `counterRoll` — odometer-style digit roll for big numbers
 - `drawText` — handwriting-style stroke text (SVG paths for common glyphs)
