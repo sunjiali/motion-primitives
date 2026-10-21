@@ -2,6 +2,15 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.9.1] — 2026-10-21
+
+### Internal
+- Parity tests (`test/parity.test.js`, runs in CI): the runtime exports,
+  the `index.d.ts` function declarations, the `Motion` object type, and
+  the site's mirrored lib copies must agree — the three drift classes
+  that can silently make the site demo old code or the package lie
+  about its API now fail the build instead.
+
 ## [0.9.0] — 2026-10-21
 
 ### Added
