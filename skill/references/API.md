@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (77 functions)
+# motion-primitives API — the full catalog (78 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -623,6 +623,14 @@ M.isoBolt(o: { x?: number; y?: number; z?: number; ox?: number; oy?: number; uni
 ```
 
 Isometric bolt: hex-head prism on a short cylinder shaft. Returns SVG strings.
+
+### `isoTerrain`
+
+```ts
+M.isoTerrain(frame: number, o: { ox?: number; oy?: number; unit?: number; cols?: number; rows?: number; amp?: number; sigma?: number; fx?: number; fy?: number; auto?: boolean; speed?: number; color?: string }): string
+```
+
+Isometric data terrain: a column grid with a gaussian hill around a fixed or orbiting focus. Returns painter-sorted SVG strings.
 
 ### `isoSort`
 

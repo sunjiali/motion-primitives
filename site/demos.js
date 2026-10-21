@@ -443,6 +443,13 @@
       },
     },
     {
+      name: 'isoTerrain', desc: 'A column landscape with a gaussian hill that wanders the grid.',
+      code: 'M.isoTerrain(frame, { cols, rows, auto: true })', cycle: 9999,
+      draw(f) {
+        return M.isoTerrain(f, { cols: 11, rows: 11, unit: 15.5, ox: 282, oy: 108, amp: 2.6, sigma: 2.1, auto: true, speed: 0.016, color: '#2E86AB' });
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

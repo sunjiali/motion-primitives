@@ -28,9 +28,11 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
   overshoot / fade). Spans are inline-block, so line layout never
   shifts while letters land.
 
-### Isometric kit (v0.26–0.38)
+### Isometric kit (v0.26–0.46)
 - `isoBolt` (v0.38) — hex-head prism (all-sides-then-top trick)
   on a short cylinder shaft.
+- `isoTerrain` (v0.46) — column-grid data landscape, gaussian
+  hill around a fixed or orbiting focus.
 - `isoGear` (v0.36) — gear: cylinder body, teeth on the rim
   ellipse, hub hole and face bolts; `rot` animates the turn.
 - `isoCone` (v0.37) — cone: true tangent silhouettes from the
@@ -269,10 +271,8 @@ what the posts showed at sweep time):
 - (original note) a whole string typeset along an SVG path by arc
   length, tangent-rotated, with a flowing offset: kinetic-type
   titles and circular badges. (@holke79 carousel.)
-- `isoTerrain` — iso pillar field whose heights follow a scripted
-  focus point (distance falloff): data landscapes and equaliser
-  cities on the v0.26 iso core. (Hairline library, via
-  @repo.creative / @aiadventureryt.)
+- ~~`isoTerrain`~~ — shipped in v0.46 (gaussian hill, fixed or
+  orbiting focus).
 - `patternField` — one small looping tile repeated with per-tile
   phase into a seamless 2-D pattern backdrop.
   (@studio.baseline tutorial.)

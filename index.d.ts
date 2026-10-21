@@ -172,6 +172,8 @@ export function isoGear(o: { x?: number; y?: number; z?: number; ox?: number; oy
 export function isoCone(o: { x?: number; y?: number; z?: number; ox?: number; oy?: number; unit?: number; r?: number; h?: number; color?: string; stroke?: string }): string;
 /** Isometric bolt: hex-head prism on a short cylinder shaft. Returns SVG strings. */
 export function isoBolt(o: { x?: number; y?: number; z?: number; ox?: number; oy?: number; unit?: number; r?: number; headH?: number; shaftH?: number; color?: string; top?: string; stroke?: string }): string;
+/** Isometric data terrain: a column grid with a gaussian hill around a fixed or orbiting focus. Returns painter-sorted SVG strings. */
+export function isoTerrain(frame: number, o: { ox?: number; oy?: number; unit?: number; cols?: number; rows?: number; amp?: number; sigma?: number; fx?: number; fy?: number; auto?: boolean; speed?: number; color?: string }): string;
 /** Painter's-order join for iso parts: sorts by (x + y), then z, and concatenates their html. */
 export function isoSort(parts: { x: number; y: number; z?: number; html: string }[]): string;
 
@@ -223,6 +225,7 @@ declare const Motion: {
   isoGear: typeof isoGear;
   isoCone: typeof isoCone;
   isoBolt: typeof isoBolt;
+  isoTerrain: typeof isoTerrain;
   isoSort: typeof isoSort;
   Motion: typeof Motion;
   Remotion: RemotionModule;

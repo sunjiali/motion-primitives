@@ -201,6 +201,10 @@ interface IsoConeOpts extends IsoBase {
 interface IsoBoltOpts extends IsoBase {
   r?: number; headH?: number; shaftH?: number; color?: string; top?: string; stroke?: string;
 }
+interface IsoTerrainOpts extends IsoBase {
+  cols?: number; rows?: number; amp?: number; sigma?: number;
+  fx?: number; fy?: number; auto?: boolean; speed?: number; color?: string;
+}
 interface IsoPart { x: number; y: number; z?: number; html: string }
 interface CursorKey { f: number; x: number; y: number }
 interface CursorOpts {
@@ -1873,6 +1877,37 @@ __root.Motion = (function () {
     return isoCylinder({ ...o, r: r * 0.55, h: shaftH }) + head;
   }
 
+  // A data terrain: a grid of iso columns whose heights form a
+  // gaussian hill around a focus point. The focus is fixed
+  // (fx, fy, in grid cells) or orbits the grid centre when
+  // `auto` is on; taller columns shade lighter toward the top
+  // colour. One call returns the whole field, painter-sorted.
+  // From the X sweep (the Hairline-style iso data landscapes).
+  function isoTerrain(frame: number, o: IsoTerrainOpts): string {
+    o = o || {};
+    const cols = o.cols || 10, rows = o.rows || 10;
+    const amp = o.amp == null ? 1.6 : o.amp, sigma = o.sigma || 2.4;
+    const color = o.color || '#3E7CB1';
+    let fx = o.fx == null ? cols / 2 : o.fx, fy = o.fy == null ? rows / 2 : o.fy;
+    if (o.auto) {
+      const t = frame * (o.speed || 0.02);
+      fx = cols / 2 + Math.cos(t) * cols * 0.28;
+      fy = rows / 2 + Math.sin(t) * rows * 0.28;
+    }
+    const parts: { x: number; y: number; z: number; html: string }[] = [];
+    for (let j = 0; j < rows; j++) {
+      for (let i = 0; i < cols; i++) {
+        const d2 = (i - fx) * (i - fx) + (j - fy) * (j - fy);
+        const h = 0.12 + amp * Math.exp(-d2 / (2 * sigma * sigma));
+        parts.push({
+          x: i, y: j, z: 0,
+          html: isoBox({ ...o, x: i, y: j, z: 0, w: 0.92, d: 0.92, h, color, top: shade(color, Math.round(6 + h * 16)) }),
+        });
+      }
+    }
+    return isoSort(parts);
+  }
+
   // Painter's order for iso parts: ascending (x + y), ties by z.
   // Parts carry their resting coords; the html may be built at an
   // animated offset without changing the paint order.
@@ -1885,7 +1920,7 @@ __root.Motion = (function () {
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
     paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
-    beatGrid, beatFrames, inertia, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoSort,
+    beatGrid, beatFrames, inertia, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,

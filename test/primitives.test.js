@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -342,6 +342,9 @@ test('iso kit: box shading order, cylinder ellipse, painter sort', () => {
   const bolt = M.isoBolt({ x: 0, y: 0, r: 0.4, unit: 50 });
   assert.equal((bolt.match(/<polygon/g) || []).length, 7); // 6 head sides + the hex top
   assert.ok(bolt.includes('<ellipse')); // the shaft is a cylinder
+  const terrain = M.isoTerrain(0, { cols: 4, rows: 3, unit: 20 });
+  assert.equal((terrain.match(/<polygon/g) || []).length, 36); // 12 columns x 3 faces
+  assert.notEqual(M.isoTerrain(90, { cols: 4, rows: 3, unit: 20, auto: true }), terrain); // the hill travels
   const cyl = M.isoCylinder({ x: 0, y: 0, r: 1, h: 2, unit: 50 });
   assert.ok(cyl.includes('<ellipse'));
   assert.ok(cyl.includes('rx="61.2"')); // r * unit * sqrt(3/2)

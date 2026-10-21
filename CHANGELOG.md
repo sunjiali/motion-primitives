@@ -2,6 +2,18 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.46.0] — 2026-10-21
+
+### Added
+
+- `isoTerrain(frame, o)` — an isometric data landscape: a grid
+  of columns whose heights form a gaussian hill around a focus
+  point, fixed (fx, fy) or orbiting the centre with `auto`;
+  taller columns shade lighter toward the top. One call returns
+  the whole painter-sorted field. From the 2026-10-21 X sweep
+  (Hairline-style iso data landscapes). Skill bundle synced
+  (API catalog now 78 functions); site demo card #47.
+
 ## [0.45.0] — 2026-10-21
 
 ### Added
