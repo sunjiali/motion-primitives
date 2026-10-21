@@ -255,7 +255,9 @@ what the posts showed at sweep time):
 - ~~`matchCut`~~ — shipped in v0.40 (shared-path driver:
   quadratic out-leg to p = 0.8, derivative-matched in-leg).
 - ~~`inertia`~~ — shipped in v0.41.
-- `pixelDissolve` — mosaic transition: grid cells flip A→B at
+- ~~`pixelDissolve`~~ — shipped in v0.42 (cells in the outgoing
+  colour flip at hash delays, swelling just before they flip).
+- (original note) mosaic transition: grid cells flip A→B at
   hash delays while cell size swells mid-transition; the orderly
   counterpart to glitch. (@webflow pixelated transition demo.)
 - `charGrid` — living glyph lattice: fixed grid whose glyphs and

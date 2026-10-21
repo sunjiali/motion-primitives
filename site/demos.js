@@ -406,6 +406,16 @@
       },
     },
     {
+      name: 'pixelDissolve', desc: 'The scene dissolves cell by cell, each swelling a beat before it flips.',
+      code: 'M.pixelDissolve(frame, { at, dur, cols, rows })', cycle: 170,
+      draw(f) {
+        const lf = f % 170;
+        const next = '<div style="position:absolute;inset:0;background:linear-gradient(120deg,#2F6DB3,#57C7D4);"></div>' +
+          '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 44px system-ui;color:#FBF6EC;">DISSOLVED</div>';
+        return next + M.pixelDissolve(lf, { at: 50, dur: 55, w: 560, h: 315, cols: 14, rows: 8, color: '#26221F', seed: 5 });
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

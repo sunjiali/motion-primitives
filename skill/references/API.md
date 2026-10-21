@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (73 functions)
+# motion-primitives API — the full catalog (74 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -533,6 +533,14 @@ M.matchCut(frame: number, o: { at?: number; out?: number }): { phase: string
 ```
 
 Matched-cut travel driver: outgoing element reaches p = 0.8 at the cut; the incoming continues at matched pose and velocity to p = 1.
+
+### `pixelDissolve`
+
+```ts
+M.pixelDissolve(frame: number, o: { at?: number; dur?: number; w?: number; h?: number; cols?: number; rows?: number; color?: string; seed?: number }): string
+```
+
+Mosaic scene transition: a grid of flat cells in the outgoing colour flips away at hash-staggered frames. Returns an overlay div ('' once dissolved).
 
 ## Isometric kit
 

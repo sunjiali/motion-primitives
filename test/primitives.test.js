@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -461,6 +461,15 @@ test('inertia: closed-form glide lands exactly at x0 + v0 / k', () => {
   assert.ok(Math.abs(end.y - (0 + -3 / 0.06)) < 1e-6);
   const mid = M.inertia(20, o);
   assert.ok(mid.x > 10 && mid.x < end.x && mid.vx < 12 && mid.vx > 0); // gliding, decaying
+});
+
+test('pixelDissolve: full grid, partial mid-way, gone after', () => {
+  const o = { at: 10, dur: 40, w: 400, h: 300, cols: 4, rows: 3, color: '#26221F' };
+  const cells = (s) => (s.match(/background:#26221F/g) || []).length;
+  assert.equal(cells(M.pixelDissolve(5, o)), 12); // before `at`: the whole grid
+  const mid = cells(M.pixelDissolve(30, o));
+  assert.ok(mid > 0 && mid < 12, 'mid-dissolve keeps some cells: ' + mid);
+  assert.equal(M.pixelDissolve(55, o), '');
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

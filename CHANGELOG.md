@@ -2,6 +2,18 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.42.0] — 2026-10-21
+
+### Added
+
+- `pixelDissolve(frame, o)` — a mosaic scene transition: a grid
+  of flat cells in the outgoing scene's colour flips away one
+  by one at hash-staggered frames across the transition, each
+  cell swelling slightly just before it flips. Full grid before
+  `at`, empty string after. From the 2026-10-21 X sweep
+  (@webflow's pixel transition). Skill bundle synced (API
+  catalog now 74 functions); site demo card #43.
+
 ## [0.41.0] — 2026-10-21
 
 ### Added

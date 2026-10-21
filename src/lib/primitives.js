@@ -551,6 +551,36 @@ __root.Motion = (function () {
             vx: (o.vx || 0) * decay, vy: (o.vy || 0) * decay, t,
         };
     }
+    // pixelDissolve(): a mosaic scene transition — the outgoing
+    // scene as a grid of flat cells that flip away one by one at
+    // hash-staggered frames across [at, at + dur], each cell
+    // swelling slightly just before it flips. Draw the next scene
+    // first, then this cover. Full grid before `at`, '' after.
+    // From the X sweep (@webflow's pixel transition).
+    function pixelDissolve(frame, o) {
+        o = o || {};
+        const at = o.at || 0, dur = o.dur || 30, seed = o.seed || 1;
+        const w = o.w || 1280, h = o.h || 720;
+        const cols = o.cols || 16, rows = o.rows || 9;
+        const color = o.color || '#101014';
+        if (frame >= at + dur)
+            return '';
+        const cw = w / cols, ch = h / rows;
+        let cells = '';
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                const i = r * cols + c;
+                const flip = at + hash(seed * 57 + i * 3.7) * dur;
+                if (frame >= flip)
+                    continue;
+                const swell = 1 + 0.35 * Math.max(0, 1 - (flip - frame) / 4);
+                cells += '<div style="position:absolute;left:' + (c * cw).toFixed(1) + 'px;top:' + (r * ch).toFixed(1) +
+                    'px;width:' + cw.toFixed(1) + 'px;height:' + ch.toFixed(1) + 'px;background:' + color +
+                    ';transform:scale(' + swell.toFixed(3) + ');"></div>';
+            }
+        }
+        return '<div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">' + cells + '</div>';
+    }
     // shake(): decaying screen shake {x, y} inside [at, at+dur].
     function shake(frame, o) {
         o = o || {};
@@ -1548,7 +1578,7 @@ __root.Motion = (function () {
     }
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
+        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, pixelDissolve, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
         beatGrid, beatFrames, inertia, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoSort,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
