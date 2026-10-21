@@ -20,7 +20,7 @@
 <body>
 
 <header class="nav">
-  <a class="brand" href="#top"><span class="brand-dot"></span>motion-primitives</a>
+  <a class="brand" href="#top"><span class="dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></span>motion-primitives</a>
   <nav>
     <a href="#why">Why</a>
     <a href="#primitives">Primitives</a>
@@ -34,8 +34,9 @@
 <main id="top">
 
   <section class="hero">
+    <div class="hero-bg" id="hero-bg"></div>
     <div class="hero-text">
-      <h1>Motion primitives<br>for AI-generated videos.</h1>
+      <h1>Motion <span class="hl">primitives</span><br>for AI-generated videos.</h1>
       <p class="lede">An LLM is bad at hand-writing animation math — easing curves, spring
       constants, arc interpolation — but good at <em>composing named building blocks</em>.
       motion-primitives wraps the motions explainer &amp; teaching videos need again and
@@ -56,19 +57,23 @@ stage.innerHTML =
   </section>
 
   <section id="why" class="section">
+    <p class="eyebrow">01 — Why</p>
     <h2>Why primitives?</h2>
-    <div class="cards">
+    <div class="cards rv">
       <div class="card">
+        <span class="chip c1">01</span>
         <h3>Frame-pure by design</h3>
         <p>Every primitive is a pure function of the frame number — same frame, same picture.
         That is what makes parallel screenshot rendering correct, and live browser previews trivial.</p>
       </div>
       <div class="card">
+        <span class="chip c2">02</span>
         <h3>Compose, don't calculate</h3>
         <p>One call per motion: <code>pop()</code> for a springy entrance, <code>fly()</code> for an arc,
         <code>burst()</code> for confetti. Springs, easings and arcs live inside the library, where they belong.</p>
       </div>
       <div class="card">
+        <span class="chip c3">03</span>
         <h3>A renderer included</h3>
         <p>A from-scratch pipeline (headless Chrome screenshots + ffmpeg, in the spirit of Remotion's
         architecture) turns a plain JS composition into an MP4. No framework, no bundler.</p>
@@ -77,6 +82,7 @@ stage.innerHTML =
   </section>
 
   <section id="primitives" class="section">
+    <p class="eyebrow">02 — Live demos</p>
     <h2>The primitives, live</h2>
     <p class="section-lede">Every demo below is running <em>right now in your browser</em> on the exact
     library that renders the videos — driven by a virtual frame counter instead of a screenshot camera.</p>
@@ -84,10 +90,11 @@ stage.innerHTML =
   </section>
 
   <section id="playground" class="section">
+    <p class="eyebrow">03 — Playground</p>
     <h2>Playground</h2>
     <p class="section-lede">Pick a primitive, drag the parameters, and watch both the animation and the
     generated call update. This is the whole workflow: intent in, motion out.</p>
-    <div class="play">
+    <div class="play rv">
       <div class="play-stage-wrap">
         <div class="play-stage" id="play-stage"></div>
         <pre class="play-code"><code id="play-code"></code></pre>
@@ -96,9 +103,11 @@ stage.innerHTML =
     </div>
   </section>
 
-  <section id="examples" class="section">
+  <section id="examples" class="section dark-panel">
+    <p class="eyebrow">04 — Examples</p>
     <h2>Examples</h2>
-    <div class="examples">
+    <p class="section-lede">Finished pieces rendered by the pipeline — no screen recordings, every frame computed.</p>
+    <div class="examples rv">
       <div class="example">
         <video src="assets/showcase.mp4" poster="assets/poster-showcase.jpg" preload="metadata" controls muted loop playsinline></video>
         <h3>showcase</h3>
@@ -125,8 +134,9 @@ stage.innerHTML =
   </section>
 
   <section id="docs" class="section">
+    <p class="eyebrow">05 — Docs</p>
     <h2>Docs</h2>
-    <div class="docs-grid">
+    <div class="docs-grid rv">
       <div>
         <h3>Quick start</h3>
         <div class="hero-code"><pre><code>npm install
@@ -181,6 +191,7 @@ node src/render.js --comp showcase \
   </section>
 
   <footer>
+    <p><span class="dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></span></p>
     <p>motion-primitives · MIT License ·
     <a href="https://github.com/sunjiali/motion-primitives">github.com/sunjiali/motion-primitives</a></p>
     <p class="foot-note">This site is deployed automatically by GitHub Actions on every push to <code>site/</code>.</p>
@@ -191,5 +202,35 @@ node src/render.js --comp showcase \
 <script src="lib/animation.js"></script>
 <script src="lib/primitives.js"></script>
 <script src="demos.js"></script>
+<script>
+/* Hero backdrop is the library's own meshBg, driven live — the product demos itself. */
+(function () {
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var bg = document.getElementById('hero-bg');
+  var hero = document.querySelector('.hero');
+  if (bg && window.Motion) {
+    if (reduced) {
+      bg.style.background = window.Motion.meshBg(40, {});
+    } else {
+      var visible = true, f = 0, tick = 0;
+      new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }).observe(hero);
+      (function loop() {
+        requestAnimationFrame(loop);
+        if (!visible || (tick++ % 3)) return;
+        bg.style.background = window.Motion.meshBg((f += 2), {});
+      })();
+    }
+  }
+  var rv = document.querySelectorAll('.rv');
+  if (rv.length && 'IntersectionObserver' in window && !reduced) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    rv.forEach(function (el) { io.observe(el); });
+  } else {
+    rv.forEach(function (el) { el.classList.add('in'); });
+  }
+})();
+</script>
 </body>
 </html>

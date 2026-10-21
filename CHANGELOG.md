@@ -2,6 +2,18 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.4.1] — 2026-10-21
+
+### Site
+- Full UI/UX redesign: dark brand nav with the candy-dot mark; the hero
+  now runs the library's own `meshBg` live as its backdrop (the product
+  demos itself) with a tilted, framed showcase card; numbered section
+  eyebrows (01–05); Examples moved onto a dark ink panel for rhythm;
+  demo cards get rotating accent colors and hover lift; playground
+  controls stick while scrolling; scroll-reveal on section blocks
+  (disabled under prefers-reduced-motion). All 14 live demos, the
+  playground and mobile layout re-verified after the rewrite.
+
 ## [0.4.0] — 2026-10-21
 
 ### Added
