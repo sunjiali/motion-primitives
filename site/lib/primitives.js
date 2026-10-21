@@ -792,7 +792,7 @@ __root.Motion = (function () {
     const LM_VERT = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
     const LM_FRAG = [
         'precision highp float;',
-        'uniform vec2 u_res;uniform vec4 u_blobs[8];uniform int u_count;uniform vec3 u_tint;',
+        'uniform vec2 u_res;uniform vec4 u_blobs[8];uniform int u_count;uniform vec3 u_tint;uniform float u_oil;',
         'float smin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}',
         'float sdf(vec3 p){float d=1e5;for(int i=0;i<8;i++){if(i>=u_count)break;vec4 b=u_blobs[i];d=smin(d,length(p-b.xyz)-b.w,.55);}return d;}',
         'vec3 nrm(vec3 p){vec2 e=vec2(.002,0.);float d=sdf(p);return normalize(vec3(sdf(p+e.xyy)-d,sdf(p+e.yxy)-d,sdf(p+e.yyx)-d));}',
@@ -805,6 +805,7 @@ __root.Motion = (function () {
         'for(int i=0;i<72;i++){p=ro+rd*t;float d=sdf(p);if(d<.0015){hit=1.;break;}t+=d;if(t>9.)break;}',
         'if(hit<.5){gl_FragColor=vec4(0.,0.,0.,0.);return;}',
         'vec3 n=nrm(p);vec3 v=-rd;vec3 r=reflect(rd,n);vec3 col=env(r);',
+        'if(u_oil>.5){vec3 oil=.72+.38*cos(6.2831*(vec3(0.,.33,.67)+r.y*.85+r.x*.25));col*=oil*1.7;}',
         'float fres=pow(1.-max(0.,dot(n,v)),2.2);col+=vec3(.9,.95,1.)*fres*.5;',
         'vec3 L=normalize(vec3(.5,.8,.6));col+=vec3(1.)*pow(max(0.,dot(reflect(-L,n),v)),90.)*1.1;',
         'gl_FragColor=vec4(col,1.);}',
@@ -813,7 +814,7 @@ __root.Motion = (function () {
     function liquidMetal(frame, o) {
         o = o || {};
         const w = o.w || 720, h = o.h || 405;
-        const data = { seed: o.seed || 1, palette: o.palette || 'chrome', speed: o.speed == null ? 1 : o.speed, blobs: o.blobs || 6, fps: o.fps || 30 };
+        const data = { seed: o.seed || 1, palette: o.palette || 'chrome', speed: o.speed == null ? 1 : o.speed, blobs: o.blobs || 6, fps: o.fps || 30, spin: o.spin == null ? 0.25 : o.spin };
         return '<canvas class="mp-liquid" width="' + w + '" height="' + h + '" data-frame="' + frame + '" data-lm=\'' +
             JSON.stringify(data) + '\' style="position:absolute;left:' + (o.x || 0) + 'px;top:' + (o.y || 0) + 'px;width:' +
             (o.size || w) + 'px;height:' + (o.size ? Math.round((o.size * h) / w) : h) + 'px;"></canvas>';
@@ -837,13 +838,17 @@ __root.Motion = (function () {
             // blob layout, a pure function of (frame, seed): core + satellites
             const blobs = [];
             blobs.push(0, Math.sin(t * 0.9) * 0.05, 0, 0.98);
-            const count = Math.min(6, o.blobs || 6);
+            const count = Math.min(7, o.blobs || 6);
+            const spinA = t * (o.spin == null ? 0.25 : o.spin);
+            const cs = Math.cos(spinA), sn = Math.sin(spinA);
             for (let i = 0; i < count; i++) {
                 const ph = hash(seed * 7 + i * 3.3) * Math.PI * 2;
                 const sp = 0.35 + hash(seed * 11 + i * 5.1) * 0.5;
                 const R = 1.02 + hash(seed * 13 + i * 7.7) * 0.38;
                 const a = ph + t * sp;
-                blobs.push(Math.cos(a) * R, Math.sin(a) * R * 0.8, Math.sin(a * 0.7 + ph) * 0.35, (0.4 + hash(seed * 17 + i * 9.3) * 0.22) * (1 + 0.16 * Math.sin(t * 1.3 + ph * 2)));
+                const bx = Math.cos(a) * R, by = Math.sin(a) * R * 0.8, bz = Math.sin(a * 0.7 + ph) * 0.35;
+                blobs.push(bx * cs - bz * sn, by, bx * sn + bz * cs, // the whole cluster slowly turns in depth
+                (0.4 + hash(seed * 17 + i * 9.3) * 0.22) * (1 + 0.16 * Math.sin(t * 1.3 + ph * 2)));
             }
             const tint = o.palette === 'gold' ? [1.15, 0.92, 0.55] : o.palette === 'copper' ? [1.18, 0.72, 0.5] : [1, 1, 1];
             const ctx2d = cv.getContext('2d');
@@ -880,6 +885,7 @@ __root.Motion = (function () {
                 gl.uniform2f(gl.getUniformLocation(prog, 'u_res'), gc.width, gc.height);
                 gl.uniform1i(gl.getUniformLocation(prog, 'u_count'), count + 1);
                 gl.uniform3f(gl.getUniformLocation(prog, 'u_tint'), tint[0], tint[1], tint[2]);
+                gl.uniform1f(gl.getUniformLocation(prog, 'u_oil'), o.palette === 'oil' ? 1 : 0);
                 const flat = new Float32Array(32);
                 flat.set(blobs); // up to 8 blobs; the rest stay (0,0,0,0), guarded by u_count
                 gl.uniform4fv(gl.getUniformLocation(prog, 'u_blobs'), flat);

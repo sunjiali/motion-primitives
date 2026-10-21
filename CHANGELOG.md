@@ -2,6 +2,24 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.50.0] — 2026-10-21
+
+### Added
+
+- `liquid-showcase` composition — four creative cases built on
+  one primitive: a logo sting (chrome cluster forms, wordmark
+  assembles beneath it), a chrome / gold / oil trio, a
+  living-metal loading mark over a progress bar, and a hero
+  headline card with a gold orb. Listed in the README examples.
+
+### Changed
+
+- `liquidMetal` polish: the cluster now slowly turns in depth
+  (`spin`, default 0.25, 0 holds it still), satellites cap
+  raised to 7, and a fourth palette — `oil`, an iridescent
+  oil-slick finish computed from the reflection direction in
+  the shader.
+
 ## [0.49.0] — 2026-10-21
 
 ### Added

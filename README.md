@@ -167,6 +167,10 @@ ever need to drop below the primitives layer.
   background, a virtual camera, self-drawing charts, directed physics
   (beat/drop/shake/punch/flash) and a grain + vignette finish. The full
   effects ledger lives in [EFFECTS.md](EFFECTS.md).
+- **`liquid-showcase`** — four creative cases built on ONE primitive,
+  `liquidMetal` (WebGL raymarched SDF chrome): a logo sting (cluster
+  forms, wordmark assembles), a chrome/gold/oil trio, a living-metal
+  loading mark, and a hero headline card with a gold orb.
 
 ## 中文简介
 

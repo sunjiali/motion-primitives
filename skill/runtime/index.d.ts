@@ -135,7 +135,7 @@ export function patternField(frame: number, o: { w?: number; h?: number; tile?: 
 /** Smooth slit-scan streak warp over wrapped HTML: band-clipped copies shifted by a travelling sine field. Returns an HTML string. */
 export function slitScan(frame: number, o: { html: string; h?: number; bands?: number; amp?: number; waves?: number; speed?: number; at?: number; dur?: number }): string;
 /** Raymarched SDF liquid-chrome blob cluster (WebGL). Returns a canvas tag; the players paint it via liquidMetalDraw after each render. */
-export function liquidMetal(frame: number, o: { w?: number; h?: number; x?: number; y?: number; size?: number; palette?: string; speed?: number; seed?: number; fps?: number; blobs?: number }): string;
+export function liquidMetal(frame: number, o: { w?: number; h?: number; x?: number; y?: number; size?: number; palette?: string; speed?: number; seed?: number; fps?: number; blobs?: number; spin?: number }): string;
 /** Paints every liquidMetal canvas under a root element. Called automatically by the players; no-op without a DOM. */
 export function liquidMetalDraw(root: unknown): void;
 /** 3D flip entrance with overshoot settle. Returns a CSS style string. */
