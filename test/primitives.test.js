@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoSort'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoSort', 'orbit'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -339,6 +339,19 @@ test('iso kit: box shading order, cylinder ellipse, painter sort', () => {
   ]);
   assert.equal(sorted, 'AB1B2C'); // by x+y ascending; the sum-1 tie resolves by z (B1 at z 0 before B2 at z 1)
   assert.equal(M.isoBox({ x: 1, y: 1, color: '#808080' }), M.isoBox({ x: 1, y: 1, color: '#808080' })); // determinism
+});
+
+test('orbit: circle geometry, squash, depth scale', () => {
+  const p0 = M.orbit(0, { cx: 100, cy: 50, r: 40 });
+  assert.equal(p0.x, 140); assert.equal(p0.y, 50); assert.equal(p0.scale, 1);
+  const front = M.orbit(0, { cx: 100, cy: 50, r: 40, phase: Math.PI / 2, squash: 0.5, depth: true });
+  assert.ok(Math.abs(front.x - 100) < 1e-6);
+  assert.equal(front.y, 70); // cy + r * squash at the front of the ellipse
+  assert.equal(front.scale, 1); // front = full size with depth on
+  const back = M.orbit(0, { cx: 100, cy: 50, r: 40, phase: -Math.PI / 2, depth: true });
+  assert.equal(back.scale, 0.72); // back of the orbit = smallest
+  const moved = M.orbit(10, { cx: 0, cy: 0, r: 10, speed: 0.1 });
+  assert.ok(Math.abs(moved.angle - 1) < 1e-9); // angle advances by speed * frame
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

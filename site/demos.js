@@ -282,6 +282,24 @@
       },
     },
     {
+      name: 'orbit', desc: 'Orbit pose helper: elliptical squash + depth scaling — satellites, loaders, orbiting badges.',
+      code: 'const p = M.orbit(frame, { cx, cy, r, speed, squash, depth })', cycle: 200,
+      draw(f) {
+        const cx = 280, cy = 110;
+        const moon = M.orbit(f, { cx, cy, r: 118, speed: 0.045, squash: 0.42, depth: true });
+        const sat = M.orbit(f, { cx, cy, r: 60, speed: -0.075, phase: 2.1 });
+        const ball = (p, r, color, s) =>
+          '<div style="position:absolute;left:' + (p.x - r).toFixed(1) + 'px;top:' + (p.y - r).toFixed(1) +
+          'px;width:' + r * 2 + 'px;height:' + r * 2 + 'px;border-radius:50%;background:' + color +
+          ';transform:scale(' + (s || 1).toFixed(3) + ');"></div>';
+        const ring = '<svg style="position:absolute;left:0;top:0;" width="560" height="220"><ellipse cx="280" cy="110" rx="118" ry="49.6" fill="none" stroke="#3A4152" stroke-width="1.5" stroke-dasharray="3 6"/></svg>';
+        const planet = ball({ x: cx, y: cy }, 25, '#5B7BA5');
+        const moonEl = ball(moon, 12, '#FF8A4C', moon.scale);
+        const satEl = ball(sat, 6, '#E8E4DA');
+        return ring + (Math.sin(moon.angle) < 0 ? moonEl + planet : planet + moonEl) + satEl;
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

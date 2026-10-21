@@ -2,6 +2,19 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.29.0] — 2026-10-21
+
+### Added
+
+- `orbit(frame, o)` — pose on a circular orbit around (cx, cy):
+  returns {x, y, angle, scale} in the travel/pathFly convention.
+  `squash` flattens the circle into the classic tilted ellipse;
+  `depth` scales the traveller from 0.72 at the back of the
+  ellipse to 1.0 at the front. Satellites, orbiting badges,
+  loading rings. Skill bundle synced (API catalog now 61
+  functions); site demo card #33 (a moon with depth scaling
+  passes behind and in front of its planet).
+
 ## [0.28.0] — 2026-10-21
 
 ### Added

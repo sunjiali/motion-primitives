@@ -292,6 +292,24 @@ __root.Motion = (function () {
             p, done: lf >= dur,
         };
     }
+    // orbit(): pose on a circular orbit around (cx, cy). squash < 1
+    // flattens the circle into an ellipse (the classic tilted orbit);
+    // depth scales the traveller from 0.72 at the back of the ellipse
+    // to 1 at the front. Returns {x, y, angle, scale} like travel /
+    // pathFly return poses — place the element yourself.
+    function orbit(frame, o) {
+        o = o || {};
+        const a = (o.phase || 0) + frame * (o.speed == null ? 0.04 : o.speed);
+        const r = o.r == null ? 100 : o.r;
+        const sq = o.squash == null ? 1 : o.squash;
+        const s = Math.sin(a);
+        return {
+            x: (o.cx || 0) + Math.cos(a) * r,
+            y: (o.cy || 0) + s * r * sq,
+            angle: a,
+            scale: o.depth ? 0.72 + 0.28 * ((s + 1) / 2) : 1,
+        };
+    }
     // shake(): decaying screen shake {x, y} inside [at, at+dur].
     function shake(frame, o) {
         o = o || {};
@@ -1187,7 +1205,7 @@ __root.Motion = (function () {
     }
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-        paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
+        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
         beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoSort,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

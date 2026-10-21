@@ -222,11 +222,8 @@ Researched 2026-10-21 (gap analysis against the shipped 55, after
 splitText / wipeReveal / confetti / cursor landed) — take from the
 top, one per round:
 
-- `orbit` — circular-orbit position helper: returns a transform
-  string placing content on a circle around (cx, cy) with radius,
-  phase, speed, and optional elliptical squash / depth scaling —
-  satellites, orbiting badges, loading rings of dots. Pairs with
-  pulse for the orbiting element.
+- ~~`orbit`~~ — shipped in v0.29 (as a pose object {x, y, angle,
+  scale}, matching travel/pathFly conventions).
 - `swing` — pendulum rotation about a pivot above the element
   (signs, hanging tags, mobiles): angle = maxDeg * sin(t) with
   optional decay; build on pivot/stepped conventions.

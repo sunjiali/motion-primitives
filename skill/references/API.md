@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (60 functions)
+# motion-primitives API — the full catalog (61 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -191,6 +191,14 @@ M.pathFly(frame: number, o: AtOpts & { pts: Array<[number, number]> }): PathFlyR
 ```
 
 Constant-speed flight along a polyline, with heading angle.
+
+### `orbit`
+
+```ts
+M.orbit(frame: number, o: { cx?: number; cy?: number; r?: number; speed?: number; phase?: number; squash?: number; depth?: boolean }): { x: number
+```
+
+Pose on a circular orbit: elliptical squash and optional depth scaling. Returns {x, y, angle, scale}.
 
 ### `cursor`
 
