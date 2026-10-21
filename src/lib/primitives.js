@@ -323,11 +323,11 @@ __root.Motion = (function () {
         return '<div style="position:absolute;inset:0;background:' + (o.color || '#FFFFFF') +
             ';opacity:' + op.toFixed(3) + ';pointer-events:none;"></div>';
     }
-    // camera(): a virtual camera over a world wrapper. keys = [{f, x, y, z}]
-    // (focus point in stage coords + zoom), eased between keyframes.
-    // Returns a CSS transform for a stage-sized wrapper div.
-    function camera(frame, keys, stage) {
-        const W = stage.w, H = stage.h;
+    // Shared camera pose: the eased focus + zoom at a frame,
+    // interpolated between keyframes (zoom in log space). camera() and
+    // parallax() both consume it, so depth layers can never drift from
+    // the camera move they belong to.
+    function camPose(frame, keys) {
         let a = keys[0], b = keys[keys.length - 1];
         for (let i = 0; i < keys.length - 1; i++) {
             if (frame >= keys[i].f && frame <= keys[i + 1].f) {
@@ -344,8 +344,32 @@ __root.Motion = (function () {
         }
         const span = Math.max(b.f - a.f, 1);
         const t = Easing.cubicInOut(clamp01((frame - a.f) / span));
-        const x = a.x + (b.x - a.x) * t, y = a.y + (b.y - a.y) * t;
-        const z = Math.exp(Math.log(a.z) + (Math.log(b.z) - Math.log(a.z)) * t);
+        return {
+            x: a.x + (b.x - a.x) * t,
+            y: a.y + (b.y - a.y) * t,
+            z: Math.exp(Math.log(a.z) + (Math.log(b.z) - Math.log(a.z)) * t),
+        };
+    }
+    // camera(): a virtual camera over a world wrapper. keys = [{f, x, y, z}]
+    // (focus point in stage coords + zoom), eased between keyframes.
+    // Returns a CSS transform for a stage-sized wrapper div.
+    function camera(frame, keys, stage) {
+        const W = stage.w, H = stage.h;
+        const p = camPose(frame, keys);
+        return 'translate(' + (W / 2) + 'px,' + (H / 2) + 'px) scale(' + p.z.toFixed(4) +
+            ') translate(' + (-p.x).toFixed(1) + 'px,' + (-p.y).toFixed(1) + 'px)';
+    }
+    // parallax(): the same camera move as camera(), felt at `depth`.
+    // The layer's focus is pulled toward the stage center by depth and
+    // its zoom is z^depth: depth 1 reproduces camera() exactly (the
+    // world plane), depth 0 never moves (the sky), and layered scenes
+    // live in between — near layers travel faster than far ones.
+    function parallax(frame, keys, depth, stage) {
+        const W = stage.w, H = stage.h;
+        const p = camPose(frame, keys);
+        const x = W / 2 + (p.x - W / 2) * depth;
+        const y = H / 2 + (p.y - H / 2) * depth;
+        const z = Math.exp(Math.log(p.z) * depth);
         return 'translate(' + (W / 2) + 'px,' + (H / 2) + 'px) scale(' + z.toFixed(4) +
             ') translate(' + (-x).toFixed(1) + 'px,' + (-y).toFixed(1) + 'px)';
     }
@@ -895,7 +919,7 @@ __root.Motion = (function () {
         paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
         beatGrid, beatFrames, morphPoly,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
-        beat, drop, travel, shake, punch, flash, camera, meshBg, drawOn, poly, bars,
+        beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
         scramble, kenBurns, breathe, fx, hash,
         clamp01, Easing,
     };

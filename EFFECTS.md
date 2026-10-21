@@ -11,6 +11,14 @@ TypeScript refactor — all sources are strict-mode `.ts`, compiled by
 `tsc` to the same committed JavaScript (no behavior change; CI
 build-freshness gate). No new effects this round.
 
+### Paper-cut pack, depth (v0.19)
+- `parallax` — depth-layer offsets from one camera move: consumes
+  the same keyframes as `camera()` (shared `camPose` interpolation,
+  camera output pinned by tests through the refactor) and returns
+  the move felt at `depth` — focus pulled toward stage center,
+  zoom raised to depth power. Depth 1 = camera() exactly, depth 0
+  = the unmoving sky. Paper pack complete.
+
 ### Paper-cut pack, morphs (v0.18)
 - `morphPoly` — interpolate between two raw polygon point sets
   (index-paired; uneven counts subdivided at longest-edge midpoints
@@ -103,8 +111,8 @@ whole v0.3 stack).
   value), optionally step-quantized for stiffness.
 - `stepped(frame, {steps})` — eased progress snapped to N levels;
   `onTwos(frame, {every})` — frame snap (shot-on-twos) for whole scenes.
-  Pack remainder: parallax still in the style-pack backlog
-  (morphPoly shipped in v0.18).
+  Pack remainder: none — morphPoly shipped in v0.18, parallax in
+  v0.19. Paper-cut pack complete.
 
 ### Motion blur (v0.5)
 - `smear(frame, {from, to, arc, samples, span, opacity, fullAt})` — exposure
@@ -148,7 +156,7 @@ The look is fully procedural and fits this pipeline:
 
 Primitives to build for it:
 - `paperEl` / `pivot` / `stepped` (+ `onTwos`) — shipped in v0.6
-- `parallax` — depth-layer offsets from one camera move (pairs with `camera`)
+- ~~`parallax` — depth-layer offsets from one camera move~~ shipped in v0.19; the style-pack backlog is clear.
 
 ## Backlog (next rounds, roughly in order)
 

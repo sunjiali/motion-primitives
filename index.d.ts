@@ -72,6 +72,8 @@ export function punch(frame: number, o?: AtOpts & { scale?: number }): number;
 export function flash(frame: number, o?: AtOpts): number;
 /** Virtual camera: keyframed focus + zoom transform for a stage. Returns a CSS transform. */
 export function camera(frame: number, keys: CameraKey[], stage?: { w: number; h: number }): string;
+/** The camera move felt at a depth: 1 = camera() exactly, 0 = never moves, between = parallax layer. Returns a CSS transform. */
+export function parallax(frame: number, keys: CameraKey[], depth: number, stage?: { w: number; h: number }): string;
 /** Animated gradient-mesh background. Returns a CSS background value. */
 export function meshBg(frame: number, o?: { c1?: string; c2?: string; c3?: string; base?: string }): string;
 /** Self-drawing stroke (SVG path with dash animation). Returns an HTML string. */
@@ -145,7 +147,7 @@ declare const Motion: {
   targetSlot: typeof targetSlot; scene: typeof scene; transition: typeof transition;
   wiggle: typeof wiggle; typewriter: typeof typewriter; hash: typeof hash;
   beat: typeof beat; drop: typeof drop; travel: typeof travel; shake: typeof shake;
-  punch: typeof punch; flash: typeof flash; camera: typeof camera;
+  punch: typeof punch; flash: typeof flash; camera: typeof camera; parallax: typeof parallax;
   meshBg: typeof meshBg; drawOn: typeof drawOn; poly: typeof poly; bars: typeof bars;
   scramble: typeof scramble; kenBurns: typeof kenBurns; fx: typeof fx;
   paperEl: typeof paperEl; pivot: typeof pivot; stepped: typeof stepped; onTwos: typeof onTwos;

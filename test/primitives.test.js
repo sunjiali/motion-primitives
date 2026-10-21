@@ -8,7 +8,7 @@ const M = require('../index.js');
 const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
-  'travel', 'shake', 'punch', 'flash', 'camera', 'meshBg', 'drawOn', 'poly',
+  'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
   'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly'];
 
 test('package entry exposes the full public API', () => {
@@ -240,6 +240,20 @@ test('morphPoly: exact endpoints, uneven counts subdivided, caller vertices surv
   for (const v of ['0.0,0.0', '90.0,0.0', '45.0,80.0']) assert.ok(start.includes(v), `vertex ${v} survives`);
   assert.deepEqual(pts(M.morphPoly(20, o2)), ['0.0,0.0', '100.0,0.0', '100.0,100.0', '0.0,100.0']);
   assert.equal(M.morphPoly(10, o), M.morphPoly(10, o)); // determinism
+});
+
+test('camera/parallax: camera output pinned, depth scales the same move', () => {
+  const keys = [{ f: 0, x: 640, y: 360, z: 1 }, { f: 60, x: 840, y: 300, z: 1.6 }];
+  const stage = { w: 1280, h: 720 };
+  // Pins recorded before the camPose refactor — camera() must not drift.
+  assert.equal(M.camera(0, keys, stage), 'translate(640px,360px) scale(1.0000) translate(-640.0px,-360.0px)');
+  assert.equal(M.camera(30, keys, stage), 'translate(640px,360px) scale(1.2649) translate(-740.0px,-330.0px)');
+  assert.equal(M.camera(60, keys, stage), 'translate(640px,360px) scale(1.6000) translate(-840.0px,-300.0px)');
+  // Depth 1 is the camera itself; depth 0 never moves; depth 0.5 halves
+  // the pan and takes the square root of the zoom.
+  assert.equal(M.parallax(30, keys, 1, stage), M.camera(30, keys, stage));
+  assert.equal(M.parallax(30, keys, 0, stage), 'translate(640px,360px) scale(1.0000) translate(-640.0px,-360.0px)');
+  assert.equal(M.parallax(30, keys, 0.5, stage), 'translate(640px,360px) scale(1.1247) translate(-690.0px,-345.0px)');
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

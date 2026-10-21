@@ -201,6 +201,23 @@
       },
     },
     {
+      name: 'parallax', desc: 'One camera move, felt at four depths — near paper layers travel faster than far ones.',
+      code: 'M.parallax(frame, keys, depth, stage)', cycle: 220,
+      draw(f) {
+        const keys = [{ f: 0, x: 280, y: 130, z: 1 }, { f: 110, x: 450, y: 130, z: 1 }, { f: 220, x: 280, y: 130, z: 1 }];
+        const st = { w: 560, h: 260 };
+        const L = (d, inner) => '<div style="position:absolute;inset:0;transform:' + M.parallax(f, keys, d, st) + '">' + inner + '</div>';
+        const svg = (body) => '<svg style="position:absolute;left:-280px;top:0;" width="1120" height="260" viewBox="0 0 1120 260">' + body + '</svg>';
+        const sun = '<div style="position:absolute;left:452px;top:24px;width:44px;height:44px;border-radius:50%;background:#F5C93F;"></div>';
+        const far = svg('<path d="M0 190 L120 90 L260 190 L400 70 L540 190 L680 100 L820 190 L950 80 L1120 190 L1120 260 L0 260 Z" fill="#B9CFE4"/>');
+        const mid = svg('<path d="M0 215 Q 180 160 360 210 T 720 205 T 1120 200 L1120 260 L0 260 Z" fill="#7FA36B"/>');
+        const near = svg('<path d="M0 238 Q 280 218 560 236 T 1120 232 L1120 260 L0 260 Z" fill="#2F5233"/><path d="M180 236 l16 -44 l16 44 Z" fill="#26512B"/><path d="M760 240 l14 -38 l14 38 Z" fill="#26512B"/><path d="M980 238 l16 -44 l16 44 Z" fill="#26512B"/>');
+        return '<div style="position:absolute;inset:0;background:#FBF3DF;overflow:hidden;">' +
+          L(0, sun) + L(0.25, far) + L(0.55, mid) + L(1, near) +
+          '<div style="position:absolute;left:0;right:0;top:14px;text-align:center;font:600 13px ui-monospace,Menlo,monospace;color:#8A7D68;letter-spacing:.22em;">ONE CAMERA · FOUR DEPTHS</div></div>';
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

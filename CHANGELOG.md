@@ -2,6 +2,30 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.19.0] — 2026-10-21
+
+### Added
+
+- `parallax(frame, keys, depth, stage)` — depth-layer offsets from
+  one camera move. It consumes the same keyframes as `camera()` and
+  returns that move felt at `depth`: the focus is pulled toward the
+  stage center by depth and the zoom is raised to the depth power,
+  so depth 1 reproduces `camera()` exactly (the world plane), depth
+  0 never moves (the sky), and layered scenes live in between —
+  near layers travel faster than far ones. Completes the paper-cut
+  pack.
+
+### Changed
+
+- `camera()` now shares its keyframe interpolation with
+  `parallax()` through an internal `camPose` helper, so layers can
+  never drift from the camera move they belong to. Camera output is
+  byte-identical to before — pinned by new tests recorded ahead of
+  the refactor. Verified with unit tests (pins, depth 0 / 0.5 / 1
+  exact strings) and two render stills a full pan apart (sun fixed,
+  mountains at quarter travel, foreground at full travel). Site
+  demo card #27.
+
 ## [0.18.0] — 2026-10-21
 
 ### Added
