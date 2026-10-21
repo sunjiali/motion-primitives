@@ -2,6 +2,22 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.19.1] — 2026-10-21
+
+### Fixed
+
+- SFX `ting` used the event's frame number as its base frequency
+  (`base = e.f ?? 1568`, a v0.4-era bug): a ting cued at frame 198
+  sounded at 198 Hz — a dull thud instead of a metallic ping. The
+  base is now the fixed 1568 Hz (G6) the fallback always intended,
+  consistent with every other pitched sound in the kit. A new
+  regression test pins the sound as byte-identical regardless of
+  the frame it is cued at, with its fundamental at 1568 Hz
+  (measured: 4131× the power at 198 Hz in the re-rendered
+  fx-showcase score). The site's fx-showcase video has been
+  remuxed with the corrected audio — video stream bit-identical,
+  audio re-rendered from the fixed synth.
+
 ## [0.19.0] — 2026-10-21
 
 ### Added

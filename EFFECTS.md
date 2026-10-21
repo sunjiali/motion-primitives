@@ -128,7 +128,10 @@ whole v0.3 stack).
 Deterministic SFX synthesizer: pure math in, 16-bit WAV out, zero audio
 assets, seeded noise only (same score → identical file, hash-verified).
 Ten synthesized sounds: `pop` `bloop` `ting` `whoosh` `thump` `inhale`
-`glide` `shimmer` `swell` `chord`. Scores are JSON event lists written
+`glide` `shimmer` `swell` `chord`. (v0.19.1 fixed a v0.4-era bug:
+`ting` read the event's frame number as its base frequency; the base
+is a fixed 1568 Hz like every other pitched sound in the kit, with a
+regression test pinning placement-independence and pitch.) Scores are JSON event lists written
 against video frames (`src/compositions/<name>.sfx.json`); by house rule
 each sound lands **one frame after** its visual. Recipes follow the
 «Opus 5.5 Motion Lab» write-up (pentatonic event sounds, thumps on

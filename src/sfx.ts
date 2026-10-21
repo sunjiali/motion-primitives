@@ -132,9 +132,13 @@ const SOUNDS: Record<string, SoundFn> = {
   pop(tr, t0, e) { tone(tr, t0, { f0: 520, f1: 160, dur: 0.09, gain: 0.55 * (e.g ?? 1), pan: e.pan ?? 0, harm: 0.3 }); },
   /** Droplet: high-to-mid sine drop with a soft harmonic. */
   bloop(tr, t0, e) { tone(tr, t0, { f0: 880, f1: 290, dur: 0.13, gain: 0.45 * (e.g ?? 1), pan: e.pan ?? 0, harm: 0.5 }); },
-  /** Metal ting: inharmonic partials, long shimmer decay. */
+  /** Metal ting: inharmonic partials, long shimmer decay. The base is
+   *  a fixed 1568 Hz (G6) — every pitched sound in this kit uses
+   *  absolute frequencies. (Before v0.19.1 this read `e.f ?? 1568`:
+   *  the event's frame number posing as a frequency, so a ting cued
+   *  at frame 198 sounded at 198 Hz.) */
   ting(tr, t0, e) {
-    const g = 0.30 * (e.g ?? 1), base = e.f ?? 1568;
+    const g = 0.30 * (e.g ?? 1), base = 1568;
     [[1, 1], [2.76, 0.55], [5.40, 0.28]].forEach(([m, a]) =>
       tone(tr, t0, { f0: base * m, dur: 0.5, gain: g * a, pan: e.pan ?? 0 }));
   },
