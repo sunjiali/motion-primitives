@@ -162,6 +162,15 @@
       },
     },
     {
+      name: 'glitch', desc: 'RGB-split glitch transition — sliced, channel-shifted, gone in half a second.',
+      code: 'M.glitch(frame, { html })', cycle: 110,
+      draw(f) {
+        const html = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 74px sans-serif;color:#F2EFE9;letter-spacing:.04em;">SIGNAL</div>';
+        return '<div style="position:absolute;inset:0;background:#14101F;">' +
+          M.glitch(f, { at: 30, dur: 18, html, amount: 16, blend: 'screen' }) + '</div>';
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

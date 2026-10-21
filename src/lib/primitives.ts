@@ -99,6 +99,10 @@ interface MorphShapeOpts extends EaseOpts {
   from?: ShapeName; to?: ShapeName; x?: number; y?: number; size?: number;
   color?: string; stroke?: string; strokeWidth?: number; rot?: number;
 }
+interface GlitchOpts {
+  at?: number; dur?: number; html: string; amount?: number; slices?: number;
+  seed?: number; blend?: 'multiply' | 'screen';
+}
 
 __root.Motion = (function () {
   const { interpolate, spring, Easing } = __root.Remotion as RemotionStatic;
@@ -858,9 +862,47 @@ __root.Motion = (function () {
       '/></svg>';
   }
 
+  // RGB-split glitch transition — short and tasteful by design. Inside
+  // the window the content is rebuilt from horizontal slices that jump
+  // sideways (jitter re-rolls every 2 frames, an on-twos stutter), with
+  // two channel-isolated ghosts (SVG feColorMatrix) offset behind it.
+  // A sine envelope ramps the whole thing in and out, so the first and
+  // last frames are clean. Outside the window the html passes through
+  // untouched. `blend` picks the ghost composite: 'screen' for dark
+  // scenes, 'multiply' for light ones.
+  function glitch(frame: number, o: GlitchOpts): string {
+    o = o || {};
+    const html = o.html || '';
+    const at = o.at || 0, dur = o.dur || 18;
+    if (frame < at || frame >= at + dur) return html;
+    const p = (frame - at) / dur;
+    const amount = (o.amount == null ? 14 : o.amount) * Math.sin(Math.PI * p);
+    const slices = o.slices || 6;
+    const seed = o.seed || 0;
+    const q = Math.floor((frame - at) / 2);
+    const id = 'gl' + at + 'x' + seed;
+    let s = '<svg width="0" height="0" style="position:absolute;"><defs>' +
+      '<filter id="' + id + 'r"><feColorMatrix type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0"/></filter>' +
+      '<filter id="' + id + 'c"><feColorMatrix type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0"/></filter>' +
+      '</defs></svg>';
+    const layer = (inner: string): string => '<div style="position:absolute;inset:0;">' + inner + '</div>';
+    const ghost = (fid: string, dx: number): string =>
+      '<div style="position:absolute;inset:0;opacity:0.55;mix-blend-mode:' + (o.blend || 'multiply') +
+      ';filter:url(#' + fid + ');transform:translateX(' + dx.toFixed(1) + 'px);">' + html + '</div>';
+    s += ghost(id + 'r', -amount * 0.7) + ghost(id + 'c', amount * 0.7);
+    for (let i = 0; i < slices; i++) {
+      const top = (i * 100) / slices, bottom = 100 - ((i + 1) * 100) / slices;
+      const roll = hash(seed * 7.3 + i * 13.7 + q * 29.1);
+      const jump = hash(seed * 3.1 + i * 7.9 + q * 17.3) < 0.4 ? 0 : (roll - 0.5) * 2 * amount;
+      s += '<div style="position:absolute;inset:0;clip-path:inset(' + top.toFixed(2) + '% 0 ' + bottom.toFixed(2) +
+        '% 0);transform:translateX(' + jump.toFixed(1) + 'px);">' + html + '</div>';
+    }
+    return layer(s);
+  }
+
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll, drawText, particleField, morphShape,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,

@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -194,6 +194,19 @@ test('morphShape: endpoints are true shapes, midpoint interpolates, names valida
   assert.ok(Math.min(...mid) > 30 && Math.min(...mid) < 45, `mid valleys interpolate: ${Math.min(...mid)}`);
   assert.equal(M.morphShape(10, { ...o, from: 'nope' }), M.morphShape(10, o)); // unknown name -> circle
   assert.equal(M.morphShape(30, o), M.morphShape(30, o)); // determinism
+});
+
+test('glitch: passthrough outside the window, sliced RGB ghosts inside', () => {
+  const o = { at: 10, dur: 20, html: '<b>X</b>', slices: 5 };
+  assert.equal(M.glitch(9, o), '<b>X</b>');
+  assert.equal(M.glitch(30, o), '<b>X</b>');
+  const mid = M.glitch(20, o); // p = 0.5, envelope peak
+  assert.equal((mid.match(/<b>X<\/b>/g) || []).length, 7); // 5 slices + 2 channel ghosts
+  assert.ok(mid.includes('clip-path:inset('));
+  const shifts = (h) => [...h.matchAll(/translateX\((-?[\d.]+)px\)/g)].map((m) => Math.abs(parseFloat(m[1])));
+  assert.ok(Math.max(...shifts(mid)) > 1, 'mid-window slices are displaced');
+  assert.ok(Math.max(...shifts(M.glitch(10, o))) < 0.05, 'first frame is clean (envelope 0)');
+  assert.equal(M.glitch(20, o), mid); // determinism
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

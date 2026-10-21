@@ -11,6 +11,12 @@ TypeScript refactor — all sources are strict-mode `.ts`, compiled by
 `tsc` to the same committed JavaScript (no behavior change; CI
 build-freshness gate). No new effects this round.
 
+### Transitions (v0.16)
+- `glitch` — RGB-split glitch transition: content rebuilt from
+  horizontal slices with hash jitter (re-rolled every 2 frames) plus
+  two channel-isolated ghosts (SVG feColorMatrix, screen/multiply
+  blend), all under a sine envelope so the window edges are clean.
+
 ### Shapes (v0.15)
 - `morphShape` — shape-to-shape morph across seven built-ins
   (circle, square, triangle, diamond, hexagon, star, heart). Both
@@ -133,7 +139,6 @@ Primitives to build for it:
 
 ## Backlog (next rounds, roughly in order)
 
-- `glitch` — RGB-split glitch transition (short, tasteful)
 - Beat tools — BPM/beat detection for music-synced cuts (from code-video-director beats.py);
   pairs with the v0.4 SFX kit (scores are frame-based today; a BPM grid
   generator is the missing half for music-first pieces)

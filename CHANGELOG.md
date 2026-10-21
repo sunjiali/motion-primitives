@@ -2,6 +2,23 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.16.0] — 2026-10-21
+
+### Added
+
+- `glitch(frame, o)` — RGB-split glitch transition over wrapped HTML.
+  Inside the window the content is rebuilt from horizontal slices
+  (`slices`, default 6) that jump sideways with hash-driven jitter
+  re-rolled every 2 frames, plus two channel-isolated ghosts
+  (feColorMatrix red / green+blue) offset behind it — `blend` picks
+  `screen` for dark scenes or `multiply` for light ones. A sine
+  envelope ramps displacement in and out so the first and last frames
+  are perfectly clean, and outside the window the HTML passes through
+  untouched. Options: `html`, `at`, `dur` (default 18 — short on
+  purpose), `amount`, `slices`, `seed`, `blend`. Verified with unit
+  tests (passthrough, copy count, envelope-zero first frame) and
+  mid/clean render stills. Site demo card #24.
+
 ## [0.15.0] — 2026-10-21
 
 ### Added
