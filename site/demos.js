@@ -300,6 +300,17 @@
       },
     },
     {
+      name: 'swing', desc: 'Pendulum swing for hanging signs and mobiles — optional decay settles it to rest.',
+      code: "transform: M.swing(frame, { maxDeg, period, decay })", cycle: 220,
+      draw(f) {
+        const t = M.swing(f, { maxDeg: 17, period: 74, decay: 0.0016 });
+        return '<div style="position:absolute;left:232px;top:18px;width:96px;transform-origin:50% 0;transform:' + t + '">' +
+          '<div style="width:3px;height:52px;background:#8A93A6;margin:0 auto;"></div>' +
+          '<div style="background:#FF8A4C;color:#1C1A17;font:700 21px system-ui;text-align:center;padding:10px 0;border-radius:10px;letter-spacing:2px;">OPEN</div></div>' +
+          '<div style="position:absolute;left:272px;top:12px;width:16px;height:16px;border-radius:50%;background:#E8E4DA;"></div>';
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

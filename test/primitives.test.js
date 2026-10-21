@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoSort', 'orbit'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoSort', 'orbit', 'swing'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -352,6 +352,13 @@ test('orbit: circle geometry, squash, depth scale', () => {
   assert.equal(back.scale, 0.72); // back of the orbit = smallest
   const moved = M.orbit(10, { cx: 0, cy: 0, r: 10, speed: 0.1 });
   assert.ok(Math.abs(moved.angle - 1) < 1e-9); // angle advances by speed * frame
+});
+
+test('swing: pendulum angle, quarter-period peak, decay envelope', () => {
+  assert.equal(M.swing(0, { maxDeg: 20, period: 40 }), 'rotate(0.00deg)');
+  assert.equal(M.swing(10, { maxDeg: 20, period: 40 }), 'rotate(20.00deg)'); // quarter period = peak
+  assert.equal(M.swing(10, { maxDeg: 20, period: 40, decay: 0.05 }), 'rotate(12.13deg)'); // peak * e^-0.5
+  assert.equal(M.swing(5, { at: 9, maxDeg: 20, period: 40 }), 'rotate(0.00deg)'); // before `at`, still at phase 0
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

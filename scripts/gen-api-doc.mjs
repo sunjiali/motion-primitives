@@ -13,7 +13,7 @@ const dts = fs.readFileSync(path.join(root, 'index.d.ts'), 'utf8').split('\n');
 
 const GROUPS = [
   ['Timing & math', ['pop', 'ease', 'hash', 'stagger', 'pulse', 'breathe', 'beatGrid', 'beatFrames']],
-  ['Entrances & motion', ['fadeUp', 'fly', 'travel', 'drop', 'beat', 'punch', 'shake', 'flash', 'wiggle', 'flipIn', 'whip', 'squash', 'trail', 'smear', 'pathFly', 'orbit', 'cursor']],
+  ['Entrances & motion', ['fadeUp', 'fly', 'travel', 'drop', 'beat', 'punch', 'shake', 'flash', 'wiggle', 'flipIn', 'whip', 'squash', 'trail', 'smear', 'pathFly', 'orbit', 'swing', 'cursor']],
   ['Text & numbers', ['countUp', 'counterRoll', 'typewriter', 'drawText', 'scramble', 'splitText']],
   ['Shapes & drawing', ['dot', 'ripple', 'burst', 'badge', 'targetSlot', 'poly', 'drawOn', 'bars', 'morphShape', 'morphPoly', 'paperEl', 'pivot', 'stepped', 'onTwos', 'confetti']],
   ['Scene, camera & ambience', ['scene', 'transition', 'camera', 'parallax', 'meshBg', 'kenBurns', 'particleField', 'glitch', 'fx', 'wipeReveal']],

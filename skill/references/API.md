@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (61 functions)
+# motion-primitives API — the full catalog (62 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -199,6 +199,14 @@ M.orbit(frame: number, o: { cx?: number; cy?: number; r?: number; speed?: number
 ```
 
 Pose on a circular orbit: elliptical squash and optional depth scaling. Returns {x, y, angle, scale}.
+
+### `swing`
+
+```ts
+M.swing(frame: number, o: { at?: number; maxDeg?: number; period?: number; phase?: number; decay?: number }): string
+```
+
+Pendulum swing as a rotate() transform string; optional exponential decay settles it to rest.
 
 ### `cursor`
 

@@ -2,6 +2,18 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.30.0] — 2026-10-21
+
+### Added
+
+- `swing(frame, o)` — pendulum rotation as a rotate() transform
+  string, in the pivot() convention: angle = maxDeg · sin(2π ·
+  frame / period + phase), with an optional exponential `decay`
+  so a disturbed hanging sign settles to rest. Hang the element
+  from a transform-origin above it — signs, mobiles, tags. Skill
+  bundle synced (API catalog now 62 functions); site demo card
+  #34 (a slowly settling OPEN sign).
+
 ## [0.29.0] — 2026-10-21
 
 ### Added

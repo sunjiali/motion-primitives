@@ -106,6 +106,8 @@ export interface PathFlyResult extends XY { angle: number; p: number; done: bool
 export function pathFly(frame: number, o: AtOpts & { pts: Array<[number, number]> }): PathFlyResult;
 /** Pose on a circular orbit: elliptical squash and optional depth scaling. Returns {x, y, angle, scale}. */
 export function orbit(frame: number, o: { cx?: number; cy?: number; r?: number; speed?: number; phase?: number; squash?: number; depth?: boolean }): { x: number; y: number; angle: number; scale: number };
+/** Pendulum swing as a rotate() transform string; optional exponential decay settles it to rest. */
+export function swing(frame: number, o: { at?: number; maxDeg?: number; period?: number; phase?: number; decay?: number }): string;
 /** 3D flip entrance with overshoot settle. Returns a CSS style string. */
 export function flipIn(frame: number, o?: AtOpts & { axis?: 'X' | 'Y'; from?: number; perspective?: number }): string;
 /** Odometer digit roll from one integer to another. Returns an HTML string. */
@@ -171,7 +173,7 @@ declare const Motion: {
   meshBg: typeof meshBg; drawOn: typeof drawOn; poly: typeof poly; bars: typeof bars;
   scramble: typeof scramble; kenBurns: typeof kenBurns; fx: typeof fx;
   paperEl: typeof paperEl; pivot: typeof pivot; stepped: typeof stepped; onTwos: typeof onTwos;
-  whip: typeof whip; pathFly: typeof pathFly; orbit: typeof orbit; flipIn: typeof flipIn; counterRoll: typeof counterRoll;
+  whip: typeof whip; pathFly: typeof pathFly; orbit: typeof orbit; swing: typeof swing; flipIn: typeof flipIn; counterRoll: typeof counterRoll;
   drawText: typeof drawText;
   particleField: typeof particleField;
   morphShape: typeof morphShape;

@@ -310,6 +310,20 @@ __root.Motion = (function () {
             scale: o.depth ? 0.72 + 0.28 * ((s + 1) / 2) : 1,
         };
     }
+    // swing(): pendulum rotation as a rotate() transform string —
+    // hang the element from a transform-origin above it (a sign on
+    // a rod, a mobile, a hanging tag). angle = maxDeg * sin(2π *
+    // lf / period + phase), with an optional exponential decay so a
+    // disturbed sign settles to rest.
+    function swing(frame, o) {
+        o = o || {};
+        const lf = Math.max(0, frame - (o.at || 0));
+        const period = o.period || 46;
+        const maxDeg = o.maxDeg == null ? 16 : o.maxDeg;
+        const env = o.decay ? Math.exp(-o.decay * lf) : 1;
+        const deg = maxDeg * Math.sin((lf / period) * Math.PI * 2 + (o.phase || 0)) * env;
+        return 'rotate(' + deg.toFixed(2) + 'deg)';
+    }
     // shake(): decaying screen shake {x, y} inside [at, at+dur].
     function shake(frame, o) {
         o = o || {};
@@ -1205,7 +1219,7 @@ __root.Motion = (function () {
     }
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
+        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
         beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoSort,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

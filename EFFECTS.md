@@ -224,9 +224,7 @@ top, one per round:
 
 - ~~`orbit`~~ — shipped in v0.29 (as a pose object {x, y, angle,
   scale}, matching travel/pathFly conventions).
-- `swing` — pendulum rotation about a pivot above the element
-  (signs, hanging tags, mobiles): angle = maxDeg * sin(t) with
-  optional decay; build on pivot/stepped conventions.
+- ~~`swing`~~ — shipped in v0.30.
 - `marquee` — seamless infinite scroll strip (text or repeated
   HTML): content duplicated and translated by (frame * speed)
   mod unitWidth; the promo/logo-ticker staple. Needs a measured
