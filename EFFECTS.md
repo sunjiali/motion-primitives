@@ -6,6 +6,13 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Shear (v0.52)
+- `velocitySkew` — velocity-proportional shear. `trail` mode skews
+  by the instantaneous velocity of an eased move (top lags the
+  motion); `impact` mode is a decaying ±skew oscillation for hits.
+  `anchor:'start'` recenters the sheared box (`-tan(skew)·h/2`).
+  (Round-2 sweep: Niek Pronk skew trick, CapCut "Skew Shake".)
+
 ### Feel (v0.51)
 - `anticipate` — the wind-up: progress dips below 0, then
   releases through 1 with an overshoot. Disney principle 2;
@@ -234,6 +241,19 @@ Primitives to build for it:
 - ~~`parallax` — depth-layer offsets from one camera move~~ shipped in v0.19; the style-pack backlog is clear.
 
 ## Backlog (next rounds, roughly in order)
+
+Researched 2026-10-21 round 2 (sweep report:
+research/x-motion-sweep-2026-10-21-round2.md; the whole 2026-10-21
+round-1 backlog is shipped) — take from the top, one per round:
+
+- ~~`velocitySkew`~~ — shipped in v0.52.0: velocity-proportional
+  shear with `trail` (skew follows the instantaneous velocity of an
+  eased move) and `impact` (decaying ±skew oscillation) modes, plus
+  the anchor recenter trick (`anchor:'start'`).
+- `noiseGlow` — animated-noise luminance mask + color-dodge glow
+  composite + seeded sparkle bursts where the light hits; lower
+  priority, visual-craft heavy. (Manon Louart Procreate Dreams glow
+  tutorial.)
 
 Researched 2026-10-21 (gap analysis against the shipped 55, after
 splitText / wipeReveal / confetti / cursor landed) — take from the

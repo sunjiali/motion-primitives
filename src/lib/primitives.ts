@@ -118,6 +118,19 @@ interface OrbitOpts {
 }
 interface OrbitResult { x: number; y: number; angle: number; scale: number }
 interface ShakeOpts { at?: number; dur?: number; amp?: number; seed?: number }
+// VelocitySkewOpts: velocity-proportional shear. `trail` mode skews by the
+// instantaneous velocity of an eased from->to move (the top of the element
+// lags behind the motion direction); `impact` mode is a decaying ±skew
+// oscillation for hits (the "skew shake" edit style). `anchor:'start'`
+// shears about the leading edge and recenters the box so the visual center
+// stays put (the AE/Niek-Pronk skew trick); `anchor:'center'` (default)
+// shears about the element's own center, which is self-centering.
+interface VelocitySkewOpts extends EaseOpts {
+  mode?: 'trail' | 'impact'; axis?: 'x' | 'y';
+  from?: number; to?: number; maxSkew?: number; gain?: number;
+  freq?: number; h?: number; anchor?: 'center' | 'start';
+}
+interface VelocitySkewResult { pos: number; skew: number; recenter: number; css: string }
 interface PunchOpts { at?: number; amp?: number }
 interface FlashOpts { at?: number; dur?: number; opacity?: number; color?: string }
 interface CamKey { f: number; x: number; y: number; z: number }
@@ -1140,6 +1153,43 @@ __root.Motion = (function () {
     };
   }
 
+  // velocitySkew(): shear driven by motion. `trail` mode: skew follows the
+  // instantaneous velocity of an eased from->to move — the element leans
+  // into the move, top lagging behind, like speed lines frozen into the
+  // shape. `impact` mode: a decaying ±skew oscillation for hits and
+  // transition punches (the "skew shake" edit style). Returns the eased
+  // position plus a ready-to-paste CSS transform. Frame-pure, deterministic.
+  function velocitySkew(frame: number, o?: VelocitySkewOpts): VelocitySkewResult {
+    o = o || {};
+    const at = o.at || 0, dur = o.dur || 20, mode = o.mode || 'trail';
+    const axis = o.axis || 'x', maxSkew = o.maxSkew == null ? 12 : o.maxSkew;
+    const anchor = o.anchor || 'center', h = o.h || 0;
+    const lf = frame - at;
+    let pos = 0, skew = 0;
+    if (mode === 'impact') {
+      if (lf >= 0 && lf < dur) skew = maxSkew * Math.sin(lf * (o.freq || 1.2)) * (1 - lf / dur);
+    } else {
+      const from = o.from || 0, to = o.to == null ? 100 : o.to;
+      const ef = Easing[o.fn || 'cubicOut'] || Easing.cubicOut;
+      const atPos = (f: number): number => {
+        const t = Math.max(0, Math.min(1, (f - at) / dur));
+        return from + (to - from) * ef(t);
+      };
+      pos = atPos(frame);
+      if (lf >= 0 && lf < dur) {
+        const v = atPos(frame + 0.5) - atPos(frame - 0.5); // px per frame
+        skew = Math.max(-maxSkew, Math.min(maxSkew, v * (o.gain == null ? 0.5 : o.gain)));
+      }
+    }
+    // Shearing about the leading edge shifts the visual center by
+    // tan(skew)*h/2 — pull it back along the axis so the box stays centered.
+    const recenter = anchor === 'start' && h > 0 ? -Math.tan(skew * Math.PI / 180) * h / 2 : 0;
+    const css = axis === 'x'
+      ? 'translate(' + (pos + recenter).toFixed(1) + 'px, 0px) skewX(' + skew.toFixed(2) + 'deg)'
+      : 'translate(0px, ' + (pos + recenter).toFixed(1) + 'px) skewY(' + skew.toFixed(2) + 'deg)';
+    return { pos, skew, recenter, css };
+  }
+
   // punch(): a quick camera punch-in that settles back. Returns a scale
   // multiplier (1 = neutral). Compose with camera().
   function punch(frame: number, o?: PunchOpts): number {
@@ -2151,7 +2201,7 @@ __root.Motion = (function () {
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
     paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
-    beatGrid, beatFrames, inertia, anticipate, followThrough, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort,
+    beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,

@@ -2,6 +2,29 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.52.0] — 2026-10-21
+
+### Added — `velocitySkew`
+
+Velocity-driven shear, frame-pure and deterministic:
+
+- `trail` mode: the element's skew follows the instantaneous
+  velocity of an eased `from`→`to` move — the shape leans into
+  its slide, top lagging behind the motion direction, clamped to
+  `maxSkew`. Returns the eased position plus a ready-to-paste CSS
+  transform (`translate + skewX/skewY`).
+- `impact` mode: a decaying ±skew oscillation for hits and
+  transition punches (the "skew shake" edit style).
+- `anchor: 'start'` shears about the leading edge and recenters
+  the box with `-tan(skew)·h/2` so the visual center stays put
+  (the AE skew-animator trick); `anchor: 'center'` (default) is
+  self-centering.
+
+Researched from the 2026-10-21 round-2 sweep: Niek Pronk's
+skew-animator centering trick, the CapCut "Skew Shake" edit style,
+and the classic ±15° decaying skew-shake keyframes. Ships with a
+live demo card (53 total) and endpoint-exact tests (57 total).
+
 ## [0.51.0] — 2026-10-21
 
 ### Added — the feel pack

@@ -416,6 +416,21 @@
       },
     },
     {
+      name: 'velocitySkew', desc: 'Shear that follows velocity — the chip leans into its slide, top lagging the motion; below, a skew-shake impact.',
+      code: 'M.velocitySkew(frame, { mode, from, to, maxSkew })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        const r = M.velocitySkew(lf, { at: 12, dur: 26, from: 60, to: 440, maxSkew: 14 });
+        const hit = M.velocitySkew(lf, { mode: 'impact', at: 92, dur: 14, maxSkew: 16 });
+        return '<div style="position:absolute;left:52px;top:152px;width:470px;height:2px;background:#3A3F4A;"></div>' +
+          '<div style="position:absolute;left:' + r.pos + 'px;top:98px;width:110px;height:54px;border:2px dashed #5B6472;border-radius:12px;opacity:.45"></div>' +
+          '<div style="position:absolute;left:0;top:98px;width:110px;height:54px;border-radius:12px;background:linear-gradient(120deg,#F59E4C,#F2B134);display:flex;align-items:center;justify-content:center;font:700 20px system-ui;color:#26221F;transform:' + r.css + ';transform-origin:center;">SKEW</div>' +
+          '<div style="position:absolute;left:56px;top:66px;font:600 15px ui-monospace,monospace;color:#8B93A3;">skew ' + r.skew.toFixed(1) + '&deg;</div>' +
+          '<div style="position:absolute;left:0;top:228px;width:180px;height:54px;border-radius:12px;background:#2F6DB3;display:flex;align-items:center;justify-content:center;font:700 20px system-ui;color:#FBF6EC;transform:' + hit.css + ';transform-origin:center;">HIT ME</div>' +
+          '<div style="position:absolute;left:196px;top:246px;font:600 15px ui-monospace,monospace;color:#8B93A3;">impact &plusmn;' + hit.skew.toFixed(1) + '&deg;</div>';
+      },
+    },
+    {
       name: 'inertia', desc: 'A thrown puck glides to a stop — the ring marks v0 / k, physics lands it there.',
       code: 'M.inertia(frame, { x0, vx, k })', cycle: 150,
       draw(f) {

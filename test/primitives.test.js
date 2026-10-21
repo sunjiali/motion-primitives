@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -561,4 +561,46 @@ test('hash is deterministic and stays in [0, 1)', () => {
     assert.equal(h, M.hash(n));
   }
   assert.notEqual(M.hash(1), M.hash(2));
+});
+
+test('velocitySkew: skew follows velocity, clamps, and settles', () => {
+  const o = { at: 10, dur: 20, from: 0, to: 200, maxSkew: 14 };
+  const r0 = M.velocitySkew(5, o);
+  assert.equal(r0.pos, 0);
+  assert.equal(r0.skew, 0); // before `at`: parked, no shear
+  let peak = 0;
+  for (let f = 10; f <= 30; f++) {
+    const r = M.velocitySkew(f, o);
+    peak = Math.max(peak, r.skew);
+    assert.ok(Math.abs(r.skew) <= 14 + 1e-9, `skew clamped to maxSkew: ${r.skew}`);
+  }
+  assert.ok(peak > 2, `skew leans into the move, peak=${peak}`);
+  const end = M.velocitySkew(30, o);
+  assert.equal(end.pos, 200);
+  assert.equal(end.skew, 0); // landed: no shear at rest
+  const late = M.velocitySkew(60, o);
+  assert.equal(late.pos, 200);
+  assert.equal(late.skew, 0);
+  assert.deepEqual(M.velocitySkew(16, o), M.velocitySkew(16, o)); // frame-pure
+  const neg = M.velocitySkew(14, { at: 10, dur: 20, from: 200, to: 0 });
+  assert.ok(neg.skew < 0, `skew flips with direction: ${neg.skew}`);
+  // impact mode: ± oscillation that decays to rest
+  const io = { mode: 'impact', at: 10, dur: 12, maxSkew: 15 };
+  assert.equal(M.velocitySkew(5, io).skew, 0);
+  let sawPos = false, sawNeg = false;
+  for (let f = 10; f < 22; f++) {
+    const s = M.velocitySkew(f, io).skew;
+    if (s > 1) sawPos = true;
+    if (s < -1) sawNeg = true;
+  }
+  assert.ok(sawPos && sawNeg, 'impact oscillates both ways');
+  assert.ok(Math.abs(M.velocitySkew(21, io).skew) < Math.abs(M.velocitySkew(11, io).skew), 'impact decays');
+  assert.equal(M.velocitySkew(30, io).skew, 0);
+  // anchor:'start' recenter matches the tan formula
+  const a = M.velocitySkew(14, { at: 10, dur: 20, from: 0, to: 200, anchor: 'start', h: 80 });
+  const expect = -Math.tan(a.skew * Math.PI / 180) * 40;
+  assert.ok(Math.abs(a.recenter - expect) < 1e-9, `recenter=${a.recenter} expected=${expect}`);
+  const c = M.velocitySkew(14, o);
+  assert.equal(c.recenter, 0); // center anchor is self-centering
+  assert.ok(/^translate\([-\d.]+px, 0px\) skewX\([-\d.]+deg\)$/.test(a.css), `css: ${a.css}`);
 });

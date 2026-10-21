@@ -160,6 +160,9 @@ export function inertia(frame: number, o: { x0?: number; y0?: number; vx?: numbe
 export function anticipate(frame: number, o: { at?: number; wind?: number; dur?: number; depth?: number }): number;
 /** A row of progress values for trailing parts: each starts `lag` frames later and overshoots a little more; every value ends exactly at 1. */
 export function followThrough(frame: number, o: { at?: number; dur?: number; count?: number; lag?: number; boost?: number }): number[];
+/** Velocity-driven shear. `trail`: skew follows the instantaneous velocity of an eased move (the top lags behind the motion);
+ * `impact`: a decaying ±skew oscillation for hits. `anchor:'start'` recenters the sheared box. Returns the eased position plus a ready CSS transform. */
+export function velocitySkew(frame: number, o?: { at?: number; dur?: number; fn?: string; mode?: 'trail' | 'impact'; axis?: 'x' | 'y'; from?: number; to?: number; maxSkew?: number; gain?: number; freq?: number; h?: number; anchor?: 'center' | 'start' }): { pos: number; skew: number; recenter: number; css: string };
 /** Morph between two raw polygon point sets (uneven counts are subdivided to match). Returns an SVG string. */
 export function morphPoly(frame: number, o: AtOpts & { fn?: string; from: [number, number][]; to: [number, number][]; x?: number; y?: number; color?: string; stroke?: string; strokeWidth?: number; rot?: number }): string;
 /** Split-text entrance: every character animates in on its own stagger (rise / pop / fade). Returns an HTML string. */
@@ -222,7 +225,7 @@ declare const Motion: {
   particleField: typeof particleField;
   morphShape: typeof morphShape;
   glitch: typeof glitch;
-  beatGrid: typeof beatGrid; beatFrames: typeof beatFrames; inertia: typeof inertia; anticipate: typeof anticipate; followThrough: typeof followThrough;
+  beatGrid: typeof beatGrid; beatFrames: typeof beatFrames; inertia: typeof inertia; anticipate: typeof anticipate; followThrough: typeof followThrough; velocitySkew: typeof velocitySkew;
   morphPoly: typeof morphPoly;
   splitText: typeof splitText;
   assembleText: typeof assembleText;

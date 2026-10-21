@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (84 functions)
+# motion-primitives API — the full catalog (85 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -247,6 +247,12 @@ M.cursor(frame: number, o: { path: { f: number; x: number; y: number }[]; clicks
 ```
 
 Animated mouse cursor: keyframed travel, click dip, expanding click rings. Returns an HTML string.
+
+### `velocitySkew`
+
+```ts
+M.velocitySkew(frame: number, o?: { at?: number; dur?: number; fn?: string; mode?: 'trail' | 'impact'; axis?: 'x' | 'y'; from?: number; to?: number; maxSkew?: number; gain?: number; freq?: number; h?: number; anchor?: 'center' | 'start' }): { pos: number
+```
 
 ## Text & numbers
 
