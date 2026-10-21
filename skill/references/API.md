@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (82 functions)
+# motion-primitives API — the full catalog (84 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -79,6 +79,22 @@ M.inertia(frame: number, o: { x0?: number; y0?: number; vx?: number; vy?: number
 ```
 
 Closed-form inertial glide: position/velocity of a thrown object; total travel is exactly v0 / k.
+
+### `anticipate`
+
+```ts
+M.anticipate(frame: number, o: { at?: number; wind?: number; dur?: number; depth?: number }): number
+```
+
+Wind-up progress: dips below 0 (the crouch / pull-back), then releases through 1 with an overshoot and lands exactly on 1.
+
+### `followThrough`
+
+```ts
+M.followThrough(frame: number, o: { at?: number; dur?: number; count?: number; lag?: number; boost?: number }): number[]
+```
+
+A row of progress values for trailing parts: each starts `lag` frames later and overshoots a little more; every value ends exactly at 1.
 
 ## Entrances & motion
 
@@ -585,7 +601,7 @@ Smooth slit-scan streak warp over wrapped HTML: band-clipped copies shifted by a
 ### `liquidMetal`
 
 ```ts
-M.liquidMetal(frame: number, o: { w?: number; h?: number; x?: number; y?: number; size?: number; palette?: string; speed?: number; seed?: number; fps?: number; blobs?: number }): string
+M.liquidMetal(frame: number, o: { w?: number; h?: number; x?: number; y?: number; size?: number; palette?: string; speed?: number; seed?: number; fps?: number; blobs?: number; spin?: number }): string
 ```
 
 Raymarched SDF liquid-chrome blob cluster (WebGL). Returns a canvas tag; the players paint it via liquidMetalDraw after each render.

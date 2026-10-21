@@ -6,6 +6,15 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Feel (v0.51)
+- `anticipate` — the wind-up: progress dips below 0, then
+  releases through 1 with an overshoot. Disney principle 2;
+  the cheapest "alive" upgrade for any 0→1 journey.
+- `followThrough` — trailing progress rows: each part starts
+  `lag` frames later and overshoots more. Disney principle 5.
+  (Quality directive, 2026-10-21: polish against the X
+  references Robin feeds — feel first, count second.)
+
 ### Interface (v0.24)
 - `cursor` — animated mouse cursor for UI demos: keyframed path
   travel (cubicInOut per segment, holds at both ends), a press dip

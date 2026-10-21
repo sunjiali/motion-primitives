@@ -390,6 +390,32 @@
       },
     },
     {
+      name: 'anticipate', desc: 'The puck crouches back before it launches — a wind-up dip, then the release overshoots home.',
+      code: 'x = from + (to - from) * M.anticipate(f, o)', cycle: 120,
+      draw(f) {
+        const lf = f % 120;
+        const m = M.anticipate(lf, { at: 14, wind: 12, dur: 26, depth: 0.16 });
+        const x = 60 + (470 - 60) * m;
+        return '<div style="position:absolute;left:52px;top:196px;width:486px;height:2px;background:#3A3F4A;"></div>' +
+          '<div style="position:absolute;left:462px;top:182px;width:30px;height:30px;border-radius:50%;border:2px dashed #5B6472;"></div>' +
+          M.dot({ x, y: 204, r: 17, color: '#F59E4C', candy: true });
+      },
+    },
+    {
+      name: 'followThrough', desc: 'Five beads chase one pop apiece — each starts later and swings wider, like a tail settling.',
+      code: 'M.followThrough(f, { count, lag }).forEach(p => …)', cycle: 130,
+      draw(f) {
+        const lf = f % 130;
+        const ps = M.followThrough(lf, { at: 12, dur: 20, count: 5, lag: 4 });
+        let s = '<div style="position:absolute;left:60px;top:196px;width:440px;height:2px;background:#3A3F4A;"></div>';
+        for (let i = 0; i < 5; i++) {
+          s += M.dot({ x: 84 + i * 96, y: 204, r: 15, color: '#7BC96F', candy: true, scale: Math.max(0.05, ps[i]) }) +
+            '<div style="position:absolute;left:' + (84 + i * 96 - 15) + 'px;top:196px;width:30px;height:30px;border-radius:50%;border:2px dashed #5B6472;opacity:.5"></div>';
+        }
+        return s;
+      },
+    },
+    {
       name: 'inertia', desc: 'A thrown puck glides to a stop — the ring marks v0 / k, physics lands it there.',
       code: 'M.inertia(frame, { x0, vx, k })', cycle: 150,
       draw(f) {

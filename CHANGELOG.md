@@ -2,6 +2,29 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.51.0] — 2026-10-21
+
+### Added — the feel pack
+
+Two of the classic animation principles the library was
+missing, as frame-pure progress drivers:
+
+- `anticipate(frame, o)` — the wind-up (principle 2): the
+  value dips below 0 during `wind` frames (the crouch, the
+  pull-back), then releases through 1 with an easeOutBack
+  overshoot and lands exactly on 1. Feed it into any 0→1
+  journey and the journey gathers itself before it goes.
+- `followThrough(frame, o)` — follow-through and overlapping
+  action (principle 5): a row of `count` progress values,
+  each starting `lag` frames after the previous and
+  overshooting a little more (`boost`), the way a tail or a
+  scarf settles after its leader. Every value ends exactly 1.
+
+Both ship with live demo cards (52 total) and endpoint-exact
+tests (56 total). An A/B render — plain ease vs anticipate +
+followThrough on identical targets — accompanies the release
+notes discussion: same targets, different feel.
+
 ## [0.50.1] — 2026-10-21
 
 ### Fixed

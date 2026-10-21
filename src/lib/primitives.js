@@ -551,6 +551,44 @@ __root.Motion = (function () {
             vx: (o.vx || 0) * decay, vy: (o.vy || 0) * decay, t,
         };
     }
+    // anticipate(): the wind-up before the move. Progress first
+    // dips below zero (the crouch, the pull-back), then releases
+    // through the mark with an easeOutBack overshoot and lands
+    // exactly on 1. Feed it into any 0→1 journey —
+    //   x = from + (to - from) * M.anticipate(frame, o)
+    // and the journey gathers itself before it goes: the single
+    // cheapest "alive" upgrade (animation principle 2).
+    function anticipate(frame, o) {
+        o = o || {};
+        const at = o.at || 0, wind = o.wind == null ? 8 : o.wind, dur = o.dur || 18, depth = o.depth == null ? 0.18 : o.depth;
+        const f = frame - at;
+        if (f <= 0)
+            return 0;
+        if (f < wind) {
+            const p = f / wind;
+            return -depth * (1 - Math.cos(p * Math.PI)) / 2 + 0;
+        }
+        const p = clamp01((f - wind) / dur);
+        const c1 = 1.70158, c3 = c1 + 1; // easeOutBack, 0→1
+        const back = p <= 0 ? 0 : p >= 1 ? 1 : 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2);
+        return -depth + (1 + depth) * back + 0;
+    }
+    // followThrough(): a row of progress values for trailing
+    // parts — element i starts `lag` frames after element i−1 and
+    // overshoots a little more than the one before (boost), the
+    // way a tail, a scarf or a line of dominoes settles after its
+    // leader (animation principle 5). Each value ends exactly 1.
+    function followThrough(frame, o) {
+        o = o || {};
+        const at = o.at || 0, dur = o.dur || 16, count = o.count || 4, lag = o.lag == null ? 3 : o.lag, boost = o.boost == null ? 0.35 : o.boost;
+        const out = [];
+        for (let i = 0; i < count; i++) {
+            const p = clamp01((frame - at - i * lag) / dur);
+            const c1 = 1.70158 * (1 + i * boost), c3 = c1 + 1;
+            out.push(p <= 0 ? 0 : p >= 1 ? 1 : 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2));
+        }
+        return out;
+    }
     // pixelDissolve(): a mosaic scene transition — the outgoing
     // scene as a grid of flat cells that flip away one by one at
     // hash-staggered frames across [at, at + dur], each cell
@@ -1940,7 +1978,7 @@ __root.Motion = (function () {
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
         paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
-        beatGrid, beatFrames, inertia, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort,
+        beatGrid, beatFrames, inertia, anticipate, followThrough, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
         scramble, kenBurns, breathe, fx, hash,

@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -464,6 +464,30 @@ test('inertia: closed-form glide lands exactly at x0 + v0 / k', () => {
   assert.ok(Math.abs(end.y - (0 + -3 / 0.06)) < 1e-6);
   const mid = M.inertia(20, o);
   assert.ok(mid.x > 10 && mid.x < end.x && mid.vx < 12 && mid.vx > 0); // gliding, decaying
+});
+
+test('anticipate: winds below zero, releases through, lands exactly on 1', () => {
+  const o = { at: 10, wind: 8, dur: 18, depth: 0.2 };
+  assert.equal(M.anticipate(5, o), 0); // before `at`
+  assert.equal(M.anticipate(10, o), 0); // the wind-up starts from rest
+  assert.ok(Math.abs(M.anticipate(14, o) - -0.1) < 1e-9); // mid wind-up: −depth/2 (cosine ease)
+  assert.equal(M.anticipate(18, o), -0.2); // fully wound: exactly −depth
+  assert.equal(M.anticipate(18 + 18, o), 1); // release lands exactly on 1
+  assert.equal(M.anticipate(500, o), 1); // and stays there
+  assert.ok(M.anticipate(18 + 12, o) > 1); // the release overshoots on its way in
+});
+
+test('followThrough: trailers start later, overshoot more, all land on 1', () => {
+  const o = { at: 0, dur: 16, count: 4, lag: 3, boost: 0.35 };
+  const start = M.followThrough(0, o);
+  assert.deepEqual(start, [0, 0, 0, 0]); // nobody has moved yet
+  const early = M.followThrough(4, o);
+  assert.ok(early[0] > early[1] && early[1] > early[2]); // staggered starts: the leader moves first
+  const mid = M.followThrough(14, o);
+  assert.ok(mid[2] > 1); // a late trailer is mid-overshoot…
+  assert.ok(Math.abs(mid[0] - 1) < Math.abs(mid[2] - 1)); // …while the leader is already nearest rest
+  const end = M.followThrough(500, o);
+  assert.deepEqual(end, [1, 1, 1, 1]); // everyone lands exactly on 1
 });
 
 test('pixelDissolve: full grid, partial mid-way, gone after', () => {

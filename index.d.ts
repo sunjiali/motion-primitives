@@ -156,6 +156,10 @@ export function beatGrid(frame: number, o: { bpm: number; at?: number; fps?: num
 export function beatFrames(o: { bpm: number; at?: number; fps?: number; perBar?: number; count: number }): number[];
 /** Closed-form inertial glide: position/velocity of a thrown object; total travel is exactly v0 / k. */
 export function inertia(frame: number, o: { x0?: number; y0?: number; vx?: number; vy?: number; k?: number; at?: number }): { x: number; y: number; vx: number; vy: number; t: number };
+/** Wind-up progress: dips below 0 (the crouch / pull-back), then releases through 1 with an overshoot and lands exactly on 1. */
+export function anticipate(frame: number, o: { at?: number; wind?: number; dur?: number; depth?: number }): number;
+/** A row of progress values for trailing parts: each starts `lag` frames later and overshoots a little more; every value ends exactly at 1. */
+export function followThrough(frame: number, o: { at?: number; dur?: number; count?: number; lag?: number; boost?: number }): number[];
 /** Morph between two raw polygon point sets (uneven counts are subdivided to match). Returns an SVG string. */
 export function morphPoly(frame: number, o: AtOpts & { fn?: string; from: [number, number][]; to: [number, number][]; x?: number; y?: number; color?: string; stroke?: string; strokeWidth?: number; rot?: number }): string;
 /** Split-text entrance: every character animates in on its own stagger (rise / pop / fade). Returns an HTML string. */
@@ -218,7 +222,7 @@ declare const Motion: {
   particleField: typeof particleField;
   morphShape: typeof morphShape;
   glitch: typeof glitch;
-  beatGrid: typeof beatGrid; beatFrames: typeof beatFrames; inertia: typeof inertia;
+  beatGrid: typeof beatGrid; beatFrames: typeof beatFrames; inertia: typeof inertia; anticipate: typeof anticipate; followThrough: typeof followThrough;
   morphPoly: typeof morphPoly;
   splitText: typeof splitText;
   assembleText: typeof assembleText;
