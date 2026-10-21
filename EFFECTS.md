@@ -98,7 +98,6 @@ Primitives to build for it:
 
 ## Backlog (next rounds, roughly in order)
 
-- `flipIn` — 3D flip entrance (perspective rotateX/rotateY)
 - `counterRoll` — odometer-style digit roll for big numbers
 - `drawText` — handwriting-style stroke text (SVG paths for common glyphs)
 - `particleField` — ambient drifting particle layer (stars/dust/snow)
