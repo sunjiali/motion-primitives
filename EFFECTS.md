@@ -273,9 +273,7 @@ what the posts showed at sweep time):
   titles and circular badges. (@holke79 carousel.)
 - ~~`isoTerrain`~~ — shipped in v0.46 (gaussian hill, fixed or
   orbiting focus).
-- `patternField` — one small looping tile repeated with per-tile
-  phase into a seamless 2-D pattern backdrop.
-  (@studio.baseline tutorial.)
+- ~~`patternField`~~ — shipped in v0.47.
 - `slitScan` — smooth per-band time displacement: band b shifted
   by A·sin(phase + b·k), the Superman-titles streak warp; smooth
   where glitch is jagged. (@CcampFx's X thread on streaks and

@@ -450,6 +450,13 @@
       },
     },
     {
+      name: 'patternField', desc: 'One motif, tiled seamlessly — a wave of motion travels the wall.',
+      code: "M.patternField(frame, { motif, motion: 'wave' })", cycle: 9999,
+      draw(f) {
+        return M.patternField(f, { w: 560, h: 315, tile: 52, motif: 'diamond', motion: 'wave', color: '#46608C', bg: '#141A26', speed: 0.05 });
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

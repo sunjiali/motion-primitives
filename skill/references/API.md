@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (78 functions)
+# motion-primitives API — the full catalog (79 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -565,6 +565,14 @@ M.pixelDissolve(frame: number, o: { at?: number; dur?: number; w?: number; h?: n
 ```
 
 Mosaic scene transition: a grid of flat cells in the outgoing colour flips away at hash-staggered frames. Returns an overlay div ('' once dissolved).
+
+### `patternField`
+
+```ts
+M.patternField(frame: number, o: { w?: number; h?: number; tile?: number; motif?: string; motion?: string; color?: string; bg?: string; speed?: number; x?: number; y?: number }): string
+```
+
+Seamless animated pattern backdrop: one motif tiled with a travelling per-tile phase (spin / pulse / wave). Returns a positioned div.
 
 ## Isometric kit
 

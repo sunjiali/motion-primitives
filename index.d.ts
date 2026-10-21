@@ -130,6 +130,8 @@ export function charGrid(frame: number, o: { cols?: number; rows?: number; size?
 export function assembleText(frame: number, o: { text: string; at?: number; dur?: number; x?: number; y?: number; size?: number; color?: string; seed?: number; mode?: string; weight?: number }): string;
 /** A string typeset along a smoothed polyline by arc length, tangent-rotated, flowing at `speed`. Returns a positioned div. */
 export function textOnPath(frame: number, o: { text: string; pts: number[][]; size?: number; color?: string; speed?: number; offset?: number; loop?: boolean; weight?: number; x?: number; y?: number }): string;
+/** Seamless animated pattern backdrop: one motif tiled with a travelling per-tile phase (spin / pulse / wave). Returns a positioned div. */
+export function patternField(frame: number, o: { w?: number; h?: number; tile?: number; motif?: string; motion?: string; color?: string; bg?: string; speed?: number; x?: number; y?: number }): string;
 /** 3D flip entrance with overshoot settle. Returns a CSS style string. */
 export function flipIn(frame: number, o?: AtOpts & { axis?: 'X' | 'Y'; from?: number; perspective?: number }): string;
 /** Odometer digit roll from one integer to another. Returns an HTML string. */
@@ -215,6 +217,7 @@ declare const Motion: {
   splitText: typeof splitText;
   assembleText: typeof assembleText;
   textOnPath: typeof textOnPath;
+  patternField: typeof patternField;
   wipeReveal: typeof wipeReveal;
   confetti: typeof confetti;
   cursor: typeof cursor;

@@ -2,6 +2,19 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.47.0] — 2026-10-21
+
+### Added
+
+- `patternField(frame, o)` — a seamless animated pattern
+  backdrop: one motif (dot, ring, diamond, cross) tiled across
+  the stage, every tile animated with a phase that travels
+  across the grid — spin, pulse, or a rocking wave — so the
+  whole wall breathes as one surface. From the 2026-10-21 X
+  sweep (@studio.baseline's seamless-pattern tutorial). Skill
+  bundle synced (API catalog now 79 functions); site demo
+  card #48.
+
 ## [0.46.0] — 2026-10-21
 
 ### Added

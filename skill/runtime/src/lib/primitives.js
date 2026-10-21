@@ -705,6 +705,46 @@ __root.Motion = (function () {
         return '<div style="position:absolute;left:' + (o.x || 0) + 'px;top:' + (o.y || 0) + 'px;font-family:ui-monospace,Menlo,monospace;font-size:' +
             size + 'px;font-weight:' + (o.weight || 700) + ';color:' + (o.color || '#E8E4DA') + ';">' + spans + '</div>';
     }
+    // patternField(): a seamless pattern backdrop — one motif
+    // tiled across the stage, every tile animated with a phase
+    // that travels across the grid (spin / pulse / wave), so the
+    // whole wall breathes as one surface. Motifs: dot, ring,
+    // diamond, cross. From the X sweep (@studio.baseline's
+    // seamless-pattern tutorial).
+    function patternField(frame, o) {
+        o = o || {};
+        const w = o.w || 1280, h = o.h || 720, tile = o.tile || 64;
+        const motif = o.motif || 'diamond', motion = o.motion || 'wave';
+        const color = o.color || '#3A4A63', speed = o.speed || 0.06;
+        const cols = Math.ceil(w / tile), rows = Math.ceil(h / tile);
+        const s = tile * 0.3;
+        let tiles = '';
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                const cx = c * tile + tile / 2, cy = r * tile + tile / 2;
+                const ph = frame * speed + (c + r) * 0.55;
+                let tr = '';
+                if (motion === 'spin')
+                    tr = ' rotate(' + (ph * 40).toFixed(1) + ')';
+                else if (motion === 'pulse')
+                    tr = ' scale(' + (0.75 + 0.35 * (0.5 + 0.5 * Math.sin(ph))).toFixed(3) + ')';
+                else
+                    tr = ' rotate(' + (Math.sin(ph) * 38).toFixed(1) + ')'; // wave: tiles rock back and forth
+                let shape = '';
+                if (motif === 'dot')
+                    shape = '<circle r="' + (s * 0.5).toFixed(1) + '" fill="' + color + '"/>';
+                else if (motif === 'ring')
+                    shape = '<circle r="' + (s * 0.55).toFixed(1) + '" fill="none" stroke="' + color + '" stroke-width="' + (tile * 0.07).toFixed(1) + '"/>';
+                else if (motif === 'cross')
+                    shape = '<path d="M ' + (-s / 2) + ' 0 H ' + (s / 2) + ' M 0 ' + (-s / 2) + ' V ' + (s / 2) + '" stroke="' + color + '" stroke-width="' + (tile * 0.09).toFixed(1) + '" stroke-linecap="round"/>';
+                else
+                    shape = '<rect x="' + (-s / 2).toFixed(1) + '" y="' + (-s / 2).toFixed(1) + '" width="' + s.toFixed(1) + '" height="' + s.toFixed(1) + '" fill="' + color + '"/>';
+                tiles += '<g transform="translate(' + cx + ' ' + cy + ')' + tr + '">' + shape + '</g>';
+            }
+        }
+        return '<div style="position:absolute;left:' + (o.x || 0) + 'px;top:' + (o.y || 0) + 'px;width:' + w + 'px;height:' + h +
+            'px;overflow:hidden;' + (o.bg ? 'background:' + o.bg + ';' : '') + '"><svg width="' + w + '" height="' + h + '">' + tiles + '</svg></div>';
+    }
     // shake(): decaying screen shake {x, y} inside [at, at+dur].
     function shake(frame, o) {
         o = o || {};
@@ -1732,7 +1772,7 @@ __root.Motion = (function () {
     }
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
+        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
         beatGrid, beatFrames, inertia, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
