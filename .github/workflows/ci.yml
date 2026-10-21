@@ -9,6 +9,7 @@ on:
       - 'index.js'
       - 'index.d.ts'
       - 'test/**'
+      - 'scripts/**'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/ci.yml'
@@ -19,19 +20,33 @@ on:
       - 'index.js'
       - 'index.d.ts'
       - 'test/**'
+      - 'scripts/**'
       - 'package.json'
       - 'package-lock.json'
   workflow_dispatch:
 
+# Least privilege: CI reads the repo, nothing more. (GitHub's secure-use
+# guidance; jobs that need more must say so themselves.)
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check:
+    name: check
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 20
           cache: npm
@@ -40,27 +55,70 @@ jobs:
         run: npm ci
 
       - name: Syntax-check all JavaScript
-        run: |
-          set -e
-          for f in $(find src site test -name '*.js' -not -path '*/node_modules/*') index.js; do
-            echo "checking $f"
-            node --check "$f"
-          done
+        run: npm run syntax
 
-      - name: Unit tests
+      - name: Unit + parity tests
         run: npm test
 
-      - name: Install Chrome for the smoke render
+  compat:
+    name: compat (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [18, 22]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Syntax + tests on this Node
+        run: npm run syntax && npm test
+
+  smoke:
+    name: smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chrome for the smoke renders
         run: |
           npx -y @puppeteer/browsers install chrome@stable --path "$HOME/.cache/puppeteer" | tee /tmp/chrome-install.txt
           CHROME_BIN=$(awk '/^chrome@/ {print $2}' /tmp/chrome-install.txt | tail -1)
           test -x "$CHROME_BIN"
           echo "CHROME_PATH=$CHROME_BIN" >> "$GITHUB_ENV"
 
-      - name: Smoke render (one showcase still)
+      - name: Smoke render (one showcase still, from source)
         run: |
           node src/render.js --comp showcase --still 60 --out /tmp/smoke.png
           test -s /tmp/smoke.png
           SIZE=$(stat -c%s /tmp/smoke.png)
           echo "smoke.png: $SIZE bytes"
           test "$SIZE" -gt 10000
+
+      - name: Package smoke (pack → install → API → installed CLI render)
+        run: npm run package:smoke

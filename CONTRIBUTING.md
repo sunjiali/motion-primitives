@@ -22,11 +22,19 @@ npm test             # unit tests (node:test, no extra dependencies)
 2. Record it in `EFFECTS.md` (move it from Backlog to Implemented) and in
    `CHANGELOG.md` under the next version.
 3. Verify before you push:
-   - `npm test` — determinism and API-surface tests must pass.
+   - `npm run check` — syntax plus the unit/parity tests must pass.
    - `node src/render.js --comp showcase --still 60 --out /tmp/f.png` —
      eyeball one frame.
    - New visual effects: render a short composition and check a few stills
      (entrance / mid-action / settled), not just the final frame.
+   - Anything that touches packaging (`package.json` `files`, entry
+     points, the CLI): `CHROME_PATH=<chrome> npm run package:smoke` —
+     the tarball must install and render in a clean project.
+4. Releases follow RELEASING.md; the quality bar and its known
+   exceptions are written down in QUALITY.md. Workflow changes keep
+   two house rules: actions pinned to full-length commit SHAs
+   (Dependabot keeps them current) and the smallest `permissions:`
+   that can work.
 
 ## Pull requests
 

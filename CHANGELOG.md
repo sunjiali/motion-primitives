@@ -2,6 +2,25 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.10.1] — 2026-10-21
+
+### Internal — project quality, benchmarked to mature-OSS practice
+- Community profile completed: SECURITY.md (private vulnerability
+  reporting), CODE_OF_CONDUCT.md, SUPPORT.md, CODEOWNERS.
+- Supply chain: Dependabot (npm + GitHub Actions, weekly) and
+  Dependabot security updates enabled; GitHub Actions pinned to
+  full-length commit SHAs; CI token cut to `contents: read`;
+  credentials no longer persisted at checkout; job timeouts added.
+- CI now also exercises Node 18 and 22 (compat job) and runs a package
+  smoke gate: the packed tarball is installed into a clean project and
+  must render through the installed CLI (`npm run package:smoke`).
+  The same commands run locally (`npm run check`, `npm run syntax`).
+- CodeQL code scanning enabled with GitHub's default setup; private
+  vulnerability reporting and secret-scanning push protection are on.
+- RELEASING.md (SemVer, gated checklist, tag + GitHub release per
+  version) and QUALITY.md (the bar, the evidence, and the known
+  exceptions — solo-maintainer review model, npm pending) added.
+
 ## [0.10.0] — 2026-10-21
 
 ### Added
