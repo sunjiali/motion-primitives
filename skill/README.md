@@ -51,6 +51,7 @@ it does not download a browser).
 | `SKILL.md` | The agent's playbook: workflow, hard rules, quickstart |
 | `scripts/doctor.mjs` | Environment preflight with friendly verdicts |
 | `scripts/render.mjs` | Renderer launcher (finds Chrome for you) |
+| `scripts/record.mjs` | Page recorder: turn a live web page (interactive figure, WebGL demo) into an MP4 |
 | `scripts/sfx.mjs` | SFX score synthesizer launcher |
 | `runtime/` | The synced motion-primitives runtime (library, renderer, player, SFX) |
 | `runtime/src/compositions/` | `hello-motion` example + its sound score — copy and edit |

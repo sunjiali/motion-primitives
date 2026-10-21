@@ -2,6 +2,33 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.25.0] — 2026-10-21
+
+### Added
+
+- **Page recorder** (`src/record.js`, `npm run record`, bundled in
+  the skill): record a *live web page* — an interactive figure, a
+  WebGL demo, a web app — into an MP4. You direct with data: a
+  `--mouse "x1,y1>x2,y2"` glide and `--keys "3.8:i"` timed key
+  presses; the page's own model drives the motion. Two capture
+  strategies:
+  - `--mode cast` (default): real-time CDP screencast, frames
+    stitched on their compositor timestamps. Works on any page,
+    including main-thread-heavy ones (verified against the
+    541-solid Raptor 2 anatomy figure: hover takes it apart
+    on camera). Output duration is the span over which the page
+    actually changed — dead air compresses out.
+  - `--mode virtual`: virtual-time stepping (one frame = 1/fps of
+    browser clock), screenshot per frame — deterministic and
+    reproducible (verified against the dial-indicator figure:
+    exactly 90 frames, the live readout changes truthfully as the
+    directed hover slides the carriage). A page whose main thread
+    starves the task queue wedges this mode; a 20 s watchdog
+    aborts with guidance to use `cast`.
+  Same finish/draft encode grades as the renderer. Skill bundle
+  synced in lockstep, with a `scripts/record.mjs` launcher and a
+  SKILL.md section; the doctor now checks for the recorder too.
+
 ## [0.24.0] — 2026-10-21
 
 ### Added

@@ -14,6 +14,7 @@ const PAIRS = [
   ['index.js', 'skill/runtime/index.js'],
   ['index.d.ts', 'skill/runtime/index.d.ts'],
   ['src/render.js', 'skill/runtime/src/render.js'],
+  ['src/record.js', 'skill/runtime/src/record.js'],
   ['src/sfx.js', 'skill/runtime/src/sfx.js'],
   ['src/player.html', 'skill/runtime/src/player.html'],
   ['src/lib/animation.js', 'skill/runtime/src/lib/animation.js'],

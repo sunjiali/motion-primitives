@@ -40,6 +40,30 @@ node scripts/render.mjs --comp hello-motion --out hello-sound.mp4 --audio hello.
 Compositions live in `runtime/src/compositions/<name>.js`. To make a
 new video, copy the example, rename, edit, render.
 
+## Recording a live web page instead
+
+Some videos are *performances of a real page* — an interactive
+figure (e.g. an anatomy isometric machine), a WebGL demo, a web app
+walkthrough. Record those with the page recorder; you direct with a
+mouse glide and timed keys, the page's own model drives the motion:
+
+```bash
+# Heavy page (WebGL, dense DOM): real-time screencast
+node scripts/record.mjs --url file:///path/figure.html --out fig.mp4 \
+  --mode cast --seconds 7 --mouse "300,470>660,330" --keys "3.8:i"
+
+# Light page: virtual-time capture — deterministic, frame-exact
+node scripts/record.mjs --url file:///path/figure.html --out fig.mp4 \
+  --mode virtual --seconds 3 --mouse "560,330>760,330"
+```
+
+Mode guide: `cast` works on any page (real time; frame timing comes
+from the compositor). `virtual` is deterministic and reproducible,
+but a page whose main thread starves the task queue (continuous
+heavy simulation) will wedge it — the recorder aborts after 20 s and
+tells you to switch to `cast`. Verify recordings like renders:
+ffprobe the frame count, extract frames, look at them.
+
 ## Workflow (do not skip steps 3 and 5)
 
 1. **Brief.** Pin down: topic, audience, duration, aspect (1280×720

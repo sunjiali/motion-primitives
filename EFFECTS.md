@@ -28,6 +28,16 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
   overshoot / fade). Spans are inline-block, so line layout never
   shifts while letters land.
 
+### Platform (v0.25)
+- Page recorder (`src/record.js`): turns live web pages —
+  interactive anatomy figures, WebGL demos — into MP4s. Two
+  strategies: `cast` (CDP screencast, real time, works on any
+  page; output spans the page's actual motion) and `virtual`
+  (virtual-time stepping, deterministic; watchdog aborts pages
+  whose main thread starves the queue and points at cast).
+  Directing is data: a `--mouse "x1,y1>x2,y2"` glide plus
+  `--keys "3.8:i"` timed presses. Bundled into the skill.
+
 ### Platform (v0.20)
 - Installable skill bundle (`skill/`): self-contained agent skill —
   SKILL.md playbook, vendored runtime synced from the build (drift

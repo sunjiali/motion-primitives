@@ -15,6 +15,7 @@ const PAIRS = [
   ['index.js', 'skill/runtime/index.js'],
   ['index.d.ts', 'skill/runtime/index.d.ts'],
   ['src/render.js', 'skill/runtime/src/render.js'],
+  ['src/record.js', 'skill/runtime/src/record.js'],
   ['src/sfx.js', 'skill/runtime/src/sfx.js'],
   ['src/player.html', 'skill/runtime/src/player.html'],
   ['src/lib/animation.js', 'skill/runtime/src/lib/animation.js'],
@@ -31,7 +32,7 @@ test('skill: SKILL.md frontmatter is valid and the bundle is complete', () => {
   assert.ok(/^name: motion$/m.test(md), 'skill name is motion');
   assert.ok(/^description: .{40,}$/m.test(md), 'description is substantive');
   for (const f of ['skill/README.md', 'skill/scripts/doctor.mjs', 'skill/scripts/render.mjs',
-    'skill/scripts/sfx.mjs', 'skill/scripts/chrome.mjs', 'skill/references/API.md']) {
+    'skill/scripts/record.mjs', 'skill/scripts/sfx.mjs', 'skill/scripts/chrome.mjs', 'skill/references/API.md']) {
     assert.ok(fs.existsSync(path.join(root, f)), `missing ${f}`);
   }
   const pkg = JSON.parse(read('skill/package.json').toString('utf8'));

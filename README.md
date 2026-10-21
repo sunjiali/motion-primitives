@@ -83,6 +83,31 @@ node src/render.js --comp showcase --still 250 --out out/frame.png
 
 Requirements: Node.js ≥ 18, Chrome/Chromium, ffmpeg.
 
+## Record a live web page
+
+Some videos are performances of a real page — an interactive
+figure (say, an [anatomy](https://github.com/wheresryan22/anatomy)
+isometric machine), a WebGL demo, a web app. The recorder directs
+the page with a mouse glide and timed key presses while the page's
+own model drives the motion:
+
+```bash
+# Heavy page (WebGL, dense DOM): real-time screencast
+node src/record.js --url file:///path/raptor-engine.html --out raptor.mp4 \
+  --mode cast --seconds 7 --mouse "300,470>660,330" --keys "3.8:i"
+
+# Light page: virtual-time capture — deterministic, frame-exact
+node src/record.js --url file:///path/figure.html --out fig.mp4 \
+  --mode virtual --seconds 3 --mouse "560,330>760,330"
+```
+
+`cast` works on any page; its output duration is the span over
+which the page actually changed (dead air compresses out).
+`virtual` advances the browser clock one frame at a time — fully
+reproducible — but a page whose main thread starves the task queue
+will wedge it; the recorder aborts after 20 s and tells you to use
+`cast`. Also exposed as `npm run record`, and bundled in the skill.
+
 ## The primitives
 
 | Primitive | What it does |

@@ -68,6 +68,7 @@
     "package:smoke": "node scripts/package-smoke.js",
     "prepublishOnly": "npm run check",
     "render": "node src/render.js",
+    "record": "node src/record.js",
     "syntax": "node scripts/check-syntax.js",
     "test": "node --test",
     "build": "tsc",
@@ -81,5 +82,5 @@
   ],
   "type": "commonjs",
   "types": "index.d.ts",
-  "version": "0.24.0"
+  "version": "0.25.0"
 }

@@ -34,6 +34,7 @@ else bad('no Chrome/Chromium found', 'install Chrome, or set CHROME_PATH to the 
 const runtimeFiles = [
   'runtime/index.js',
   'runtime/src/render.js',
+  'runtime/src/record.js',
   'runtime/src/sfx.js',
   'runtime/src/player.html',
   'runtime/src/lib/animation.js',
