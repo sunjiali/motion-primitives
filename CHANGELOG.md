@@ -2,6 +2,19 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.36.0] — 2026-10-21
+
+### Added
+
+- `isoGear(o)` — an isometric gear: an isoCylinder body with
+  teeth arranged on the projected rim ellipse (each tooth
+  tangent-rotated, riding the mid-plane so its tips clear both
+  rim arcs), a dark hub hole, and three face bolts so rotation
+  reads. `rot` (radians) turns the whole gear — animate it per
+  frame and mesh two gears with opposite signs. Skill bundle
+  synced (API catalog now 68 functions); the site iso machine
+  gains a spinning brass gear.
+
 ## [0.35.0] — 2026-10-21
 
 ### Added

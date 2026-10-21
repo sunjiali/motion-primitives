@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -331,6 +331,10 @@ test('iso kit: box shading order, cylinder ellipse, painter sort', () => {
   assert.equal((pipe.match(/<circle/g) || []).length, 1); // one interior joint
   assert.ok(pipe.includes('stroke-width="22.0"')); // 2.2 * r * unit
   assert.equal(M.isoPipe({ path: [[0, 0, 0]] }), ''); // degenerate path draws nothing
+  const gear = M.isoGear({ x: 0, y: 0, r: 1, h: 0.3, teeth: 8, unit: 50 });
+  assert.equal((gear.match(/<g transform=/g) || []).length, 8); // one group per tooth
+  assert.ok(gear.includes('<ellipse')); // body + hub from the cylinder and face layers
+  assert.notEqual(M.isoGear({ teeth: 8, rot: 0.4, unit: 50 }), M.isoGear({ teeth: 8, rot: 0, unit: 50 })); // rot turns it
   const cyl = M.isoCylinder({ x: 0, y: 0, r: 1, h: 2, unit: 50 });
   assert.ok(cyl.includes('<ellipse'));
   assert.ok(cyl.includes('rx="61.2"')); // r * unit * sqrt(3/2)

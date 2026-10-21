@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (67 functions)
+# motion-primitives API — the full catalog (68 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -543,6 +543,14 @@ M.isoPipe(o: { ox?: number; oy?: number; unit?: number; path: number[][]; r?: nu
 ```
 
 Isometric pipe run through world points [[x, y, z], ...] — a stylized tube with joint dots and a lit edge. Returns an SVG string.
+
+### `isoGear`
+
+```ts
+M.isoGear(o: { x?: number; y?: number; z?: number; ox?: number; oy?: number; unit?: number; r?: number; h?: number; teeth?: number; rot?: number; color?: string; top?: string; stroke?: string }): string
+```
+
+Isometric gear: cylinder body, teeth on the projected rim ellipse, hub hole and face bolts; `rot` turns it. Returns SVG strings.
 
 ### `isoSort`
 

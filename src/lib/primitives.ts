@@ -168,6 +168,9 @@ interface IsoWedgeOpts extends IsoBase {
 interface IsoPipeOpts extends IsoBase {
   path: number[][]; r?: number; color?: string;
 }
+interface IsoGearOpts extends IsoBase {
+  r?: number; h?: number; teeth?: number; rot?: number; color?: string; top?: string; stroke?: string;
+}
 interface IsoPart { x: number; y: number; z?: number; html: string }
 interface CursorKey { f: number; x: number; y: number }
 interface CursorOpts {
@@ -1501,6 +1504,49 @@ __root.Motion = (function () {
       '" stroke-linecap="round" opacity="0.8" transform="translate(' + (-w * 0.16).toFixed(1) + ' ' + (-w * 0.2).toFixed(1) + ')"/>');
   }
 
+  // A gear lying on the iso camera: an isoCylinder body, teeth
+  // arranged on the projected rim ellipse (each tangent-rotated),
+  // a dark hub hole, and three face bolts so rotation reads.
+  // `rot` (radians) turns the whole gear — animate it per frame.
+  // Teeth are drawn first and the body over their roots, so tips
+  // ring the rim all the way around.
+  function isoGear(o: IsoGearOpts): string {
+    o = o || {};
+    const x = o.x || 0, y = o.y || 0, z = o.z || 0;
+    const r = o.r || 1, h = o.h == null ? 0.35 : o.h, unit = o.unit || 36;
+    const teeth = o.teeth || 9, rot = o.rot || 0;
+    const color = o.color || '#8A93A6';
+    const c1 = isoPt(o, x, y, z + h);
+    const cM = isoPt(o, x, y, z + h / 2); // teeth ride the mid-plane so their tips clear both rim arcs
+    const rx = r * unit * 1.2247, ry = r * unit * 0.7071;
+    const toothLen = r * unit * 0.52 + h * unit * 0.9, toothWid = (2 * Math.PI * r * unit * 0.94) / teeth * 0.52;
+    const pad = toothLen / 2 + 4;
+    const minX = cM[0] - rx - pad, minY = cM[1] - ry - pad;
+    const W = (rx + pad) * 2, H = (ry + pad) * 2;
+    const edge = o.stroke === 'none' ? '' : ' stroke="' + (o.stroke || shade(color, -48)) + '" stroke-width="1"';
+    let teethSvg = '';
+    for (let i = 0; i < teeth; i++) {
+      const a = rot + (i / teeth) * Math.PI * 2;
+      const px = cM[0] + Math.cos(a) * rx, py = cM[1] + Math.sin(a) * ry;
+      const tang = Math.atan2(ry * Math.cos(a), -rx * Math.sin(a)) * 180 / Math.PI;
+      teethSvg += '<g transform="translate(' + (px - minX).toFixed(1) + ' ' + (py - minY).toFixed(1) +
+        ') rotate(' + tang.toFixed(1) + ')"><rect x="' + (-toothWid / 2).toFixed(1) + '" y="' + (-toothLen / 2).toFixed(1) +
+        '" width="' + toothWid.toFixed(1) + '" height="' + toothLen.toFixed(1) + '" fill="' + shade(color, -8) + '"' + edge + '/></g>';
+    }
+    let bolts = '';
+    for (let i = 0; i < 3; i++) {
+      const a = rot + (i / 3) * Math.PI * 2 + 0.5;
+      const bx = (Math.cos(a) * rx * 0.55).toFixed(1), by = (Math.sin(a) * ry * 0.55).toFixed(1);
+      bolts += '<circle cx="' + bx + '" cy="' + by + '" r="' + (r * unit * 0.09).toFixed(1) + '" fill="' + shade(color, -38) + '"/>';
+    }
+    const face = '<svg style="position:absolute;left:' + (c1[0] - rx).toFixed(1) + 'px;top:' + (c1[1] - ry).toFixed(1) +
+      'px;" width="' + (rx * 2).toFixed(1) + '" height="' + (ry * 2).toFixed(1) + '" viewBox="' + (-rx).toFixed(1) + ' ' +
+      (-ry).toFixed(1) + ' ' + (rx * 2).toFixed(1) + ' ' + (ry * 2).toFixed(1) + '">' + bolts +
+      '<ellipse cx="0" cy="0" rx="' + (rx * 0.34).toFixed(1) + '" ry="' + (ry * 0.34).toFixed(1) + '" fill="' + shade(color, -46) + '"' + edge + '/>' +
+      '<ellipse cx="0" cy="0" rx="' + (rx * 0.2).toFixed(1) + '" ry="' + (ry * 0.2).toFixed(1) + '" fill="' + shade(color, -64) + '"/></svg>';
+    return isoSvg(minX, minY, W, H, teethSvg) + isoCylinder({ ...o, r, h }) + face;
+  }
+
   // Painter's order for iso parts: ascending (x + y), ties by z.
   // Parts carry their resting coords; the html may be built at an
   // animated offset without changing the paint order.
@@ -1513,7 +1559,7 @@ __root.Motion = (function () {
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
     paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
-    beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoSort,
+    beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,

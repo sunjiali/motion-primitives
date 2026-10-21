@@ -28,7 +28,9 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
   overshoot / fade). Spans are inline-block, so line layout never
   shifts while letters land.
 
-### Isometric kit (v0.26–0.28)
+### Isometric kit (v0.26–0.36)
+- `isoGear` (v0.36) — gear: cylinder body, teeth on the rim
+  ellipse, hub hole and face bolts; `rot` animates the turn.
 - `isoWedge` (v0.27) — triangular prism: high edge at x, slope
   descending along +x, two visible faces (slope + side triangle).
 - `isoPipe` (v0.28) — pipe runs through world points: constant
@@ -232,11 +234,9 @@ top, one per round:
 - ~~`waveLine`~~ — shipped in v0.34.
 - ~~`spotlight`~~ — shipped in v0.35. The researched-2026-10-21
   general backlog (orbit → spotlight) is now fully shipped.
-- `isoGear` — an isometric gear: cylinder body with teeth boxes
-  arranged radially (teeth drawn as small isoBoxes rotated in
-  screen space around the hub — approximation: teeth placed on
-  the projected ellipse, each a tiny wedge/box glyph), hub hole
-  as a dark ellipse. The machine part the kit still lacks most.
+- ~~`isoGear`~~ — shipped in v0.36 (teeth on the projected rim
+  ellipse riding the mid-plane so tips clear both rim arcs,
+  tangent-rotated; hub hole + face bolts; `rot` turns it).
 - `isoCone` — a cone on the iso camera: top point above a
   projected-circle base ellipse, two silhouette lines, side
   shaded in two halves. Funnels, nozzles, spikes.
