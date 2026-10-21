@@ -246,6 +246,21 @@
       },
     },
     {
+      name: 'cursor', desc: 'Animated mouse cursor: keyframed travel, click dip, expanding ring — for UI demos.',
+      code: 'M.cursor(frame, { path, clicks })', cycle: 190,
+      draw(f) {
+        const done = f >= 62;
+        const ui = '<div style="position:absolute;left:80px;top:24px;width:400px;height:172px;border-radius:14px;background:#fff;box-shadow:0 10px 30px rgba(38,34,31,.16);">' +
+          '<div style="height:26px;border-radius:14px 14px 0 0;background:#E9E2D2;"></div>' +
+          '<div style="position:absolute;left:118px;top:76px;width:164px;height:52px;border-radius:12px;background:' + (done ? '#39D98A' : '#2F6DB3') +
+          ';color:#fff;font:800 22px sans-serif;display:flex;align-items:center;justify-content:center;">' + (done ? 'Done ✓' : 'Click me') + '</div></div>';
+        return ui + M.cursor(f, {
+          path: [{ f: 0, x: 36, y: 196 }, { f: 44, x: 268, y: 108 }, { f: 120, x: 268, y: 108 }, { f: 165, x: 516, y: 190 }],
+          clicks: [62], size: 26,
+        });
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

@@ -121,6 +121,11 @@ interface ConfettiOpts {
   spread?: number; gravity?: number; life?: number; seed?: number;
   size?: number; colors?: string[];
 }
+interface CursorKey { f: number; x: number; y: number }
+interface CursorOpts {
+  path: CursorKey[]; clicks?: number[]; size?: number;
+  color?: string; ring?: string; showFrom?: number; showTo?: number;
+}
 
 __root.Motion = (function () {
   const { interpolate, spring, Easing } = __root.Remotion as RemotionStatic;
@@ -1104,10 +1109,61 @@ __root.Motion = (function () {
     return '<div style="position:absolute;inset:0;">' + bits + '</div>';
   }
 
+  // Animated mouse cursor for software demos and UI walkthroughs.
+  // Travels the keyframed `path` (cubicInOut per segment, holds at
+  // both ends), dips on each `clicks` frame, and emits an expanding
+  // ring from the click point. Visible from the first key's frame
+  // (or `showFrom`) until `showTo`. The arrow is an inline SVG with
+  // its hotspot at the wrapper's origin.
+  function cursor(frame: number, o: CursorOpts): string {
+    o = o || ({} as CursorOpts);
+    const keys = (o.path || []).slice().sort((a, b) => a.f - b.f);
+    if (!keys.length) return '';
+    const from = o.showFrom == null ? keys[0].f : o.showFrom;
+    const to = o.showTo == null ? Infinity : o.showTo;
+    if (frame < from || frame > to) return '';
+    const posAt = (f: number): CursorKey => {
+      if (f <= keys[0].f) return keys[0];
+      for (let i = 0; i < keys.length - 1; i++) {
+        const a = keys[i], b = keys[i + 1];
+        if (f <= b.f) {
+          const p = Easing.cubicInOut(clamp01((f - a.f) / Math.max(b.f - a.f, 1)));
+          return { f, x: a.x + (b.x - a.x) * p, y: a.y + (b.y - a.y) * p };
+        }
+      }
+      return keys[keys.length - 1];
+    };
+    const pos = posAt(frame);
+    let scale = 1;
+    let rings = '';
+    const ringColor = o.ring || '#2F6DB3';
+    for (const c of o.clicks || []) {
+      const d = frame - c;
+      if (d >= 0 && d <= 5) {
+        const k = d <= 2 ? d / 2 : (5 - d) / 3;
+        scale = Math.min(scale, 1 - 0.2 * k);
+      }
+      if (d >= 0 && d < 14) {
+        const cp = posAt(c);
+        const r = 6 + d * 2.2;
+        rings += '<div style="position:absolute;left:' + cp.x.toFixed(1) + 'px;top:' + cp.y.toFixed(1) +
+          'px;width:' + (r * 2).toFixed(1) + 'px;height:' + (r * 2).toFixed(1) +
+          'px;transform:translate(-50%,-50%);border-radius:50%;border:3px solid ' + ringColor +
+          ';opacity:' + ((1 - d / 14) * 0.75).toFixed(2) + ';"></div>';
+      }
+    }
+    const size = o.size || 30;
+    const svg = '<svg width="' + size + '" height="' + Math.round(size * 27 / 20) + '" viewBox="0 0 20 27">' +
+      '<path d="M1 1 L1 20.5 L6.2 16.4 L9.8 25.4 L12.9 24.1 L9.2 15.6 L16.8 15.6 Z" fill="' + (o.color || '#FFFFFF') +
+      '" stroke="#26221F" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+    return rings + '<div style="position:absolute;left:' + pos.x.toFixed(1) + 'px;top:' + pos.y.toFixed(1) +
+      'px;transform:scale(' + scale.toFixed(3) + ');transform-origin:0 0;pointer-events:none;">' + svg + '</div>';
+  }
+
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
     paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
-    beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti,
+    beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,

@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -296,6 +296,19 @@ test('confetti: seeded paper burst — rises, gravity wins, fades out, determini
   assert.ok(meanTop(M.confetti(79, o)) > meanTop(early) + 60, 'on average the burst must fall');
   assert.ok(M.confetti(78, o).includes('opacity:0.11')); // fade: (70 - 68) / 18 ≈ 0.11
   assert.equal(M.confetti(40, o), M.confetti(40, o)); // determinism
+});
+
+test('cursor: keyframed travel, click dip and ring, visibility window', () => {
+  const o = { path: [{ f: 0, x: 100, y: 100 }, { f: 20, x: 300, y: 100 }], clicks: [30] };
+  assert.ok(M.cursor(0, o).includes('left:100.0px')); // at the first key
+  assert.ok(M.cursor(20, o).includes('left:300.0px')); // at the second key
+  assert.ok(M.cursor(10, o).includes('left:200.0px')); // cubicInOut midpoint is halfway
+  assert.ok(M.cursor(50, o).includes('left:300.0px')); // holds after the last key
+  assert.ok(M.cursor(32, o).includes('scale(0.800)')); // deepest press two frames into the click
+  assert.ok(M.cursor(36, o).includes('border-radius:50%')); // ring alive at click+6
+  assert.ok(!M.cursor(50, o).includes('border-radius:50%')); // ring gone by click+20
+  assert.equal(M.cursor(-5, { path: [{ f: 10, x: 0, y: 0 }] }), ''); // hidden before its first key
+  assert.equal(M.cursor(12, o), M.cursor(12, o)); // determinism
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

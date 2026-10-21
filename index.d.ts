@@ -128,6 +128,8 @@ export function splitText(frame: number, o: AtOpts & { fn?: string; text: string
 export function wipeReveal(frame: number, o: AtOpts & { fn?: string; html: string; dir?: 'right' | 'left' | 'up' | 'down' }): string;
 /** Confetti cannon: seeded paper bits burst upward, tumble, and fall under gravity. Returns an HTML string. */
 export function confetti(frame: number, o: { at?: number; n?: number; x?: number; y?: number; power?: number; spread?: number; gravity?: number; life?: number; seed?: number; size?: number; colors?: string[] }): string;
+/** Animated mouse cursor: keyframed travel, click dip, expanding click rings. Returns an HTML string. */
+export function cursor(frame: number, o: { path: { f: number; x: number; y: number }[]; clicks?: number[]; size?: number; color?: string; ring?: string; showFrom?: number; showTo?: number }): string;
 
 export interface SfxEvent { f: number; s: string; g?: number; pan?: number; seed?: number }
 export interface SfxScore { fps?: number; durationFrames: number; tailSec?: number; events: SfxEvent[] }
@@ -167,6 +169,7 @@ declare const Motion: {
   splitText: typeof splitText;
   wipeReveal: typeof wipeReveal;
   confetti: typeof confetti;
+  cursor: typeof cursor;
   Motion: typeof Motion;
   Remotion: RemotionModule;
   sfx: SfxModule;

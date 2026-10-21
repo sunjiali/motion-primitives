@@ -2,6 +2,24 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.24.0] — 2026-10-21
+
+### Added
+
+- `cursor(frame, o)` — an animated mouse cursor for software demos
+  and UI walkthroughs. It travels a keyframed `path`
+  (`[{f, x, y}, ...]`, cubicInOut per segment, holds at both ends),
+  dips to 0.8 scale on each frame listed in `clicks`, and emits an
+  expanding ring from the click point. Tunables: `size`, `color`,
+  `ring`, `showFrom` / `showTo` (visible by default from the first
+  key's frame). The arrow is an inline SVG, hotspot at its origin —
+  pair it with a fake UI built from plain divs and the demo stages
+  itself. Skill bundle synced in lockstep (API catalog now 55
+  functions). Verified with unit tests (key positions, midpoint,
+  click dip, ring lifetime, visibility window) and glide/click/
+  parked render stills against a mock app window. Site demo
+  card #31.
+
 ## [0.23.0] — 2026-10-21
 
 ### Added

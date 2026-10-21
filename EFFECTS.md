@@ -6,6 +6,11 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Interface (v0.24)
+- `cursor` — animated mouse cursor for UI demos: keyframed path
+  travel (cubicInOut per segment, holds at both ends), a press dip
+  on each click frame, and an expanding ring from the click point.
+
 ### Celebration (v0.23)
 - `confetti` — confetti cannon: seeded paper bits burst from a
   point in an upward cone, tumble (rotation + scaleX paper-flip),
@@ -190,6 +195,35 @@ Primitives to build for it:
 
 ## Backlog (next rounds, roughly in order)
 
+Researched 2026-10-21 (gap analysis against the shipped 55, after
+splitText / wipeReveal / confetti / cursor landed) — take from the
+top, one per round:
+
+- `orbit` — circular-orbit position helper: returns a transform
+  string placing content on a circle around (cx, cy) with radius,
+  phase, speed, and optional elliptical squash / depth scaling —
+  satellites, orbiting badges, loading rings of dots. Pairs with
+  pulse for the orbiting element.
+- `swing` — pendulum rotation about a pivot above the element
+  (signs, hanging tags, mobiles): angle = maxDeg * sin(t) with
+  optional decay; build on pivot/stepped conventions.
+- `marquee` — seamless infinite scroll strip (text or repeated
+  HTML): content duplicated and translated by (frame * speed)
+  mod unitWidth; the promo/logo-ticker staple. Needs a measured
+  unit width option so the loop is truly seamless.
+- `marchingAnts` — animated dashed outline (stroke-dashoffset
+  crawl) around a rect or along a path: selection/highlight
+  language from editors, great for tutorials pointing at UI.
+- `highlightBox` — a marker box that draws itself around a region
+  (drawOn-style rect with a slight hand wobble) then settles:
+  the tutorial "look here" move. May land as a drawOn preset
+  rather than a new primitive — decide in the round.
+- `waveLine` — animated sine wave line (SVG path, phase scrolls):
+  voice/audio visuals, dividers, "signal" motifs. Options for
+  amplitude envelope so it can swell on a beatGrid pulse.
+- `spotlight` — radial mask that punches a lit hole in a dimmed
+  stage and can travel between points (reuse camPose-style keys):
+  focus-the-eye for walkthroughs; pairs with cursor.
 - (Future track, not committed) WebGL/three.js liquid-metal logo sting —
   the Motion Lab opener is raymarched SDF chrome with smooth-min blending;
   out of scope for this 2D stack, revisit only if a 3D need appears.
