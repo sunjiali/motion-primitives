@@ -422,6 +422,43 @@ __root.Motion = (function () {
             '" fill="none" stroke="' + (o.color || '#5B7BA5') + '" stroke-width="' + (o.width || 3) +
             '" stroke-linecap="round"/></svg>';
     }
+    // spotlight(): a dimmed stage with one lit hole — a radial
+    // gradient overlay whose centre is static (x, y) or travels
+    // between keyframes (keys, cubicInOut, the cursor convention).
+    // Place it AFTER the content it should dim. Focus-the-eye for
+    // walkthroughs; pairs with cursor.
+    function spotlight(frame, o) {
+        o = o || {};
+        const r = o.r || 110, feather = o.feather == null ? 70 : o.feather;
+        const alpha = o.alpha == null ? 0.78 : o.alpha;
+        let cx = o.x || 0, cy = o.y || 0;
+        const keys = o.keys || [];
+        if (keys.length) {
+            if (frame <= keys[0].f) {
+                cx = keys[0].x;
+                cy = keys[0].y;
+            }
+            else if (frame >= keys[keys.length - 1].f) {
+                cx = keys[keys.length - 1].x;
+                cy = keys[keys.length - 1].y;
+            }
+            else {
+                for (let i = 0; i < keys.length - 1; i++) {
+                    const a = keys[i], b = keys[i + 1];
+                    if (frame >= a.f && frame <= b.f) {
+                        const p = (frame - a.f) / (b.f - a.f);
+                        const e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+                        cx = a.x + (b.x - a.x) * e;
+                        cy = a.y + (b.y - a.y) * e;
+                        break;
+                    }
+                }
+            }
+        }
+        return '<div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at ' +
+            cx.toFixed(1) + 'px ' + cy.toFixed(1) + 'px, rgba(4,5,9,0) 0px, rgba(4,5,9,0) ' + r.toFixed(1) +
+            'px, rgba(4,5,9,' + alpha + ') ' + (r + feather).toFixed(1) + 'px);"></div>';
+    }
     // shake(): decaying screen shake {x, y} inside [at, at+dur].
     function shake(frame, o) {
         o = o || {};
@@ -1317,7 +1354,7 @@ __root.Motion = (function () {
     }
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
+        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
         beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoSort,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

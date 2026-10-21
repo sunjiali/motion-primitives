@@ -16,7 +16,7 @@ const GROUPS = [
   ['Entrances & motion', ['fadeUp', 'fly', 'travel', 'drop', 'beat', 'punch', 'shake', 'flash', 'wiggle', 'flipIn', 'whip', 'squash', 'trail', 'smear', 'pathFly', 'orbit', 'swing', 'marquee', 'cursor']],
   ['Text & numbers', ['countUp', 'counterRoll', 'typewriter', 'drawText', 'scramble', 'splitText']],
   ['Shapes & drawing', ['dot', 'ripple', 'burst', 'badge', 'targetSlot', 'poly', 'drawOn', 'bars', 'morphShape', 'morphPoly', 'paperEl', 'pivot', 'stepped', 'onTwos', 'confetti', 'marchingAnts', 'highlightBox', 'waveLine']],
-  ['Scene, camera & ambience', ['scene', 'transition', 'camera', 'parallax', 'meshBg', 'kenBurns', 'particleField', 'glitch', 'fx', 'wipeReveal']],
+  ['Scene, camera & ambience', ['scene', 'transition', 'camera', 'parallax', 'meshBg', 'kenBurns', 'particleField', 'glitch', 'fx', 'wipeReveal', 'spotlight']],
   ['Isometric kit', ['isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoSort']],
 ];
 

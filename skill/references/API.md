@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (66 functions)
+# motion-primitives API — the full catalog (67 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -501,6 +501,14 @@ M.wipeReveal(frame: number, o: AtOpts & { fn?: string; html: string; dir?: 'righ
 ```
 
 Directional wipe reveal of arbitrary HTML via an animated clip-path inset. Returns an HTML string.
+
+### `spotlight`
+
+```ts
+M.spotlight(frame: number, o: { x?: number; y?: number; keys?: { f: number; x: number; y: number }[]; r?: number; feather?: number; alpha?: number }): string
+```
+
+Dimmed-stage spotlight overlay with one lit hole; the hole is static (x, y) or travels between keyframes. Returns an overlay div.
 
 ## Isometric kit
 

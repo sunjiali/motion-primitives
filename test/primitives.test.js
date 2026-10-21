@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -404,6 +404,17 @@ test('waveLine: phase scrolls, amplitude bounded, taper settles the ends', () =>
   const tapered = M.waveLine(0, { x: 0, y: 100, w: 96, amp: 10, wl: 48, taper: 1 });
   const startY = parseFloat(tapered.match(/M [\d.]+ (-?[\d.]+)/)[1]);
   assert.ok(Math.abs(startY - 100) < 0.01); // the start point settles to the centre line at full taper
+});
+
+test('spotlight: static hole geometry and keyframe travel', () => {
+  const s = M.spotlight(0, { x: 100, y: 50, r: 40, feather: 30 });
+  assert.ok(s.includes('circle at 100.0px 50.0px'));
+  assert.ok(s.includes('rgba(4,5,9,0) 40.0px'));
+  assert.ok(s.includes('rgba(4,5,9,0.78) 70.0px')); // full dim at r + feather
+  const mid = M.spotlight(25, { keys: [{ f: 0, x: 0, y: 0 }, { f: 50, x: 200, y: 100 }] });
+  assert.ok(mid.includes('circle at 100.0px 50.0px')); // cubicInOut(0.5) = 0.5 exactly
+  const held = M.spotlight(99, { keys: [{ f: 0, x: 0, y: 0 }, { f: 50, x: 200, y: 100 }] });
+  assert.ok(held.includes('circle at 200.0px 100.0px')); // holds the last key
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

@@ -230,9 +230,8 @@ top, one per round:
 - ~~`highlightBox`~~ — shipped in v0.33 (standalone primitive,
   not a drawOn preset — the wobble + pad ergonomics earned it).
 - ~~`waveLine`~~ — shipped in v0.34.
-- `spotlight` — radial mask that punches a lit hole in a dimmed
-  stage and can travel between points (reuse camPose-style keys):
-  focus-the-eye for walkthroughs; pairs with cursor.
+- ~~`spotlight`~~ — shipped in v0.35. The researched-2026-10-21
+  general backlog (orbit → spotlight) is now fully shipped.
 - `isoGear` — an isometric gear: cylinder body with teeth boxes
   arranged radially (teeth drawn as small isoBoxes rotated in
   screen space around the hub — approximation: teeth placed on

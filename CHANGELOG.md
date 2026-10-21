@@ -2,6 +2,18 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.35.0] — 2026-10-21
+
+### Added
+
+- `spotlight(frame, o)` — a dimmed-stage overlay with one lit
+  hole (radial gradient, soft feathered edge). The hole is
+  static at (x, y) or travels between keyframes with cubicInOut
+  easing, holding at the ends — focus-the-eye for walkthroughs,
+  pairs with cursor. Place it after the content it dims. Skill
+  bundle synced (API catalog now 67 functions); site demo card
+  #39.
+
 ## [0.34.0] — 2026-10-21
 
 ### Added

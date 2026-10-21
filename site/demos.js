@@ -349,6 +349,21 @@
       },
     },
     {
+      name: 'spotlight', desc: 'One lit hole in a dimmed stage, travelling exhibit to exhibit.',
+      code: 'M.spotlight(frame, { keys: [{ f, x, y }], r })', cycle: 240,
+      draw(f) {
+        const exhibit = (x, label) =>
+          '<div style="position:absolute;left:' + (x - 26) + 'px;top:84px;width:52px;height:52px;border-radius:14px;background:#2C3547;"></div>' +
+          '<div style="position:absolute;left:' + (x - 40) + 'px;top:146px;width:80px;text-align:center;font:600 12px system-ui;color:#C9CFDA;">' + label + '</div>';
+        const keys = [
+          { f: 0, x: 110, y: 110 }, { f: 40, x: 110, y: 110 }, { f: 80, x: 280, y: 110 },
+          { f: 120, x: 280, y: 110 }, { f: 160, x: 450, y: 110 }, { f: 200, x: 450, y: 110 }, { f: 240, x: 110, y: 110 },
+        ];
+        return exhibit(110, 'EXPLODE') + exhibit(280, 'ASSEMBLE') + exhibit(450, 'SHIP') +
+          M.spotlight(f % 240, { keys, r: 62, feather: 46, alpha: 0.82 });
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {
