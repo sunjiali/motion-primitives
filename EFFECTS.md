@@ -259,6 +259,45 @@ top, one per round:
   polygon extrusion in iso) + short cylinder shaft; pairs with
   isoGear for assembly scenes. Simpler fallback: hex-head as a
   flat polygon with a top face only.
+
+From the X/social motion sweep of 2026-10-21 (full specs and
+sources in research/x-motion-sweep-2026-10-21.md; engagement is
+what the posts showed at sweep time):
+
+- `maskReveal` — shaped, travelling aperture reveal: the next
+  scene shows through a hole (circle / path) cut in the current
+  one, aperture keyframed. (@ginyboi's top-5 transitions, 33K
+  likes — A-to-B masking.)
+- `matchCut` — match-cut preset: two elements ease to 80% of
+  travel at a 1:2 timing ratio, cut at matched pose/velocity so
+  two objects read as one motion. (Same @ginyboi countdown, #1.)
+- `inertia` — velocity-driven glide, closed form
+  x(t) = x0 + v0·(1 − e^(−k·t))/k: the throw/flick primitive —
+  endpoint distance is v0/k, not a fixed keyframe. (@webflow's
+  GSAP Inertia Slider template.)
+- `pixelDissolve` — mosaic transition: grid cells flip A→B at
+  hash delays while cell size swells mid-transition; the orderly
+  counterpart to glitch. (@webflow pixelated transition demo.)
+- `charGrid` — living glyph lattice: fixed grid whose glyphs and
+  colors cycle by per-cell hash phase — a data-wall ambience
+  layer. (@antonin.work digit grid, 13K likes.)
+- `assembleText` — glyphs fly in from hash scatter to their
+  typeset slots (and disperse in reverse): splitText's travelling
+  sibling. (@antonin.work, 28K likes.)
+- `textOnPath` — a whole string typeset along an SVG path by arc
+  length, tangent-rotated, with a flowing offset: kinetic-type
+  titles and circular badges. (@holke79 carousel.)
+- `isoTerrain` — iso pillar field whose heights follow a scripted
+  focus point (distance falloff): data landscapes and equaliser
+  cities on the v0.26 iso core. (Hairline library, via
+  @repo.creative / @aiadventureryt.)
+- `patternField` — one small looping tile repeated with per-tile
+  phase into a seamless 2-D pattern backdrop.
+  (@studio.baseline tutorial.)
+- `slitScan` — smooth per-band time displacement: band b shifted
+  by A·sin(phase + b·k), the Superman-titles streak warp; smooth
+  where glitch is jagged. (@CcampFx's X thread on streaks and
+  slit-scans — the sweep's one genuine X find.)
 - (Future track, not committed) WebGL/three.js liquid-metal logo sting —
   the Motion Lab opener is raymarched SDF chrome with smooth-min blending;
   out of scope for this 2D stack, revisit only if a 3D need appears.
