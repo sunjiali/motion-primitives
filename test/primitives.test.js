@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -426,6 +426,15 @@ test('spotlight: static hole geometry and keyframe travel', () => {
   assert.ok(mid.includes('circle at 100.0px 50.0px')); // cubicInOut(0.5) = 0.5 exactly
   const held = M.spotlight(99, { keys: [{ f: 0, x: 0, y: 0 }, { f: 50, x: 200, y: 100 }] });
   assert.ok(held.includes('circle at 200.0px 100.0px')); // holds the last key
+});
+
+test('maskReveal: whole cover, growing blob, then gone', () => {
+  const before = M.maskReveal(10, { at: 20, dur: 30, w: 560, h: 315 });
+  assert.ok(before.includes('background:#101014') && !before.includes('<mask'));
+  const mid = M.maskReveal(35, { at: 20, dur: 30, w: 560, h: 315 });
+  assert.ok(mid.includes('<mask id="mr1"') && mid.includes(' Q ')); // blob path punched in the cover
+  assert.equal(M.maskReveal(55, { at: 20, dur: 30, w: 560, h: 315 }), '');
+  assert.notEqual(M.maskReveal(35, { at: 20, dur: 30, w: 560, h: 315, seed: 2 }), mid); // seed reshapes the blob
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

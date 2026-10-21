@@ -2,6 +2,19 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.39.0] — 2026-10-21
+
+### Added
+
+- `maskReveal(frame, o)` — a scene-change cover in the outgoing
+  scene's colour with an organic blob hole growing through it
+  (SVG mask, hash-wobbled rim, seedable), revealing the next
+  scene underneath. Whole cover before `at`, nothing left after
+  at + dur. Built for the one-flat-colour-per-scene house style.
+  From the 2026-10-21 X sweep (@ginyboi's A-to-B masking).
+  Skill bundle synced (API catalog now 71 functions); site
+  demo card #40.
+
 ## [0.38.0] — 2026-10-21
 
 ### Added

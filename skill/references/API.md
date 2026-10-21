@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (70 functions)
+# motion-primitives API — the full catalog (71 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -509,6 +509,14 @@ M.spotlight(frame: number, o: { x?: number; y?: number; keys?: { f: number; x: n
 ```
 
 Dimmed-stage spotlight overlay with one lit hole; the hole is static (x, y) or travels between keyframes. Returns an overlay div.
+
+### `maskReveal`
+
+```ts
+M.maskReveal(frame: number, o: { at?: number; dur?: number; x?: number; y?: number; w?: number; h?: number; color?: string; seed?: number }): string
+```
+
+Scene-change cover in the outgoing scene's colour with an organic blob hole growing through it. Returns an overlay div ('' once fully revealed).
 
 ## Isometric kit
 

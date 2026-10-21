@@ -249,10 +249,9 @@ From the X/social motion sweep of 2026-10-21 (full specs and
 sources in research/x-motion-sweep-2026-10-21.md; engagement is
 what the posts showed at sweep time):
 
-- `maskReveal` — shaped, travelling aperture reveal: the next
-  scene shows through a hole (circle / path) cut in the current
-  one, aperture keyframed. (@ginyboi's top-5 transitions, 33K
-  likes — A-to-B masking.)
+- ~~`maskReveal`~~ — shipped in v0.39 (flat-colour cover + SVG
+  mask blob hole; the original note's path-shaped aperture is
+  a possible later variant).
 - `matchCut` — match-cut preset: two elements ease to 80% of
   travel at a 1:2 timing ratio, cut at matched pose/velocity so
   two objects read as one motion. (Same @ginyboi countdown, #1.)

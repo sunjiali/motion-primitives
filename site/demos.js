@@ -367,6 +367,16 @@
       },
     },
     {
+      name: 'maskReveal', desc: 'The next scene shows through a growing organic hole in this one.',
+      code: 'M.maskReveal(frame, { at, dur, color })', cycle: 170,
+      draw(f) {
+        const lf = f % 170;
+        const next = '<div style="position:absolute;inset:0;background:linear-gradient(135deg,#FFD93D,#F59E4C);"></div>' +
+          '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 44px system-ui;color:#26221F;">SCENE 2</div>';
+        return next + M.maskReveal(lf, { at: 55, dur: 55, w: 560, h: 315, color: '#26221F', seed: 3, x: 200, y: 170 });
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

@@ -74,6 +74,10 @@ interface SpotlightOpts {
   x?: number; y?: number; keys?: SpotlightKey[];
   r?: number; feather?: number; alpha?: number;
 }
+interface MaskRevealOpts {
+  at?: number; dur?: number; x?: number; y?: number;
+  w?: number; h?: number; color?: string; seed?: number;
+}
 interface OrbitOpts {
   cx?: number; cy?: number; r?: number; speed?: number; phase?: number;
   squash?: number; depth?: boolean;
@@ -635,6 +639,50 @@ __root.Motion = (function () {
     return '<div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at ' +
       cx.toFixed(1) + 'px ' + cy.toFixed(1) + 'px, rgba(4,5,9,0) 0px, rgba(4,5,9,0) ' + r.toFixed(1) +
       'px, rgba(4,5,9,' + alpha + ') ' + (r + feather).toFixed(1) + 'px);"></div>';
+  }
+
+  // maskReveal(): a scene-change cover — a flat overlay in the
+  // OUTGOING scene's colour with an organic blob hole growing
+  // through it (SVG mask, hash-wobbled rim), revealing the next
+  // scene underneath. Draw the next scene first, then this.
+  // Before `at` the cover is whole; after at + dur nothing is
+  // left (returns ''). The flat-colour case is the house style:
+  // one flat colour per scene.
+  function maskReveal(frame: number, o: MaskRevealOpts): string {
+    o = o || {};
+    const at = o.at || 0, dur = o.dur || 24, seed = o.seed || 1;
+    const w = o.w || 1280, h = o.h || 720;
+    const cx = o.x == null ? w / 2 : o.x, cy = o.y == null ? h / 2 : o.y;
+    const color = o.color || '#101014';
+    if (frame < at) return '<div style="position:absolute;inset:0;background:' + color + ';"></div>';
+    if (frame >= at + dur) return '';
+    const p = clamp01((frame - at) / dur);
+    const e = 1 - Math.pow(1 - p, 3);
+    const maxR = Math.hypot(Math.max(cx, w - cx), Math.max(cy, h - cy)) * 1.08;
+    const R = maxR * e;
+    const N = 12;
+    const pts: [number, number][] = [];
+    for (let i = 0; i < N; i++) {
+      const a = (i / N) * Math.PI * 2;
+      const rr = R * (0.84 + 0.32 * hash(seed * 31 + i * 7.3));
+      pts.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]);
+    }
+    let d = '';
+    for (let i = 0; i < N; i++) {
+      const p0 = pts[i], p1 = pts[(i + 1) % N];
+      const mx = (p0[0] + p1[0]) / 2, my = (p0[1] + p1[1]) / 2;
+      if (i === 0) {
+        const s = pts[0], prev = pts[N - 1];
+        d = 'M ' + ((prev[0] + s[0]) / 2).toFixed(1) + ' ' + ((prev[1] + s[1]) / 2).toFixed(1);
+      }
+      d += ' Q ' + p0[0].toFixed(1) + ' ' + p0[1].toFixed(1) + ' ' + mx.toFixed(1) + ' ' + my.toFixed(1);
+    }
+    d += ' Z';
+    const id = 'mr' + seed;
+    return '<div style="position:absolute;inset:0;pointer-events:none;"><svg width="' + w + '" height="' + h +
+      '" viewBox="0 0 ' + w + ' ' + h + '"><defs><mask id="' + id + '"><rect width="' + w + '" height="' + h +
+      '" fill="#fff"/><path d="' + d + '" fill="#000"/></mask></defs><rect width="' + w + '" height="' + h +
+      '" fill="' + color + '" mask="url(#' + id + ')"/></svg></div>';
   }
 
   // shake(): decaying screen shake {x, y} inside [at, at+dur].
@@ -1628,7 +1676,7 @@ __root.Motion = (function () {
 
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
     beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
