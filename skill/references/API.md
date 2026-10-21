@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (71 functions)
+# motion-primitives API — the full catalog (72 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -517,6 +517,14 @@ M.maskReveal(frame: number, o: { at?: number; dur?: number; x?: number; y?: numb
 ```
 
 Scene-change cover in the outgoing scene's colour with an organic blob hole growing through it. Returns an overlay div ('' once fully revealed).
+
+### `matchCut`
+
+```ts
+M.matchCut(frame: number, o: { at?: number; out?: number }): { phase: string
+```
+
+Matched-cut travel driver: outgoing element reaches p = 0.8 at the cut; the incoming continues at matched pose and velocity to p = 1.
 
 ## Isometric kit
 

@@ -252,9 +252,8 @@ what the posts showed at sweep time):
 - ~~`maskReveal`~~ — shipped in v0.39 (flat-colour cover + SVG
   mask blob hole; the original note's path-shaped aperture is
   a possible later variant).
-- `matchCut` — match-cut preset: two elements ease to 80% of
-  travel at a 1:2 timing ratio, cut at matched pose/velocity so
-  two objects read as one motion. (Same @ginyboi countdown, #1.)
+- ~~`matchCut`~~ — shipped in v0.40 (shared-path driver:
+  quadratic out-leg to p = 0.8, derivative-matched in-leg).
 - `inertia` — velocity-driven glide, closed form
   x(t) = x0 + v0·(1 − e^(−k·t))/k: the throw/flick primitive —
   endpoint distance is v0/k, not a fixed keyframe. (@webflow's

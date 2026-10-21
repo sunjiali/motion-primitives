@@ -120,6 +120,8 @@ export function waveLine(frame: number, o: { x?: number; y?: number; w?: number;
 export function spotlight(frame: number, o: { x?: number; y?: number; keys?: { f: number; x: number; y: number }[]; r?: number; feather?: number; alpha?: number }): string;
 /** Scene-change cover in the outgoing scene's colour with an organic blob hole growing through it. Returns an overlay div ('' once fully revealed). */
 export function maskReveal(frame: number, o: { at?: number; dur?: number; x?: number; y?: number; w?: number; h?: number; color?: string; seed?: number }): string;
+/** Matched-cut travel driver: outgoing element reaches p = 0.8 at the cut; the incoming continues at matched pose and velocity to p = 1. */
+export function matchCut(frame: number, o: { at?: number; out?: number }): { phase: string; p: number; v: number };
 /** 3D flip entrance with overshoot settle. Returns a CSS style string. */
 export function flipIn(frame: number, o?: AtOpts & { axis?: 'X' | 'Y'; from?: number; perspective?: number }): string;
 /** Odometer digit roll from one integer to another. Returns an HTML string. */
@@ -191,7 +193,7 @@ declare const Motion: {
   meshBg: typeof meshBg; drawOn: typeof drawOn; poly: typeof poly; bars: typeof bars;
   scramble: typeof scramble; kenBurns: typeof kenBurns; fx: typeof fx;
   paperEl: typeof paperEl; pivot: typeof pivot; stepped: typeof stepped; onTwos: typeof onTwos;
-  whip: typeof whip; pathFly: typeof pathFly; orbit: typeof orbit; swing: typeof swing; marquee: typeof marquee; marchingAnts: typeof marchingAnts; highlightBox: typeof highlightBox; waveLine: typeof waveLine; spotlight: typeof spotlight; maskReveal: typeof maskReveal; flipIn: typeof flipIn; counterRoll: typeof counterRoll;
+  whip: typeof whip; pathFly: typeof pathFly; orbit: typeof orbit; swing: typeof swing; marquee: typeof marquee; marchingAnts: typeof marchingAnts; highlightBox: typeof highlightBox; waveLine: typeof waveLine; spotlight: typeof spotlight; maskReveal: typeof maskReveal; matchCut: typeof matchCut; flipIn: typeof flipIn; counterRoll: typeof counterRoll;
   drawText: typeof drawText;
   particleField: typeof particleField;
   morphShape: typeof morphShape;

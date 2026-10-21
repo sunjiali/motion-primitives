@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -435,6 +435,19 @@ test('maskReveal: whole cover, growing blob, then gone', () => {
   assert.ok(mid.includes('<mask id="mr1"') && mid.includes(' Q ')); // blob path punched in the cover
   assert.equal(M.maskReveal(55, { at: 20, dur: 30, w: 560, h: 315 }), '');
   assert.notEqual(M.maskReveal(35, { at: 20, dur: 30, w: 560, h: 315, seed: 2 }), mid); // seed reshapes the blob
+});
+
+test('matchCut: 80% at the cut, pose and velocity continuous, lands at rest', () => {
+  const o = { at: 10, out: 20 };
+  assert.equal(M.matchCut(10, o).p, 0);
+  const atCut = M.matchCut(30, o);
+  assert.equal(atCut.p, 0.8);
+  assert.equal(atCut.phase, 'in');
+  const vBefore = M.matchCut(30, o).p - M.matchCut(29, o).p;
+  const vAfter = M.matchCut(31, o).p - M.matchCut(30, o).p;
+  assert.ok(Math.abs(vBefore - vAfter) < 0.01, 'velocity survives the cut: ' + vBefore + ' vs ' + vAfter);
+  const done = M.matchCut(35, o); // in-phase lasts out / 4 = 5 frames
+  assert.deepEqual([done.phase, done.p, done.v], ['done', 1, 0]);
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

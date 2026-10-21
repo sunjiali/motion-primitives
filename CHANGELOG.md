@@ -2,6 +2,21 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.40.0] — 2026-10-21
+
+### Added
+
+- `matchCut(frame, o)` — the shared-travel driver for a matched
+  cut: the outgoing element accelerates along a shared path
+  (quadratic, reaching p = 0.8 at the cut) and the incoming
+  element continues from that exact pose at that exact velocity,
+  decelerating through the remaining 0.2 to rest. Pose and
+  velocity are continuous across the cut, so two different
+  objects read as one motion. Returns { phase, p, v }. The
+  80% / 1:2 recipe is @ginyboi's #1 transition, from the
+  2026-10-21 X sweep. Skill bundle synced (API catalog now 72
+  functions); site demo card #41.
+
 ## [0.39.0] — 2026-10-21
 
 ### Added

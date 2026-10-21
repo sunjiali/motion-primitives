@@ -377,6 +377,19 @@
       },
     },
     {
+      name: 'matchCut', desc: 'Ball becomes box mid-flight — pose and velocity matched, one motion reads through.',
+      code: 'const { phase, p } = M.matchCut(frame, { out })', cycle: 130,
+      draw(f) {
+        const { phase, p } = M.matchCut(f % 130, { at: 15, out: 52 });
+        const x = 46 + p * 428, y = 158;
+        const el = phase === 'out'
+          ? '<div style="position:absolute;left:' + (x - 19) + 'px;top:' + (y - 38) + 'px;width:38px;height:38px;border-radius:50%;background:#F59E4C;"></div>'
+          : '<div style="position:absolute;left:' + (x - 19) + 'px;top:' + (y - 38) + 'px;width:38px;height:38px;border-radius:9px;background:#57C7D4;"></div>';
+        return '<div style="position:absolute;left:30px;right:30px;top:' + y + 'px;height:3px;border-radius:2px;background:#2C3547;"></div>' +
+          '<div style="position:absolute;left:' + (46 + 0.8 * 428 - 1) + 'px;top:' + (y - 52) + 'px;width:2px;height:52px;background:#46506A;"></div>' + el;
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

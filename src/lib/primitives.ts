@@ -78,6 +78,8 @@ interface MaskRevealOpts {
   at?: number; dur?: number; x?: number; y?: number;
   w?: number; h?: number; color?: string; seed?: number;
 }
+interface MatchCutResult { phase: string; p: number; v: number }
+interface MatchCutOpts { at?: number; out?: number }
 interface OrbitOpts {
   cx?: number; cy?: number; r?: number; speed?: number; phase?: number;
   squash?: number; depth?: boolean;
@@ -683,6 +685,33 @@ __root.Motion = (function () {
       '" viewBox="0 0 ' + w + ' ' + h + '"><defs><mask id="' + id + '"><rect width="' + w + '" height="' + h +
       '" fill="#fff"/><path d="' + d + '" fill="#000"/></mask></defs><rect width="' + w + '" height="' + h +
       '" fill="' + color + '" mask="url(#' + id + ')"/></svg></div>';
+  }
+
+  // matchCut(): the shared-travel driver for a matched cut.
+  // One motion path, two elements: the outgoing element
+  // accelerates along p (quadratic) and reaches p = 0.8 at the
+  // cut frame; the incoming element starts at that exact pose
+  // with that exact velocity and decelerates through the
+  // remaining 0.2, landing at rest. Pose AND velocity are
+  // continuous across the cut, so two different objects read as
+  // one motion. Render element A while phase is 'out' and
+  // element B while 'in'/'done', both positioned by the same
+  // path function of p. The 80% / 1:2 recipe is @ginyboi's #1
+  // transition, from the 2026-10-21 X sweep.
+  function matchCut(frame: number, o: MatchCutOpts): MatchCutResult {
+    o = o || {};
+    const at = o.at || 0, out = o.out || 18;
+    const t = frame - at;
+    const inDur = out / 4; // distance 0.2 at matched velocity, triangular profile
+    if (t <= 0) return { phase: 'out', p: 0, v: 0 };
+    if (t < out) {
+      const u = t / out;
+      return { phase: 'out', p: 0.8 * u * u, v: 1.6 * u / out };
+    }
+    const tau = t - out;
+    if (tau >= inDur) return { phase: 'done', p: 1, v: 0 };
+    const v0 = 1.6 / out;
+    return { phase: 'in', p: 0.8 + v0 * tau - (v0 / (2 * inDur)) * tau * tau, v: v0 * (1 - tau / inDur) };
   }
 
   // shake(): decaying screen shake {x, y} inside [at, at+dur].
@@ -1676,7 +1705,7 @@ __root.Motion = (function () {
 
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
     beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
