@@ -320,6 +320,16 @@
       },
     },
     {
+      name: 'marchingAnts', desc: 'The editor selection outline — dashes crawl around the region you mean.',
+      code: 'M.marchingAnts(frame, { x, y, w, h })', cycle: 160,
+      draw(f) {
+        const bar = (top, w, c) => '<div style="position:absolute;left:176px;top:' + top + 'px;width:' + w + 'px;height:13px;border-radius:4px;background:' + c + ';"></div>';
+        return bar(62, 208, '#3E4C63') + bar(90, 150, '#2C3547') + bar(118, 178, '#2C3547') +
+          M.marchingAnts(f, { x: 160, y: 46, w: 240, h: 106, r: 10, color: '#FF8A4C', width: 2.5 }) +
+          '<div style="position:absolute;left:176px;top:160px;font:600 13px system-ui;color:#8A93A6;">selected region</div>';
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

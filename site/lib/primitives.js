@@ -345,6 +345,23 @@ __root.Motion = (function () {
             'px;width:' + width + 'px;overflow:hidden;"><div style="display:flex;transform:translateX(' +
             shift.toFixed(1) + 'px);">' + inner + '</div></div>';
     }
+    // marchingAnts(): the editor selection outline — a dashed rect
+    // whose dashes crawl around the border (dashoffset advances by
+    // speed each frame, wrapping over the dash period). The
+    // tutorial "look at this region" language.
+    function marchingAnts(frame, o) {
+        o = o || { w: 100, h: 60 };
+        const w = o.w || 100, h = o.h || 60;
+        const lw = o.width || 2, dash = o.dash || 7;
+        const speed = o.speed == null ? 1.2 : o.speed;
+        const off = -(((frame * speed) % (dash * 2)) + dash * 2) % (dash * 2);
+        const inset = lw / 2;
+        return '<svg style="position:absolute;left:' + (o.x || 0) + 'px;top:' + (o.y || 0) +
+            'px;" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '"><rect x="' + inset +
+            '" y="' + inset + '" width="' + (w - lw) + '" height="' + (h - lw) + '" rx="' + (o.r || 0) +
+            '" fill="none" stroke="' + (o.color || '#E8E4DA') + '" stroke-width="' + lw +
+            '" stroke-dasharray="' + dash + ' ' + dash + '" stroke-dashoffset="' + off.toFixed(1) + '"/></svg>';
+    }
     // shake(): decaying screen shake {x, y} inside [at, at+dur].
     function shake(frame, o) {
         o = o || {};
@@ -1240,7 +1257,7 @@ __root.Motion = (function () {
     }
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
+        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
         beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoSort,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

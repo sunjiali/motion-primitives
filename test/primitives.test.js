@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoSort', 'orbit', 'swing', 'marquee'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -371,6 +371,16 @@ test('marquee: copy count, modulo wrap, direction', () => {
   assert.ok(m2.includes('translateX(-20.0px)')); // 120 mod 100 — the seamless wrap
   const m3 = M.marquee(10, { content: 'X', unit: 100, width: 250, speed: 3, dir: 'right' });
   assert.ok(m3.includes('translateX(-70.0px)')); // right: offset - unit
+});
+
+test('marchingAnts: dash pattern and crawl offset wrap', () => {
+  const a0 = M.marchingAnts(0, { w: 100, h: 60 });
+  assert.ok(a0.includes('stroke-dasharray="7 7"'));
+  assert.ok(a0.includes('stroke-dashoffset="0.0"'));
+  const a1 = M.marchingAnts(10, { w: 100, h: 60 });
+  assert.ok(a1.includes('stroke-dashoffset="-12.0"')); // 10 frames * 1.2 speed
+  const a2 = M.marchingAnts(20, { w: 100, h: 60 });
+  assert.ok(a2.includes('stroke-dashoffset="-10.0"')); // 24 mod 14 — wrapped over the dash period
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

@@ -226,9 +226,7 @@ top, one per round:
   scale}, matching travel/pathFly conventions).
 - ~~`swing`~~ — shipped in v0.30.
 - ~~`marquee`~~ — shipped in v0.31.
-- `marchingAnts` — animated dashed outline (stroke-dashoffset
-  crawl) around a rect or along a path: selection/highlight
-  language from editors, great for tutorials pointing at UI.
+- ~~`marchingAnts`~~ — shipped in v0.32 (rect form).
 - `highlightBox` — a marker box that draws itself around a region
   (drawOn-style rect with a slight hand wobble) then settles:
   the tutorial "look here" move. May land as a drawOn preset

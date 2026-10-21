@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (63 functions)
+# motion-primitives API — the full catalog (64 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -395,6 +395,14 @@ M.confetti(frame: number, o: { at?: number; n?: number; x?: number; y?: number; 
 ```
 
 Confetti cannon: seeded paper bits burst upward, tumble, and fall under gravity. Returns an HTML string.
+
+### `marchingAnts`
+
+```ts
+M.marchingAnts(frame: number, o: { x?: number; y?: number; w: number; h: number; color?: string; width?: number; dash?: number; speed?: number; r?: number }): string
+```
+
+Animated dashed selection outline (marching ants) around a rect. Returns an SVG string.
 
 ## Scene, camera & ambience
 

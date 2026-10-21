@@ -2,6 +2,17 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.32.0] — 2026-10-21
+
+### Added
+
+- `marchingAnts(frame, o)` — the editor selection outline: a
+  dashed rect whose dashes crawl around the border as the frame
+  advances (dashoffset wraps over the dash period). Options for
+  size, corner radius, dash length, crawl speed and color — the
+  tutorial "look at this region" language. Skill bundle synced
+  (API catalog now 64 functions); site demo card #36.
+
 ## [0.31.0] — 2026-10-21
 
 ### Added
