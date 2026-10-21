@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoSort'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoSort'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -326,6 +326,11 @@ test('iso kit: box shading order, cylinder ellipse, painter sort', () => {
   assert.equal(wfills.length, 2); // side triangle, then slope
   assert.ok(lum(wfills[1]) > lum(wfills[0]), 'slope must be lighter than the side');
   assert.ok(wedge.includes('width="173.2"')); // (len + d) * unit * cos30, same span rule as the box
+  const pipe = M.isoPipe({ path: [[0, 0, 0], [0, 0, 2], [2, 0, 2]], r: 0.2, unit: 50 });
+  assert.equal((pipe.match(/<path/g) || []).length, 2); // body + highlight
+  assert.equal((pipe.match(/<circle/g) || []).length, 1); // one interior joint
+  assert.ok(pipe.includes('stroke-width="22.0"')); // 2.2 * r * unit
+  assert.equal(M.isoPipe({ path: [[0, 0, 0]] }), ''); // degenerate path draws nothing
   const cyl = M.isoCylinder({ x: 0, y: 0, r: 1, h: 2, unit: 50 });
   assert.ok(cyl.includes('<ellipse'));
   assert.ok(cyl.includes('rx="61.2"')); // r * unit * sqrt(3/2)

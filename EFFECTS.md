@@ -28,9 +28,12 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
   overshoot / fade). Spans are inline-block, so line layout never
   shifts while letters land.
 
-### Isometric kit (v0.26–0.27)
+### Isometric kit (v0.26–0.28)
 - `isoWedge` (v0.27) — triangular prism: high edge at x, slope
   descending along +x, two visible faces (slope + side triangle).
+- `isoPipe` (v0.28) — pipe runs through world points: constant
+  screen-width tube, joint dots at bends, shifted highlight for
+  the lit edge. Diagram-style, mixes with the solids.
 - `isoBox` / `isoCylinder` / `isoSort` — native isometric solids
   on one fixed camera (30°, no perspective): filled faces shaded
   by orientation from a single base color (top lightest), crisp
@@ -244,6 +247,18 @@ top, one per round:
 - `spotlight` — radial mask that punches a lit hole in a dimmed
   stage and can travel between points (reuse camPose-style keys):
   focus-the-eye for walkthroughs; pairs with cursor.
+- `isoGear` — an isometric gear: cylinder body with teeth boxes
+  arranged radially (teeth drawn as small isoBoxes rotated in
+  screen space around the hub — approximation: teeth placed on
+  the projected ellipse, each a tiny wedge/box glyph), hub hole
+  as a dark ellipse. The machine part the kit still lacks most.
+- `isoCone` — a cone on the iso camera: top point above a
+  projected-circle base ellipse, two silhouette lines, side
+  shaded in two halves. Funnels, nozzles, spikes.
+- `isoBolt` — a bolt/screw: hex head (short 6-gon prism via
+  polygon extrusion in iso) + short cylinder shaft; pairs with
+  isoGear for assembly scenes. Simpler fallback: hex-head as a
+  flat polygon with a top face only.
 - (Future track, not committed) WebGL/three.js liquid-metal logo sting —
   the Motion Lab opener is raymarched SDF chrome with smooth-min blending;
   out of scope for this 2D stack, revisit only if a 3D need appears.

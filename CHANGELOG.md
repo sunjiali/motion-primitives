@@ -2,6 +2,22 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.28.0] — 2026-10-21
+
+### Added
+
+- `isoPipe(o)` — an isometric pipe run through world points
+  (`path: [[x, y, z], ...]`): a stylized tube of constant screen
+  width (2.2 · r · unit) with round joins, joint dots at the
+  bends, and a shifted highlight stroke for the lit edge.
+  Diagram-style piping that connects the solid parts — ports,
+  tanks, housings. Degenerate paths (fewer than 2 points) draw
+  nothing. Skill bundle synced (API catalog now 60 functions).
+  Verified with tests (path/joint counts, tube width,
+  degenerate path) and a composed render: a pipe rises from a
+  column cap, bends across, and drops into a housing. The site
+  iso demo gains the pipe as its final assembly step.
+
 ## [0.27.0] — 2026-10-21
 
 ### Added

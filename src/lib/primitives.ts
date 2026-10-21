@@ -135,6 +135,9 @@ interface IsoWedgeOpts extends IsoBase {
   len?: number; d?: number; h?: number; color?: string;
   top?: string; side?: string; stroke?: string;
 }
+interface IsoPipeOpts extends IsoBase {
+  path: number[][]; r?: number; color?: string;
+}
 interface IsoPart { x: number; y: number; z?: number; html: string }
 interface CursorKey { f: number; x: number; y: number }
 interface CursorOpts {
@@ -1273,6 +1276,33 @@ __root.Motion = (function () {
       poly([E, F, C, B], o.top || shade(color, 16)));    // the slope
   }
 
+  // A pipe run through world points [[x, y, z], ...]: a stylized
+  // tube of constant screen width (2.2 * r * unit), round joints
+  // with joint dots at the bends and a shifted highlight stroke
+  // for the lit edge. Diagram-style piping that mixes cleanly
+  // with the solid parts; route it through connectors, tanks,
+  // and housings.
+  function isoPipe(o: IsoPipeOpts): string {
+    o = o || { path: [] };
+    const pts3 = o.path || [];
+    if (pts3.length < 2) return '';
+    const unit = o.unit || 36;
+    const r = o.r || 0.16;
+    const w = r * unit * 2.2;
+    const color = o.color || '#9AA7BD';
+    const sp = pts3.map((p) => isoPt(o, p[0] || 0, p[1] || 0, p[2] || 0));
+    const minX = Math.min(...sp.map((p) => p[0])) - w, maxX = Math.max(...sp.map((p) => p[0])) + w;
+    const minY = Math.min(...sp.map((p) => p[1])) - w, maxY = Math.max(...sp.map((p) => p[1])) + w;
+    const d = sp.map((p, i) => (i ? 'L ' : 'M ') + (p[0] - minX).toFixed(1) + ' ' + (p[1] - minY).toFixed(1)).join(' ');
+    const joints = sp.slice(1, -1).map((p) =>
+      '<circle cx="' + (p[0] - minX).toFixed(1) + '" cy="' + (p[1] - minY).toFixed(1) + '" r="' + (w / 2).toFixed(1) + '" fill="' + shade(color, -8) + '"/>').join('');
+    return isoSvg(minX, minY, maxX - minX, maxY - minY,
+      '<path d="' + d + '" fill="none" stroke="' + shade(color, -8) + '" stroke-width="' + w.toFixed(1) + '" stroke-linejoin="round" stroke-linecap="round"/>' +
+      joints +
+      '<path d="' + d + '" fill="none" stroke="' + shade(color, 34) + '" stroke-width="' + (w * 0.36).toFixed(1) +
+      '" stroke-linecap="round" opacity="0.8" transform="translate(' + (-w * 0.16).toFixed(1) + ' ' + (-w * 0.2).toFixed(1) + ')"/>');
+  }
+
   // Painter's order for iso parts: ascending (x + y), ties by z.
   // Parts carry their resting coords; the html may be built at an
   // animated offset without changing the paint order.
@@ -1285,7 +1315,7 @@ __root.Motion = (function () {
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
     paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
-    beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoSort,
+    beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,
