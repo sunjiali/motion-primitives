@@ -17,6 +17,7 @@ const GROUPS = [
   ['Text & numbers', ['countUp', 'counterRoll', 'typewriter', 'drawText', 'scramble', 'splitText']],
   ['Shapes & drawing', ['dot', 'ripple', 'burst', 'badge', 'targetSlot', 'poly', 'drawOn', 'bars', 'morphShape', 'morphPoly', 'paperEl', 'pivot', 'stepped', 'onTwos', 'confetti']],
   ['Scene, camera & ambience', ['scene', 'transition', 'camera', 'parallax', 'meshBg', 'kenBurns', 'particleField', 'glitch', 'fx', 'wipeReveal']],
+  ['Isometric kit', ['isoBox', 'isoCylinder', 'isoSort']],
 ];
 
 const fns = new Map(); // name -> { doc, sig }

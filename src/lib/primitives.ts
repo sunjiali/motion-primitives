@@ -121,6 +121,17 @@ interface ConfettiOpts {
   spread?: number; gravity?: number; life?: number; seed?: number;
   size?: number; colors?: string[];
 }
+interface IsoBase {
+  x?: number; y?: number; z?: number; ox?: number; oy?: number; unit?: number;
+}
+interface IsoBoxOpts extends IsoBase {
+  w?: number; d?: number; h?: number; color?: string;
+  top?: string; left?: string; right?: string; stroke?: string;
+}
+interface IsoCylinderOpts extends IsoBase {
+  r?: number; h?: number; color?: string; top?: string; stroke?: string;
+}
+interface IsoPart { x: number; y: number; z?: number; html: string }
 interface CursorKey { f: number; x: number; y: number }
 interface CursorOpts {
   path: CursorKey[]; clicks?: number[]; size?: number;
@@ -1160,10 +1171,96 @@ __root.Motion = (function () {
       'px;transform:scale(' + scale.toFixed(3) + ');transform-origin:0 0;pointer-events:none;">' + svg + '</div>';
   }
 
+  /* ----------------------------------------------------------------
+     Isometric kit: solid parts on one fixed iso camera (30 degrees,
+     no perspective), in the anatomy tradition — every part is a
+     filled solid, faces shaded by orientation (top lightest), and
+     parts paint back to front (isoSort orders them by x + y, then
+     z). Geometry is a pure function of the options, so compositions
+     animate by varying x / y / z per frame — parts can drop in,
+     slide, and assemble. World units project at `unit` px each;
+     (ox, oy) is where world (0, 0, 0) lands on stage. */
+  const ISO_C = 0.8660254, ISO_S = 0.5;
+  function isoPt(o: IsoBase, x: number, y: number, z: number): [number, number] {
+    const unit = o.unit || 36;
+    return [(o.ox || 0) + (x - y) * unit * ISO_C, (o.oy || 0) + (x + y) * unit * ISO_S - z * unit];
+  }
+  function shade(hex: string, pct: number): string {
+    const n = hex.replace('#', '');
+    const full = n.length === 3 ? n.split('').map((c) => c + c).join('') : n;
+    const num = parseInt(full, 16);
+    const t = pct < 0 ? 0 : 255;
+    const p = Math.abs(pct) / 100;
+    const r = Math.round(((num >> 16) & 255) + (t - ((num >> 16) & 255)) * p);
+    const g = Math.round(((num >> 8) & 255) + (t - ((num >> 8) & 255)) * p);
+    const b = Math.round((num & 255) + (t - (num & 255)) * p);
+    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+  }
+  function isoSvg(minX: number, minY: number, w: number, h: number, inner: string): string {
+    return '<svg style="position:absolute;left:' + minX.toFixed(1) + 'px;top:' + minY.toFixed(1) +
+      'px;" width="' + w.toFixed(1) + '" height="' + h.toFixed(1) + '" viewBox="0 0 ' + w.toFixed(1) + ' ' + h.toFixed(1) + '">' + inner + '</svg>';
+  }
+
+  // A solid box: width w (x axis), depth d (y axis), height h (z).
+  // Three visible faces, shaded from `color` unless overridden.
+  function isoBox(o: IsoBoxOpts): string {
+    o = o || {};
+    const x = o.x || 0, y = o.y || 0, z = o.z || 0;
+    const w = o.w || 1, d = o.d || 1, h = o.h == null ? 1 : o.h;
+    const color = o.color || '#8A93A6';
+    const P = (dx: number, dy: number, dz: number): [number, number] => isoPt(o, x + dx, y + dy, z + dz);
+    const t0 = P(0, 0, h), t1 = P(w, 0, h), t2 = P(w, d, h), t3 = P(0, d, h);
+    const b1 = P(w, 0, 0), b2 = P(w, d, 0), b3 = P(0, d, 0);
+    const all = [t0, t1, t2, t3, b1, b2, b3];
+    const minX = Math.min(...all.map((p) => p[0])), maxX = Math.max(...all.map((p) => p[0]));
+    const minY = Math.min(...all.map((p) => p[1])), maxY = Math.max(...all.map((p) => p[1]));
+    const pts = (list: [number, number][]): string => list.map((p) => (p[0] - minX).toFixed(1) + ',' + (p[1] - minY).toFixed(1)).join(' ');
+    const edge = o.stroke === 'none' ? '' : ' stroke="' + (o.stroke || shade(color, -48)) + '" stroke-width="1" stroke-linejoin="round"';
+    const poly = (list: [number, number][], fill: string): string => '<polygon points="' + pts(list) + '" fill="' + fill + '"' + edge + '/>';
+    return isoSvg(minX, minY, maxX - minX, maxY - minY,
+      poly([t3, t2, b2, b3], o.left || shade(color, -2)) +   // +y face (left-down)
+      poly([t1, t2, b2, b1], o.right || shade(color, -24)) + // +x face (right-down)
+      poly([t0, t1, t2, t3], o.top || shade(color, 30)));     // top
+  }
+
+  // A solid cylinder standing on the xy plane: radius r, height h.
+  // The top is the projected circle — an axis-aligned ellipse with
+  // rx = r * unit * sqrt(3/2), ry = r * unit * sqrt(1/2).
+  function isoCylinder(o: IsoCylinderOpts): string {
+    o = o || {};
+    const x = o.x || 0, y = o.y || 0, z = o.z || 0;
+    const r = o.r || 0.5, h = o.h == null ? 1 : o.h, unit = o.unit || 36;
+    const color = o.color || '#8A93A6';
+    const c0 = isoPt(o, x, y, z), c1 = isoPt(o, x, y, z + h);
+    const rx = r * unit * 1.2247, ry = r * unit * 0.7071;
+    const minX = c1[0] - rx, maxX = c1[0] + rx;
+    const minY = c1[1] - ry, maxY = c0[1] + ry;
+    const L = (v: number): string => (v - minX).toFixed(1);
+    const T = (v: number): string => (v - minY).toFixed(1);
+    const edge = o.stroke === 'none' ? '' : ' stroke="' + (o.stroke || shade(color, -48)) + '" stroke-width="1"';
+    const body = 'M ' + L(c1[0] - rx) + ' ' + T(c1[1]) +
+      ' L ' + L(c0[0] - rx) + ' ' + T(c0[1]) +
+      ' A ' + rx.toFixed(1) + ' ' + ry.toFixed(1) + ' 0 0 0 ' + L(c0[0] + rx) + ' ' + T(c0[1]) +
+      ' L ' + L(c1[0] + rx) + ' ' + T(c1[1]) + ' Z';
+    return isoSvg(minX, minY, maxX - minX, maxY - minY,
+      '<path d="' + body + '" fill="' + shade(color, -8) + '"' + edge + '/>' +
+      '<ellipse cx="' + L(c1[0]) + '" cy="' + T(c1[1]) + '" rx="' + rx.toFixed(1) + '" ry="' + ry.toFixed(1) +
+      '" fill="' + (o.top || shade(color, 30)) + '"' + edge + '/>');
+  }
+
+  // Painter's order for iso parts: ascending (x + y), ties by z.
+  // Parts carry their resting coords; the html may be built at an
+  // animated offset without changing the paint order.
+  function isoSort(parts: IsoPart[]): string {
+    return parts.slice()
+      .sort((a, b) => (a.x + a.y) - (b.x + b.y) || (a.z || 0) - (b.z || 0))
+      .map((p) => p.html).join('');
+  }
+
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
     paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
-    beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor,
+    beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,

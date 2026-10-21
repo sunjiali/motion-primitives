@@ -28,6 +28,14 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
   overshoot / fade). Spans are inline-block, so line layout never
   shifts while letters land.
 
+### Isometric kit (v0.26)
+- `isoBox` / `isoCylinder` / `isoSort` — native isometric solids
+  on one fixed camera (30°, no perspective): filled faces shaded
+  by orientation from a single base color (top lightest), crisp
+  edges, painter's order by (x + y) then z via isoSort. Geometry
+  is frame-pure, so compositions animate x / y / z to assemble
+  machines part by part — the anatomy direction, native.
+
 ### Platform (v0.25)
 - Page recorder (`src/record.js`): turns live web pages —
   interactive anatomy figures, WebGL demos — into MP4s. Two

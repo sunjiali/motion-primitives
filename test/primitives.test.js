@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoSort'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -309,6 +309,26 @@ test('cursor: keyframed travel, click dip and ring, visibility window', () => {
   assert.ok(!M.cursor(50, o).includes('border-radius:50%')); // ring gone by click+20
   assert.equal(M.cursor(-5, { path: [{ f: 10, x: 0, y: 0 }] }), ''); // hidden before its first key
   assert.equal(M.cursor(12, o), M.cursor(12, o)); // determinism
+});
+
+test('iso kit: box shading order, cylinder ellipse, painter sort', () => {
+  const lum = (hex) => {
+    const n = parseInt(hex.slice(1), 16);
+    return 0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255);
+  };
+  const box = M.isoBox({ x: 0, y: 0, w: 2, d: 2, h: 1, unit: 50, color: '#808080' });
+  const fills = [...box.matchAll(/fill="(#[0-9a-f]{6})"/g)].map((m) => m[1]);
+  assert.equal(fills.length, 3); // left, right, top painted in that order
+  assert.ok(lum(fills[2]) > lum(fills[0]) && lum(fills[0]) > lum(fills[1]), `tone order broken: ${fills}`);
+  assert.ok(box.includes('width="173.2"')); // (w + d) * unit * cos30
+  const cyl = M.isoCylinder({ x: 0, y: 0, r: 1, h: 2, unit: 50 });
+  assert.ok(cyl.includes('<ellipse'));
+  assert.ok(cyl.includes('rx="61.2"')); // r * unit * sqrt(3/2)
+  const sorted = M.isoSort([
+    { x: 2, y: 2, html: 'C' }, { x: 0, y: 0, html: 'A' }, { x: 1, y: 0, z: 1, html: 'B2' }, { x: 0, y: 1, html: 'B1' },
+  ]);
+  assert.equal(sorted, 'AB1B2C'); // by x+y ascending; the sum-1 tie resolves by z (B1 at z 0 before B2 at z 1)
+  assert.equal(M.isoBox({ x: 1, y: 1, color: '#808080' }), M.isoBox({ x: 1, y: 1, color: '#808080' })); // determinism
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

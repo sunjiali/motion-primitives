@@ -130,6 +130,12 @@ export function wipeReveal(frame: number, o: AtOpts & { fn?: string; html: strin
 export function confetti(frame: number, o: { at?: number; n?: number; x?: number; y?: number; power?: number; spread?: number; gravity?: number; life?: number; seed?: number; size?: number; colors?: string[] }): string;
 /** Animated mouse cursor: keyframed travel, click dip, expanding click rings. Returns an HTML string. */
 export function cursor(frame: number, o: { path: { f: number; x: number; y: number }[]; clicks?: number[]; size?: number; color?: string; ring?: string; showFrom?: number; showTo?: number }): string;
+/** Isometric solid box on the fixed iso camera; faces shaded by orientation. Returns an SVG string. */
+export function isoBox(o: { x?: number; y?: number; z?: number; ox?: number; oy?: number; unit?: number; w?: number; d?: number; h?: number; color?: string; top?: string; left?: string; right?: string; stroke?: string }): string;
+/** Isometric solid cylinder (projected-circle top ellipse). Returns an SVG string. */
+export function isoCylinder(o: { x?: number; y?: number; z?: number; ox?: number; oy?: number; unit?: number; r?: number; h?: number; color?: string; top?: string; stroke?: string }): string;
+/** Painter's-order join for iso parts: sorts by (x + y), then z, and concatenates their html. */
+export function isoSort(parts: { x: number; y: number; z?: number; html: string }[]): string;
 
 export interface SfxEvent { f: number; s: string; g?: number; pan?: number; seed?: number }
 export interface SfxScore { fps?: number; durationFrames: number; tailSec?: number; events: SfxEvent[] }
@@ -170,6 +176,9 @@ declare const Motion: {
   wipeReveal: typeof wipeReveal;
   confetti: typeof confetti;
   cursor: typeof cursor;
+  isoBox: typeof isoBox;
+  isoCylinder: typeof isoCylinder;
+  isoSort: typeof isoSort;
   Motion: typeof Motion;
   Remotion: RemotionModule;
   sfx: SfxModule;

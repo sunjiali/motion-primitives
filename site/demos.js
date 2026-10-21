@@ -261,6 +261,21 @@
       },
     },
     {
+      name: 'isoBox', desc: 'Isometric solids kit: boxes & cylinders on one fixed camera, face-shaded, sorted back to front.',
+      code: 'M.isoBox({ w, d, h }) · M.isoCylinder({ r, h })', cycle: 200,
+      draw(f) {
+        const base = { unit: 30, ox: 280, oy: 122 };
+        const drop = (at, dur) => { const p = Math.min(Math.max((f - at) / dur, 0), 1); return Math.pow(1 - p, 3) * 3.2; }; // high above rest, settles in
+        const parts = [
+          { x: -2.4, y: -1.6, html: M.isoBox({ ...base, x: -2.4, y: -1.6, z: drop(0, 16), w: 4.8, d: 3.2, h: 0.35, color: '#3E4C63' }) },
+          { x: -1.5, y: -0.7, html: M.isoCylinder({ ...base, x: -1.5, y: -0.7, z: 0.35 + drop(14, 16), r: 0.42, h: 1.5, color: '#8A93A6' }) },
+          { x: 0.4, y: -1.2, html: M.isoBox({ ...base, x: 0.4, y: -1.2, z: 0.35 + drop(28, 16), w: 1.7, d: 2.2, h: 1.05, color: '#5B7BA5' }) },
+          { x: 1.2, y: 0.4, html: M.isoCylinder({ ...base, x: 1.2, y: 0.4, z: 0.35 + drop(42, 16), r: 0.5, h: 0.5, color: '#FF8A4C' }) },
+        ];
+        return M.isoSort(parts);
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

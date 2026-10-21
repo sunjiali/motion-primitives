@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (55 functions)
+# motion-primitives API — the full catalog (58 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -453,4 +453,30 @@ M.wipeReveal(frame: number, o: AtOpts & { fn?: string; html: string; dir?: 'righ
 ```
 
 Directional wipe reveal of arbitrary HTML via an animated clip-path inset. Returns an HTML string.
+
+## Isometric kit
+
+### `isoBox`
+
+```ts
+M.isoBox(o: { x?: number; y?: number; z?: number; ox?: number; oy?: number; unit?: number; w?: number; d?: number; h?: number; color?: string; top?: string; left?: string; right?: string; stroke?: string }): string
+```
+
+Isometric solid box on the fixed iso camera; faces shaded by orientation. Returns an SVG string.
+
+### `isoCylinder`
+
+```ts
+M.isoCylinder(o: { x?: number; y?: number; z?: number; ox?: number; oy?: number; unit?: number; r?: number; h?: number; color?: string; top?: string; stroke?: string }): string
+```
+
+Isometric solid cylinder (projected-circle top ellipse). Returns an SVG string.
+
+### `isoSort`
+
+```ts
+M.isoSort(parts: { x: number; y: number; z?: number; html: string }[]): string
+```
+
+Painter's-order join for iso parts: sorts by (x + y), then z, and concatenates their html.
 

@@ -2,6 +2,30 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.26.0] — 2026-10-21
+
+### Added
+
+- **Isometric kit** — native isometric solids in the anatomy
+  tradition, on one fixed camera (30°, no perspective):
+  - `isoBox(o)` — a solid box (`w` × `d` × `h` world units) whose
+    three visible faces are shaded from one `color` by
+    orientation (top lightest), with per-face overrides and a
+    crisp derived edge stroke.
+  - `isoCylinder(o)` — a standing cylinder; its top is the true
+    projected circle (axis-aligned ellipse, rx = r·unit·√(3/2),
+    ry = r·unit·√(1/2)).
+  - `isoSort(parts)` — painter's-order join: sorts part
+    descriptors by (x + y), ties by z, concatenates their HTML.
+  Geometry is a pure function of the options (`x`, `y`, `z`,
+  `ox`, `oy`, `unit`), so a composition animates parts by varying
+  coordinates per frame — machines assemble part by part, as the
+  site demo does (six parts drop in on staggers). Skill bundle
+  synced in lockstep (API catalog now 58 functions). Verified
+  with unit tests (tone ordering, projected dimensions, ellipse
+  radii, sort order) and mid/end render stills. Site demo
+  card #32.
+
 ## [0.25.1] — 2026-10-21
 
 ### Fixed
