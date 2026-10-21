@@ -2,6 +2,24 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.18.0] — 2026-10-21
+
+### Added
+
+- `morphPoly(frame, o)` — morph between two raw polygon point sets
+  (`from` / `to` as `[[x, y], ...]` in local coordinates, placed at
+  `x` / `y`, optional `rot`): the unboxed engine behind morphShape,
+  for paper-pack shape-morph transitions and any custom silhouette.
+  Points pair index-by-index; when counts differ, the shorter
+  polygon's longest edges are split at their midpoints until counts
+  match, so every caller vertex survives subdivision. Pairing
+  quality depends on listing both sets in the same rotational order
+  from a similar start point — the render-still gate caught exactly
+  that mistake in this release's first demo data (mid-morph
+  collapse), fixed by re-ordering the points. Verified with unit
+  tests (exact endpoints, subdivision, vertex survival) and
+  mid/end stills. Site demo card #26 (pentagon ⇄ house).
+
 ## [0.17.0] — 2026-10-21
 
 ### Added

@@ -846,10 +846,54 @@ __root.Motion = (function () {
             out.push(Math.round((o.at || 0) + i * fpb));
         return out;
     }
+    // morphPoly — morphShape's raw engine for arbitrary polygons:
+    // interpolate between two point sets ([[x, y], ...], local coords,
+    // placed at o.x/o.y). Point sets pair index-by-index; when counts
+    // differ, the shorter polygon's longest edges are split at their
+    // midpoints until counts match, so every caller vertex survives.
+    // Progress clamps like morphShape (holds `from` / `to` outside the
+    // window). Pairing quality depends on the caller listing both sets
+    // in the same rotational order from a similar start point.
+    function morphPoly(frame, o) {
+        o = o || {};
+        const even = (pts, n) => {
+            const out = pts.slice();
+            while (out.length < n) {
+                let bi = 0, bl = -1;
+                for (let i = 0; i < out.length; i++) {
+                    const a = out[i], b = out[(i + 1) % out.length];
+                    const L = Math.hypot(b[0] - a[0], b[1] - a[1]);
+                    if (L > bl) {
+                        bl = L;
+                        bi = i;
+                    }
+                }
+                const a = out[bi], b = out[(bi + 1) % out.length];
+                out.splice(bi + 1, 0, [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]);
+            }
+            return out;
+        };
+        const n = Math.max(o.from.length, o.to.length);
+        const A = even(o.from, n), B = even(o.to, n);
+        const p = (Easing[o.fn || 'cubicInOut'] || Easing.cubicInOut)(clamp01((frame - (o.at || 0)) / (o.dur || 40)));
+        const rot = ((o.rot || 0) * Math.PI) / 180;
+        const cr = Math.cos(rot), sr = Math.sin(rot);
+        const cx = o.x || 0, cy = o.y || 0;
+        const pts = [];
+        for (let k = 0; k < n; k++) {
+            const x = A[k][0] + (B[k][0] - A[k][0]) * p;
+            const y = A[k][1] + (B[k][1] - A[k][1]) * p;
+            pts.push((cx + x * cr - y * sr).toFixed(1) + ',' + (cy + x * sr + y * cr).toFixed(1));
+        }
+        return '<svg style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none;">' +
+            '<polygon points="' + pts.join(' ') + '" fill="' + (o.color || '#3E7CB1') + '"' +
+            (o.stroke ? ' stroke="' + o.stroke + '" stroke-width="' + (o.strokeWidth == null ? 3 : o.strokeWidth) + '" stroke-linejoin="round"' : '') +
+            '/></svg>';
+    }
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
         paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
-        beatGrid, beatFrames,
+        beatGrid, beatFrames, morphPoly,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, meshBg, drawOn, poly, bars,
         scramble, kenBurns, breathe, fx, hash,

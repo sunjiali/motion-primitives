@@ -11,6 +11,12 @@ TypeScript refactor — all sources are strict-mode `.ts`, compiled by
 `tsc` to the same committed JavaScript (no behavior change; CI
 build-freshness gate). No new effects this round.
 
+### Paper-cut pack, morphs (v0.18)
+- `morphPoly` — interpolate between two raw polygon point sets
+  (index-paired; uneven counts subdivided at longest-edge midpoints
+  so caller vertices survive). The unboxed engine behind
+  morphShape, for paper-pack shape-morph transitions.
+
 ### Music (v0.17)
 - `beatGrid` / `beatFrames` — BPM grid tools: `beatGrid` reports a
   frame's beat index, phase, decay pulse and bar position;
@@ -97,7 +103,8 @@ whole v0.3 stack).
   value), optionally step-quantized for stiffness.
 - `stepped(frame, {steps})` — eased progress snapped to N levels;
   `onTwos(frame, {every})` — frame snap (shot-on-twos) for whole scenes.
-  Pack remainder (morphPoly, parallax) still in the style-pack backlog.
+  Pack remainder: parallax still in the style-pack backlog
+  (morphPoly shipped in v0.18).
 
 ### Motion blur (v0.5)
 - `smear(frame, {from, to, arc, samples, span, opacity, fullAt})` — exposure
@@ -141,7 +148,6 @@ The look is fully procedural and fits this pipeline:
 
 Primitives to build for it:
 - `paperEl` / `pivot` / `stepped` (+ `onTwos`) — shipped in v0.6
-- `morphPoly` — interpolate between two polygon point sets (same count)
 - `parallax` — depth-layer offsets from one camera move (pairs with `camera`)
 
 ## Backlog (next rounds, roughly in order)

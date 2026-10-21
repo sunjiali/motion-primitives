@@ -185,6 +185,22 @@
       },
     },
     {
+      name: 'morphPoly', desc: 'Morph between two raw polygon point sets — the engine behind morphShape, unboxed.',
+      code: 'M.morphPoly(frame, { from: penta, to: house })', cycle: 150,
+      draw(f) {
+        const penta = [0, 1, 2, 3, 4].map((k) => {
+          const a = (-90 + k * 72) * Math.PI / 180;
+          return [Math.cos(a) * 82, Math.sin(a) * 82];
+        });
+        const house = [[0, -72], [58, -18], [58, 62], [-58, 62], [-58, -18]];
+        const go = f < 75;
+        return M.morphPoly(f, {
+          from: go ? penta : house, to: go ? house : penta,
+          at: go ? 14 : 89, dur: 44, x: 280, y: 122, color: C.blue,
+        }) + '<div style="position:absolute;left:0;right:0;top:216px;text-align:center;font:600 13px ui-monospace,Menlo,monospace;color:#8A7D68;letter-spacing:.22em;">PENTAGON ⇄ HOUSE</div>';
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

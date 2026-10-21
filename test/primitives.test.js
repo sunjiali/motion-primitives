@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -224,6 +224,22 @@ test('beat tools: grid math, phase, pulse decay, bars, frame generation', () => 
   assert.deepEqual([pre.index, pre.inBar], [-1, 3]);
   assert.deepEqual(M.beatFrames({ bpm: 120, fps: 30, at: 10, count: 4 }), [10, 25, 40, 55]);
   assert.deepEqual(M.beatFrames({ bpm: 128, fps: 30, count: 4 }), [0, 14, 28, 42]); // 14.0625 fpb, rounded
+});
+
+test('morphPoly: exact endpoints, uneven counts subdivided, caller vertices survive', () => {
+  const sq = [[0, 0], [100, 0], [100, 100], [0, 100]];
+  const di = [[50, -20], [120, 50], [50, 120], [-20, 50]];
+  const o = { from: sq, to: di, at: 0, dur: 20 };
+  const pts = (h) => h.match(/points="([^"]+)"/)[1].trim().split(/\s+/);
+  assert.deepEqual(pts(M.morphPoly(0, o)), ['0.0,0.0', '100.0,0.0', '100.0,100.0', '0.0,100.0']);
+  assert.deepEqual(pts(M.morphPoly(20, o)), ['50.0,-20.0', '120.0,50.0', '50.0,120.0', '-20.0,50.0']);
+  const tri = [[0, 0], [90, 0], [45, 80]];
+  const o2 = { from: tri, to: sq, at: 0, dur: 20 };
+  const start = pts(M.morphPoly(0, o2));
+  assert.equal(start.length, 4); // 3 -> 4 via longest-edge split
+  for (const v of ['0.0,0.0', '90.0,0.0', '45.0,80.0']) assert.ok(start.includes(v), `vertex ${v} survives`);
+  assert.deepEqual(pts(M.morphPoly(20, o2)), ['0.0,0.0', '100.0,0.0', '100.0,100.0', '0.0,100.0']);
+  assert.equal(M.morphPoly(10, o), M.morphPoly(10, o)); // determinism
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {
