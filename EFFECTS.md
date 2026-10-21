@@ -27,6 +27,17 @@ slow zoom/pan · `breathe` idle micro-motion · `fx` film grain + vignette ·
 Showcase: `src/compositions/fx-showcase.js` (dark premium reel using the
 whole v0.3 stack).
 
+### Sound (v0.4) — `src/sfx.js`
+Deterministic SFX synthesizer: pure math in, 16-bit WAV out, zero audio
+assets, seeded noise only (same score → identical file, hash-verified).
+Ten synthesized sounds: `pop` `bloop` `ting` `whoosh` `thump` `inhale`
+`glide` `shimmer` `swell` `chord`. Scores are JSON event lists written
+against video frames (`src/compositions/<name>.sfx.json`); by house rule
+each sound lands **one frame after** its visual. Recipes follow the
+«Opus 5.5 Motion Lab» write-up (pentatonic event sounds, thumps on
+landings, sparkle on reveals). First score: fx-showcase (19 events,
+RMS-verified alignment, silent gaps are truly silent).
+
 ## Style pack backlog: paper-cut collage
 
 Reference: a paper-cut collage brand film («Paper Cuts», ~60s) seen in an
@@ -63,13 +74,9 @@ Primitives to build for it:
 - `particleField` — ambient drifting particle layer (stars/dust/snow)
 - `morphShape` — shape A→B morph (circle→star→heart…) for icons
 - `glitch` — RGB-split glitch transition (short, tasteful)
-- SFX synth kit — deterministic WAV one-shots (pop/whoosh/thump) + `--sfx` mixing.
-  Recipes validated by @flxrnc's «Opus 5.5 Motion Lab» article (Web Audio,
-  all synthesized): lay a BPM grid first (their pieces run 120 BPM), one
-  event sound per visual event landing **1 frame after** the picture
-  (squash inhale, stretch glide, droplet bloops, metal ting, stereo
-  shimmer, liquid swell); no voice needed for short loops.
-- Beat tools — BPM/beat detection for music-synced cuts (from code-video-director beats.py)
+- Beat tools — BPM/beat detection for music-synced cuts (from code-video-director beats.py);
+  pairs with the v0.4 SFX kit (scores are frame-based today; a BPM grid
+  generator is the missing half for music-first pieces)
 - (Future track, not committed) WebGL/three.js liquid-metal logo sting —
   the Motion Lab opener is raymarched SDF chrome with smooth-min blending;
   out of scope for this 2D stack, revisit only if a 3D need appears.

@@ -2,6 +2,19 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.4.0] — 2026-10-21
+
+### Added
+- `src/sfx.js`: deterministic SFX synthesizer — ten code-only sounds
+  (pop / bloop / ting / whoosh / thump / inhale / glide / shimmer /
+  swell / chord), frame-based JSON scores, seeded noise, the
+  sound-lands-one-frame-after-the-visual rule. Same score renders a
+  bit-identical WAV every time (SHA-256 verified).
+- `fx-showcase.sfx.json`: a 19-event score for the advanced reel
+  (D-major pentatonic throughout); the site copy of fx-showcase now
+  plays with its synthesized soundtrack, RMS-verified alignment
+  (event windows ≈ −12…−17 dB, gaps at digital silence).
+
 ## [0.3.0] — 2026-10-20
 
 ### Added
