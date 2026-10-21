@@ -51,6 +51,24 @@ Or use it in the browser with plain script tags — no build step:
 `src/lib/animation.js` then `src/lib/primitives.js` gives you
 `window.Motion` (alias `window.M`).
 
+## Install as an agent skill
+
+Want your AI agent to make the videos for you? The `skill/` folder
+in this repo (also a zip on the
+[releases page](https://github.com/sunjiali/motion-primitives/releases))
+is a self-contained agent skill — bundled runtime, environment
+doctor, an annotated example, and the full API catalog:
+
+1. Copy `skill/` into your agent's skills directory
+   (Claude Code: `~/.claude/skills/motion/`, Codex:
+   `~/.codex/skills/motion/`).
+2. `cd` there and run `npm install` once (one dependency:
+   puppeteer-core), then `node scripts/doctor.mjs`.
+3. Ask your agent for a video — it follows `skill/SKILL.md`.
+
+Requirements: Node.js ≥ 18, Chrome/Chromium, ffmpeg. See
+`skill/README.md` for the full guide.
+
 ## Quick start (from the repo)
 
 ```bash

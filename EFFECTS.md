@@ -6,6 +6,16 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Platform (v0.20)
+- Installable skill bundle (`skill/`): self-contained agent skill —
+  SKILL.md playbook, vendored runtime synced from the build (drift
+  is a CI failure), Chrome-detecting launchers, an environment
+  doctor, an annotated example with its SFX score, and an API
+  catalog generated from index.d.ts. Verified by a clean-room
+  install simulation (fresh folder -> npm install -> doctor ->
+  still -> scored 90-frame MP4). Ships as a release zip; the npm
+  package remains the library channel.
+
 ### Platform (v0.11)
 TypeScript refactor — all sources are strict-mode `.ts`, compiled by
 `tsc` to the same committed JavaScript (no behavior change; CI

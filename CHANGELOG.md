@@ -2,6 +2,34 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.20.0] — 2026-10-21
+
+### Added
+
+- **Installable agent skill** (`skill/`, also a zip on the release):
+  install the folder into an agent's skills directory and the agent
+  can make motion videos end to end. Contents: `SKILL.md` (the
+  playbook — workflow, hard rules, quickstart), a vendored runtime
+  synced from the build (`runtime/` — library, renderer, player,
+  SFX engine, types), launchers that auto-detect Chrome
+  (`scripts/render.mjs`, `scripts/sfx.mjs`), an environment doctor
+  (`scripts/doctor.mjs`), the annotated `hello-motion` example with
+  its sound score, and references (an API catalog generated from
+  `index.d.ts`, the teaching STYLE guide). One dependency
+  (puppeteer-core), one `npm install`, no npm package or assets
+  required. Skill and library versions move in lockstep.
+
+### Changed
+
+- New repo tooling: `scripts/sync-skill.mjs` (refresh the vendored
+  runtime) and `scripts/gen-api-doc.mjs` (regenerate the catalog).
+  `test/skill.test.js` pins the bundle: synced files byte-match
+  their sources, the catalog covers every export, the example score
+  parses — drift is now a CI failure, same discipline as the site
+  mirror. Verified end to end by a clean-room simulation: fresh
+  folder → `npm install` → doctor (5/5) → still → scored render
+  (exactly 90 frames + AAC, 3.000 s).
+
 ## [0.19.1] — 2026-10-21
 
 ### Fixed
