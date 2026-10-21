@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (75 functions)
+# motion-primitives API — the full catalog (76 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -282,6 +282,22 @@ M.splitText(frame: number, o: AtOpts & { fn?: string; text: string; x?: number; 
 
 Split-text entrance: every character animates in on its own stagger (rise / pop / fade). Returns an HTML string.
 
+### `assembleText`
+
+```ts
+M.assembleText(frame: number, o: { text: string; at?: number; dur?: number; x?: number; y?: number; size?: number; color?: string; seed?: number; mode?: string; weight?: number }): string
+```
+
+Glyphs fly in from a hash scatter to their typeset slots (mode 'out' disperses). Returns a positioned div.
+
+### `charGrid`
+
+```ts
+M.charGrid(frame: number, o: { cols?: number; rows?: number; size?: number; x?: number; y?: number; chars?: string; color?: string; accent?: string; seed?: number; interval?: number }): string
+```
+
+A living wall of glyphs: every cell flips character at hash-staggered intervals. Returns a positioned div.
+
 ## Shapes & drawing
 
 ### `dot`
@@ -541,14 +557,6 @@ M.pixelDissolve(frame: number, o: { at?: number; dur?: number; w?: number; h?: n
 ```
 
 Mosaic scene transition: a grid of flat cells in the outgoing colour flips away at hash-staggered frames. Returns an overlay div ('' once dissolved).
-
-### `charGrid`
-
-```ts
-M.charGrid(frame: number, o: { cols?: number; rows?: number; size?: number; x?: number; y?: number; chars?: string; color?: string; accent?: string; seed?: number; interval?: number }): string
-```
-
-A living wall of glyphs: every cell flips character at hash-staggered intervals. Returns a positioned div.
 
 ## Isometric kit
 

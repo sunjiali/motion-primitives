@@ -610,6 +610,40 @@ __root.Motion = (function () {
         return '<div style="position:absolute;left:' + (o.x || 0) + 'px;top:' + (o.y || 0) + 'px;font-family:ui-monospace,Menlo,monospace;font-size:' +
             size + 'px;line-height:1.25;white-space:nowrap;">' + spans + '</div>';
     }
+    // assembleText(): glyphs fly in from a hash scatter to their
+    // typeset slots, staggered letter by letter, untwisting as
+    // they land — splitText's travelling sibling. mode 'out'
+    // plays it in reverse (the sentence disperses). Monospace
+    // advance, so it suits type-led layouts. From the X sweep
+    // (@antonin.work's flying letters).
+    function assembleText(frame, o) {
+        o = o || {};
+        const text = o.text || '', at = o.at || 0, dur = o.dur || 22;
+        const size = o.size || 48, seed = o.seed || 1;
+        const out = o.mode === 'out';
+        const adv = size * 0.62;
+        let spans = '';
+        for (let i = 0; i < text.length; i++) {
+            const ch = text.charAt(i);
+            if (ch === ' ') {
+                spans += '<span style="display:inline-block;width:' + adv.toFixed(1) + 'px;"></span>';
+                continue;
+            }
+            let p = clamp01((frame - at - i * 2) / dur);
+            if (out)
+                p = 1 - p;
+            const e = 1 - Math.pow(1 - p, 3);
+            const ang = hash(seed * 17 + i * 3.1) * Math.PI * 2;
+            const dist = 130 + hash(seed * 23 + i * 7.7) * 280;
+            const dx = Math.cos(ang) * dist * (1 - e), dy = Math.sin(ang) * dist * 0.72 * (1 - e);
+            const rot = (hash(seed * 31 + i * 5.3) - 0.5) * 160 * (1 - e);
+            spans += '<span style="display:inline-block;width:' + adv.toFixed(1) + 'px;text-align:center;transform:translate(' +
+                dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px) rotate(' + rot.toFixed(1) + 'deg);opacity:' + (0.15 + 0.85 * p).toFixed(2) + ';">' +
+                (ch === '<' ? '&lt;' : ch === '&' ? '&amp;' : ch) + '</span>';
+        }
+        return '<div style="position:absolute;left:' + (o.x || 0) + 'px;top:' + (o.y || 0) + 'px;font-family:ui-monospace,Menlo,monospace;font-size:' +
+            size + 'px;font-weight:' + (o.weight || 700) + ';color:' + (o.color || '#E8E4DA') + ';white-space:nowrap;">' + spans + '</div>';
+    }
     // shake(): decaying screen shake {x, y} inside [at, at+dur].
     function shake(frame, o) {
         o = o || {};
@@ -1607,7 +1641,7 @@ __root.Motion = (function () {
     }
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, pixelDissolve, charGrid, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
+        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
         beatGrid, beatFrames, inertia, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoSort,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

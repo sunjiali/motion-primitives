@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -478,6 +478,16 @@ test('charGrid: full glyph wall that reshuffles over time', () => {
   assert.equal((g.match(/<span/g) || []).length, 18);
   assert.equal(M.charGrid(0, o), g); // frame-pure
   assert.notEqual(M.charGrid(60, o), g); // steps advance, wall changes
+});
+
+test('assembleText: scattered at the start, typeset at the end', () => {
+  const o = { text: 'FLY IN', at: 10, dur: 20 };
+  const early = M.assembleText(10, o);
+  assert.ok(!early.includes('translate(0.0px,0.0px) rotate(0.0deg);opacity:1.00'));
+  const landed = M.assembleText(200, o);
+  assert.equal((landed.match(/translate\(0\.0px,0\.0px\)/g) || []).length, 5); // 5 non-space glyphs home
+  const scattered = M.assembleText(200, { ...o, mode: 'out' });
+  assert.ok(!scattered.includes('translate(0.0px,0.0px)')); // out mode disperses again
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

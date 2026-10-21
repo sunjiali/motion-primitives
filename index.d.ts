@@ -126,6 +126,8 @@ export function matchCut(frame: number, o: { at?: number; out?: number }): { pha
 export function pixelDissolve(frame: number, o: { at?: number; dur?: number; w?: number; h?: number; cols?: number; rows?: number; color?: string; seed?: number }): string;
 /** A living wall of glyphs: every cell flips character at hash-staggered intervals. Returns a positioned div. */
 export function charGrid(frame: number, o: { cols?: number; rows?: number; size?: number; x?: number; y?: number; chars?: string; color?: string; accent?: string; seed?: number; interval?: number }): string;
+/** Glyphs fly in from a hash scatter to their typeset slots (mode 'out' disperses). Returns a positioned div. */
+export function assembleText(frame: number, o: { text: string; at?: number; dur?: number; x?: number; y?: number; size?: number; color?: string; seed?: number; mode?: string; weight?: number }): string;
 /** 3D flip entrance with overshoot settle. Returns a CSS style string. */
 export function flipIn(frame: number, o?: AtOpts & { axis?: 'X' | 'Y'; from?: number; perspective?: number }): string;
 /** Odometer digit roll from one integer to another. Returns an HTML string. */
@@ -207,6 +209,7 @@ declare const Motion: {
   beatGrid: typeof beatGrid; beatFrames: typeof beatFrames; inertia: typeof inertia;
   morphPoly: typeof morphPoly;
   splitText: typeof splitText;
+  assembleText: typeof assembleText;
   wipeReveal: typeof wipeReveal;
   confetti: typeof confetti;
   cursor: typeof cursor;

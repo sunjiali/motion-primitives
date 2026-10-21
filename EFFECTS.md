@@ -261,9 +261,7 @@ what the posts showed at sweep time):
   hash delays while cell size swells mid-transition; the orderly
   counterpart to glitch. (@webflow pixelated transition demo.)
 - ~~`charGrid`~~ — shipped in v0.43.
-- `assembleText` — glyphs fly in from hash scatter to their
-  typeset slots (and disperse in reverse): splitText's travelling
-  sibling. (@antonin.work, 28K likes.)
+- ~~`assembleText`~~ — shipped in v0.44.
 - `textOnPath` — a whole string typeset along an SVG path by arc
   length, tangent-rotated, with a flowing offset: kinetic-type
   titles and circular badges. (@holke79 carousel.)

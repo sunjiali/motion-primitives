@@ -424,6 +424,16 @@
       },
     },
     {
+      name: 'assembleText', desc: 'Letters fly in from a scatter and land typeset — then disperse.',
+      code: "M.assembleText(frame, { text, mode })", cycle: 190,
+      draw(f) {
+        const lf = f % 190;
+        const mode = lf > 120 ? 'out' : 'in';
+        const local = mode === 'out' ? lf - 120 : lf;
+        return M.assembleText(local, { text: 'ASSEMBLE', at: 12, dur: 26, x: 88, y: 118, size: 62, color: '#E8E4DA', seed: 2, mode });
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

@@ -2,6 +2,18 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.44.0] — 2026-10-21
+
+### Added
+
+- `assembleText(frame, o)` — glyphs fly in from a hash scatter
+  to their typeset slots, staggered letter by letter, untwisting
+  as they land; mode 'out' disperses the sentence again.
+  splitText's travelling sibling, from the 2026-10-21 X sweep
+  (@antonin.work's flying letters). Also in this release:
+  charGrid's API-doc group moves to Text & numbers. Skill bundle
+  synced (API catalog now 76 functions); site demo card #45.
+
 ## [0.43.0] — 2026-10-21
 
 ### Added
