@@ -274,6 +274,7 @@
           { x: -1.9, y: 0.55, html: M.isoWedge({ ...base, x: -1.9, y: 0.55, z: 0.35 + drop(56, 16), len: 1.5, d: 1.0, h: 0.5, color: '#7A8699' }) },
         ];
         parts.push({ x: 2.0, y: 1.15, html: M.isoGear({ ...base, x: 2.0, y: 1.15, z: 0.35, r: 0.52, h: 0.3, teeth: 9, rot: f * 0.03, color: '#B08D57' }) });
+        parts.push({ x: 0.35, y: 1.15, html: M.isoCone({ ...base, x: 0.35, y: 1.15, z: 0.35, r: 0.32, h: 0.85, color: '#C96F4A' }) });
         if (f > 64) { // the pipe run goes on last, floating down onto its ports
           const lift = drop(72, 14) * 0.5;
           parts.push({ x: 9, y: 9, html: M.isoPipe({ ...base, r: 0.13, color: '#9AA7BD', path: [

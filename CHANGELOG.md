@@ -2,6 +2,19 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.37.0] — 2026-10-21
+
+### Added
+
+- `isoCone(o)` — an isometric cone: the silhouette lines are
+  the true tangents from the apex to the projected base ellipse
+  (chord-of-contact geometry), the front arc closes the base,
+  and the surface shades in two halves — lighter left, darker
+  right. Funnels, nozzles, spikes. Skill bundle synced (API
+  catalog now 69 functions); the site iso machine gains a cone.
+  First still caught a flipped arc sweep (kite, not cone) —
+  fixed to the cylinder's front-arc convention and re-verified.
+
 ## [0.36.0] — 2026-10-21
 
 ### Added

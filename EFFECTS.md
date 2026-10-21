@@ -28,9 +28,11 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
   overshoot / fade). Spans are inline-block, so line layout never
   shifts while letters land.
 
-### Isometric kit (v0.26–0.36)
+### Isometric kit (v0.26–0.37)
 - `isoGear` (v0.36) — gear: cylinder body, teeth on the rim
   ellipse, hub hole and face bolts; `rot` animates the turn.
+- `isoCone` (v0.37) — cone: true tangent silhouettes from the
+  apex to the base ellipse, two-tone side shading.
 - `isoWedge` (v0.27) — triangular prism: high edge at x, slope
   descending along +x, two visible faces (slope + side triangle).
 - `isoPipe` (v0.28) — pipe runs through world points: constant
@@ -237,9 +239,7 @@ top, one per round:
 - ~~`isoGear`~~ — shipped in v0.36 (teeth on the projected rim
   ellipse riding the mid-plane so tips clear both rim arcs,
   tangent-rotated; hub hole + face bolts; `rot` turns it).
-- `isoCone` — a cone on the iso camera: top point above a
-  projected-circle base ellipse, two silhouette lines, side
-  shaded in two halves. Funnels, nozzles, spikes.
+- ~~`isoCone`~~ — shipped in v0.37.
 - `isoBolt` — a bolt/screw: hex head (short 6-gon prism via
   polygon extrusion in iso) + short cylinder shaft; pairs with
   isoGear for assembly scenes. Simpler fallback: hex-head as a

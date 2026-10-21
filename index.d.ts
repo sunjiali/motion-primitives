@@ -154,6 +154,8 @@ export function isoWedge(o: { x?: number; y?: number; z?: number; ox?: number; o
 export function isoPipe(o: { ox?: number; oy?: number; unit?: number; path: number[][]; r?: number; color?: string }): string;
 /** Isometric gear: cylinder body, teeth on the projected rim ellipse, hub hole and face bolts; `rot` turns it. Returns SVG strings. */
 export function isoGear(o: { x?: number; y?: number; z?: number; ox?: number; oy?: number; unit?: number; r?: number; h?: number; teeth?: number; rot?: number; color?: string; top?: string; stroke?: string }): string;
+/** Isometric cone: true tangent silhouettes to the base ellipse, two-tone side shading. Returns an SVG string. */
+export function isoCone(o: { x?: number; y?: number; z?: number; ox?: number; oy?: number; unit?: number; r?: number; h?: number; color?: string; stroke?: string }): string;
 /** Painter's-order join for iso parts: sorts by (x + y), then z, and concatenates their html. */
 export function isoSort(parts: { x: number; y: number; z?: number; html: string }[]): string;
 
@@ -201,6 +203,7 @@ declare const Motion: {
   isoWedge: typeof isoWedge;
   isoPipe: typeof isoPipe;
   isoGear: typeof isoGear;
+  isoCone: typeof isoCone;
   isoSort: typeof isoSort;
   Motion: typeof Motion;
   Remotion: RemotionModule;

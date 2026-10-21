@@ -1386,6 +1386,34 @@ __root.Motion = (function () {
             '<ellipse cx="0" cy="0" rx="' + (rx * 0.2).toFixed(1) + '" ry="' + (ry * 0.2).toFixed(1) + '" fill="' + shade(color, -64) + '"/></svg>';
         return isoSvg(minX, minY, W, H, teethSvg) + isoCylinder({ ...o, r, h }) + face;
     }
+    // A cone on the iso camera: apex above a projected-circle
+    // base. The silhouette lines are the true tangents from the
+    // apex to the base ellipse (chord-of-contact: the tangent
+    // points sit at y = -ry^2 / d for apex distance d), the front
+    // arc closes the base, and the surface shades in two halves —
+    // lighter left, darker right.
+    function isoCone(o) {
+        o = o || {};
+        const x = o.x || 0, y = o.y || 0, z = o.z || 0;
+        const r = o.r || 0.6, h = o.h == null ? 1.2 : o.h, unit = o.unit || 36;
+        const color = o.color || '#8A93A6';
+        const c0 = isoPt(o, x, y, z), apex = isoPt(o, x, y, z + h);
+        const rx = r * unit * 1.2247, ry = r * unit * 0.7071;
+        const d = h * unit;
+        const yt = d > ry ? -ry * ry / d : 0; // tangent-point y relative to the base centre
+        const xt = rx * Math.sqrt(Math.max(0, 1 - (yt * yt) / (ry * ry)));
+        const lt = [c0[0] - xt, c0[1] + yt], rt = [c0[0] + xt, c0[1] + yt];
+        const bot = [c0[0], c0[1] + ry];
+        const minX = c0[0] - rx, maxX = c0[0] + rx, minY = apex[1], maxY = c0[1] + ry;
+        const L = (v) => (v - minX).toFixed(1);
+        const T = (v) => (v - minY).toFixed(1);
+        const arc = (to) => ' A ' + rx.toFixed(1) + ' ' + ry.toFixed(1) + ' 0 0 0 ' + L(to[0]) + ' ' + T(to[1]); // sweep 0: the front arc, same as isoCylinder
+        const edge = o.stroke === 'none' ? '' : ' stroke="' + (o.stroke || shade(color, -48)) + '" stroke-width="1" stroke-linejoin="round"';
+        const leftHalf = 'M ' + L(apex[0]) + ' ' + T(apex[1]) + ' L ' + L(lt[0]) + ' ' + T(lt[1]) + arc(bot) + ' Z';
+        const rightHalf = 'M ' + L(apex[0]) + ' ' + T(apex[1]) + ' L ' + L(bot[0]) + ' ' + T(bot[1]) + arc(rt) + ' Z';
+        return isoSvg(minX, minY, maxX - minX, maxY - minY, '<path d="' + leftHalf + '" fill="' + shade(color, 4) + '"' + edge + '/>' +
+            '<path d="' + rightHalf + '" fill="' + shade(color, -20) + '"' + edge + '/>');
+    }
     // Painter's order for iso parts: ascending (x + y), ties by z.
     // Parts carry their resting coords; the html may be built at an
     // animated offset without changing the paint order.
@@ -1397,7 +1425,7 @@ __root.Motion = (function () {
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
         paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
-        beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoSort,
+        beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoSort,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
         scramble, kenBurns, breathe, fx, hash,
