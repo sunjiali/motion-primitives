@@ -340,6 +340,15 @@
       },
     },
     {
+      name: 'waveLine', desc: 'Scrolling sine wave — voice, signal and divider duty, with a centre-swell taper.',
+      code: 'M.waveLine(frame, { x, y, w, amp, wl, taper })', cycle: 200,
+      draw(f) {
+        const amp = 13 + 9 * Math.sin(f * 0.09);
+        return '<div style="position:absolute;left:130px;top:52px;font:700 13px system-ui;letter-spacing:3px;color:#8A93A6;">SIGNAL</div>' +
+          M.waveLine(f, { x: 130, y: 118, w: 300, amp, wl: 76, speed: 0.22, taper: 0.65, color: '#5B7BA5', width: 3.5 });
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

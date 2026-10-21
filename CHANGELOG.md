@@ -2,6 +2,17 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.34.0] — 2026-10-21
+
+### Added
+
+- `waveLine(frame, o)` — an animated sine wave line: the phase
+  scrolls with the frame, `wl` sets the wavelength, and `taper`
+  mixes in a sine window so the wave swells in the middle and
+  settles at the ends. Voice/audio visuals, dividers, signal
+  motifs. Skill bundle synced (API catalog now 66 functions);
+  site demo card #38.
+
 ## [0.33.0] — 2026-10-21
 
 ### Added

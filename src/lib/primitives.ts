@@ -65,6 +65,10 @@ interface HighlightBoxOpts {
   at?: number; dur?: number; color?: string; width?: number;
   pad?: number; wobble?: number; seed?: number;
 }
+interface WaveLineOpts {
+  x?: number; y?: number; w?: number; amp?: number; wl?: number;
+  speed?: number; color?: string; width?: number; taper?: number;
+}
 interface OrbitOpts {
   cx?: number; cy?: number; r?: number; speed?: number; phase?: number;
   squash?: number; depth?: boolean;
@@ -563,6 +567,29 @@ __root.Motion = (function () {
       '"><path d="' + d + '" fill="none" stroke="' + (o.color || '#FF8A4C') +
       '" stroke-width="' + (o.width || 3) + '" stroke-linecap="round" stroke-dasharray="' + per.toFixed(1) +
       '" stroke-dashoffset="' + off.toFixed(1) + '"/></svg>';
+  }
+
+  // waveLine(): an animated sine wave line — the phase scrolls
+  // with the frame. `wl` is the wavelength in px, `taper` (0..1)
+  // mixes in a sin window so the wave swells in the middle and
+  // settles at the ends. Voice/audio visuals, dividers, signals.
+  function waveLine(frame: number, o: WaveLineOpts): string {
+    o = o || {};
+    const w = o.w || 300, amp = o.amp == null ? 10 : o.amp;
+    const wl = o.wl || 90, speed = o.speed == null ? 0.18 : o.speed;
+    const taper = o.taper || 0;
+    const cx = o.x || 0, cy = o.y || 0;
+    const step = 4;
+    let d = '';
+    for (let px = 0; px <= w; px += step) {
+      const t = px / w;
+      const win = (1 - taper) + taper * Math.sin(Math.PI * t);
+      const yy = cy + Math.sin((px / wl) * Math.PI * 2 + frame * speed) * amp * win;
+      d += (px === 0 ? 'M ' : ' L ') + (cx + px).toFixed(1) + ' ' + yy.toFixed(1);
+    }
+    return '<svg style="position:absolute;left:0;top:0;" width="100%" height="100%"><path d="' + d +
+      '" fill="none" stroke="' + (o.color || '#5B7BA5') + '" stroke-width="' + (o.width || 3) +
+      '" stroke-linecap="round"/></svg>';
   }
 
   // shake(): decaying screen shake {x, y} inside [at, at+dur].
@@ -1449,7 +1476,7 @@ __root.Motion = (function () {
 
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
     beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -393,6 +393,17 @@ test('highlightBox: draw-on progress from full offset to zero', () => {
   assert.ok(off(before) >= off(start) && off(start) > off(mid) && off(mid) > off(done));
   assert.equal(off(done), 0); // fully drawn at at + dur
   assert.equal(M.highlightBox(9, { x: 1, y: 2, w: 30, h: 12, seed: 4 }), M.highlightBox(9, { x: 1, y: 2, w: 30, h: 12, seed: 4 })); // wobble is deterministic
+});
+
+test('waveLine: phase scrolls, amplitude bounded, taper settles the ends', () => {
+  const ys = (s) => [...s.matchAll(/ L [\d.]+ (-?[\d.]+)/g)].map((m) => parseFloat(m[1]));
+  const w0 = M.waveLine(0, { x: 0, y: 100, w: 96, amp: 10, wl: 48, speed: 0.3 });
+  const w1 = M.waveLine(5, { x: 0, y: 100, w: 96, amp: 10, wl: 48, speed: 0.3 });
+  assert.notEqual(w0, w1); // phase moved
+  assert.ok(ys(w0).every((v) => Math.abs(v - 100) <= 10.01)); // never exceeds amp
+  const tapered = M.waveLine(0, { x: 0, y: 100, w: 96, amp: 10, wl: 48, taper: 1 });
+  const startY = parseFloat(tapered.match(/M [\d.]+ (-?[\d.]+)/)[1]);
+  assert.ok(Math.abs(startY - 100) < 0.01); // the start point settles to the centre line at full taper
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

@@ -229,9 +229,7 @@ top, one per round:
 - ~~`marchingAnts`~~ — shipped in v0.32 (rect form).
 - ~~`highlightBox`~~ — shipped in v0.33 (standalone primitive,
   not a drawOn preset — the wobble + pad ergonomics earned it).
-- `waveLine` — animated sine wave line (SVG path, phase scrolls):
-  voice/audio visuals, dividers, "signal" motifs. Options for
-  amplitude envelope so it can swell on a beatGrid pulse.
+- ~~`waveLine`~~ — shipped in v0.34.
 - `spotlight` — radial mask that punches a lit hole in a dimmed
   stage and can travel between points (reuse camPose-style keys):
   focus-the-eye for walkthroughs; pairs with cursor.

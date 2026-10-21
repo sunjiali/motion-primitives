@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (65 functions)
+# motion-primitives API — the full catalog (66 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -411,6 +411,14 @@ M.highlightBox(frame: number, o: { x?: number; y?: number; w: number; h: number;
 ```
 
 Hand-drawn-feeling highlight box that sketches itself around a region over dur frames. Returns an SVG string.
+
+### `waveLine`
+
+```ts
+M.waveLine(frame: number, o: { x?: number; y?: number; w?: number; amp?: number; wl?: number; speed?: number; color?: string; width?: number; taper?: number }): string
+```
+
+Animated sine wave line with scrolling phase and an optional centre-swell taper. Returns an SVG string.
 
 ## Scene, camera & ambience
 
