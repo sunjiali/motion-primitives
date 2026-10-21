@@ -55,11 +55,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Syntax-check all JavaScript
-        run: npm run syntax
+      - name: Checks (typecheck + syntax + unit/parity tests)
+        run: npm run check
 
-      - name: Unit + parity tests
-        run: npm test
+      - name: Build freshness (committed JS matches the TS sources)
+        run: |
+          npm run build
+          git diff --exit-code -- index.js src
 
   compat:
     name: compat (Node ${{ matrix.node }})

@@ -11,18 +11,27 @@ between calls. If a change breaks that rule, it breaks parallel rendering.
 
 ```bash
 npm install          # Node.js >= 18; rendering also needs Chrome + ffmpeg
+npm run build        # compile the TypeScript sources to the committed JS
 npm test             # unit tests (node:test, no extra dependencies)
 ```
 
+Sources are TypeScript (`index.ts`, `src/**/*.ts`); the compiled
+JavaScript is committed next to them and is what ships. Never edit the
+`.js` outputs by hand — change the `.ts`, run `npm run build`, and
+commit both.
+
 ## Development loop
 
-1. Add or change a primitive in `src/lib/primitives.js` (the file is the
-   manual — keep its comments accurate), mirror it into `site/lib/` and add
-   it to the site demos + `index.d.ts`.
+1. Add or change a primitive in `src/lib/primitives.ts` (the file is the
+   manual — keep its comments accurate), run `npm run build`, mirror the
+   compiled `src/lib/primitives.js` into `site/lib/` and add the
+   primitive to the site demos + `index.d.ts`.
 2. Record it in `EFFECTS.md` (move it from Backlog to Implemented) and in
    `CHANGELOG.md` under the next version.
 3. Verify before you push:
-   - `npm run check` — syntax plus the unit/parity tests must pass.
+   - `npm run check` — strict typecheck, syntax, and the unit/parity
+     tests must pass; CI additionally fails if the committed JS is not
+     what `npm run build` produces from the sources.
    - `node src/render.js --comp showcase --still 60 --out /tmp/f.png` —
      eyeball one frame.
    - New visual effects: render a short composition and check a few stills
@@ -44,6 +53,8 @@ npm test             # unit tests (node:test, no extra dependencies)
 
 ## Style
 
-- Plain JavaScript, no build step, no framework. Two-space indent.
-- Options objects with defaults at the top of each primitive.
+- TypeScript in strict mode, no framework, no bundler — `tsc` only.
+  Two-space indent in the sources (the compiler owns output formatting).
+- Options objects with defaults at the top of each primitive; every
+  options bag has a named interface next to its primitive.
 - Durations in frames at 30 fps unless a primitive says otherwise.

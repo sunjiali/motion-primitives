@@ -6,6 +6,11 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Platform (v0.11)
+TypeScript refactor — all sources are strict-mode `.ts`, compiled by
+`tsc` to the same committed JavaScript (no behavior change; CI
+build-freshness gate). No new effects this round.
+
 ### Core (v0.1)
 `pop` spring entrance · `fadeUp` · `pulse` (scale value) · `countUp` ·
 `stagger` · `fly` arc flight · `trail` ghosts · `squash` · `dot` ·

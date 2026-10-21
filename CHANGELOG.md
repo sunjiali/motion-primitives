@@ -2,6 +2,26 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.11.0] — 2026-10-21
+
+### Internal — TypeScript refactor (no behavior change)
+
+- All sources are now strict-mode TypeScript: `index.ts`,
+  `src/lib/{animation,captions,primitives}.ts`, `src/{render,studio,sfx}.ts`.
+  `tsc` (the only build step — no bundler) compiles them to the same
+  CommonJS / browser-global JavaScript, which stays committed and
+  shipped; consumers still need no build step.
+- Every primitive's options bag now has a named interface (mirroring
+  the public declarations in `index.d.ts`), and the lib scripts share
+  ambient types via `src/lib/globals.d.ts`.
+- CI gains a build-freshness gate: the build fails if the committed
+  JavaScript drifts from the TypeScript sources. `npm run check` now
+  starts with the strict typecheck.
+- Verified behavior-identical: 17/17 tests; source and
+  tarball-installed still renders byte-identical to the pre-refactor
+  baseline (20,148 bytes); the site's 20 demos render with zero page
+  errors.
+
 ## [0.10.1] — 2026-10-21
 
 ### Internal — project quality, benchmarked to mature-OSS practice

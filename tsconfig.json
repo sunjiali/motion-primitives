@@ -1,0 +1,1 @@
+{"compilerOptions":{"declaration":false,"esModuleInterop":true,"forceConsistentCasingInFileNames":true,"lib":["ES2020","DOM"],"module":"commonjs","outDir":".","rootDir":".","skipLibCheck":true,"sourceMap":false,"strict":true,"target":"ES2020","types":["node"]},"exclude":["node_modules","site","test","scripts","src/compositions"],"include":["index.ts","src/**/*.ts"]}

@@ -13,12 +13,14 @@ what is knowingly not done yet.
 number; seeded randomness only (`hash`). This is the project's core
 invariant and most tests exist to protect it.
 
-**Tests that gate.** `npm run check` (syntax + `node:test` suites) runs
-locally and in CI and must be green to ship. The suites cover primitive
-contracts (determinism, easing, spring, odometer alignment…), the SFX
-engine (WAV validity, determinism), and *parity*: runtime exports,
-`index.d.ts`, the `Motion` type, and the site's mirrored lib copies
-must agree — drift fails the build.
+**Tests that gate.** `npm run check` (strict TypeScript typecheck +
+syntax + `node:test` suites) runs locally and in CI and must be green
+to ship. The suites cover primitive contracts (determinism, easing,
+spring, odometer alignment…), the SFX engine (WAV validity,
+determinism), and *parity*: runtime exports, `index.d.ts`, the `Motion`
+type, and the site's mirrored lib copies must agree — drift fails the
+build. A build-freshness step also fails CI if the committed
+JavaScript drifts from the TypeScript sources.
 
 **Package truth.** CI packs the real tarball, installs it into a clean
 consumer project, and renders a still through the installed CLI
@@ -58,9 +60,13 @@ the release checklist (RELEASING.md) forbids shipping on a red gate.
   smoke-tested from the tarball; registry publishing waits on the
   maintainer's npm configuration and will use trusted publishing
   (OIDC provenance) from CI when it lands, per RELEASING.md.
-- **CommonJS + browser globals** are the API surface (no build step is
-  a feature). An `exports` map / ESM wrapper is a roadmap item, to be
-  added as a non-breaking minor once the surface is designed.
+- **TypeScript sources, committed JavaScript.** The source of truth is
+  strict-mode TypeScript; the shipped artifact is still CommonJS +
+  browser globals, exactly as before — consumers never run a build
+  step. `tsc` is the only build tool (no bundler); the compiled `.js`
+  is committed next to its sources and CI verifies it is fresh. An
+  `exports` map / ESM wrapper is a roadmap item, to be added as a
+  non-breaking minor once the surface is designed.
 
 ## References
 
@@ -71,3 +77,4 @@ the release checklist (RELEASING.md) forbids shipping on a red gate.
   (branch protection, pinned dependencies, dependency-update tool,
   security policy, signed releases, CI tests, SAST…)
 - Keep a Changelog / Semantic Versioning — format of CHANGELOG.md
+- TypeScript strict mode — the compiler is the first test suite

@@ -1,25 +1,24 @@
 #!/usr/bin/env node
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * motion-primitives Studio —— 生成自包含的预览 HTML
  * 用法：node src/studio.js --comp demo --out studio-demo.html
  * 打开后可播放/暂停/拖动 scrub，直接在手机浏览器里看效果。
  */
-const fs = require('fs');
-const path = require('path');
-
+const fs = require("fs");
+const path = require("path");
 const SRC = __dirname;
 function arg(k, d) {
-  const i = process.argv.indexOf('--' + k);
-  return i >= 0 && process.argv[i + 1] ? process.argv[i + 1] : d;
+    const i = process.argv.indexOf('--' + k);
+    return i >= 0 && process.argv[i + 1] ? process.argv[i + 1] : d;
 }
-
 const comp = arg('comp', 'demo');
 const out = path.resolve(arg('out', `studio-${comp}.html`));
 const compSrc = fs.readFileSync(path.join(SRC, 'compositions', comp + '.js'), 'utf8');
 const libs = ['lib/animation.js', 'lib/captions.js']
-  .map((f) => fs.readFileSync(path.join(SRC, f), 'utf8'))
-  .join('\n');
-
+    .map((f) => fs.readFileSync(path.join(SRC, f), 'utf8'))
+    .join('\n');
 const html = `<!DOCTYPE html>
 <html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -91,7 +90,6 @@ const html = `<!DOCTYPE html>
   window.addEventListener('resize', fit);
   setFrame(0).then(fit);
 </script></body></html>`;
-
 fs.mkdirSync(path.dirname(out), { recursive: true });
 fs.writeFileSync(out, html);
 console.log('[studio] 已生成：' + out);
