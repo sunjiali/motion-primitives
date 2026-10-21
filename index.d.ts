@@ -88,6 +88,14 @@ export function kenBurns(frame: number, o?: { dur?: number; from?: number; to?: 
 export function breathe(frame: number, o?: { amp?: number; speed?: number }): number;
 /** Film grain + vignette finishing overlay. Returns an HTML string. */
 export function fx(frame: number, o?: { grain?: number; vignette?: number }): string;
+/** A cut-paper shape: flat fill, hard offset thickness shadow, resting tilt. */
+export function paperEl(o: { x: number; y: number; w?: number; h?: number; color: string; shape?: 'rect' | 'circle' | 'blob'; thick?: number; rot?: number; radius?: number; scale?: number; opacity?: number; shadow?: string }): string;
+/** Paper-puppet joint rotation. Returns a CSS transform value. */
+export function pivot(frame: number, o?: AtOpts & { from?: number; to?: number; steps?: number }): string;
+/** Eased progress snapped to N discrete levels (stop-motion timing). */
+export function stepped(frame: number, o?: AtOpts & { steps?: number }): number;
+/** Snap a frame down to a multiple of `every` (shot-on-twos timing). */
+export function onTwos(frame: number, o?: { every?: number }): number;
 
 export interface SfxEvent { f: number; s: string; g?: number; pan?: number; seed?: number }
 export interface SfxScore { fps?: number; durationFrames: number; tailSec?: number; events: SfxEvent[] }
@@ -116,6 +124,7 @@ declare const Motion: {
   punch: typeof punch; flash: typeof flash; camera: typeof camera;
   meshBg: typeof meshBg; drawOn: typeof drawOn; poly: typeof poly; bars: typeof bars;
   scramble: typeof scramble; kenBurns: typeof kenBurns; fx: typeof fx;
+  paperEl: typeof paperEl; pivot: typeof pivot; stepped: typeof stepped; onTwos: typeof onTwos;
   Motion: typeof Motion;
   Remotion: RemotionModule;
   sfx: SfxModule;

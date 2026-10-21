@@ -457,8 +457,59 @@ __root.Motion = (function () {
     return s;
   }
 
+  // ---- Paper-cut pack (v0.6) -------------------------------------------
+  // The paper world: flat fills, a hard offset shadow for paper thickness,
+  // small resting rotations, puppet joints, stop-motion timing.
+
+  // A cut-paper shape centered on (x, y). shape: 'rect' | 'circle' | 'blob'
+  // (blob = irregular hand-cut edge). `thick` is the offset-shadow depth —
+  // keep it consistent across a scene so the paper stock reads as one.
+  function paperEl(o) {
+    const w = o.w || 120, h = o.h || 80;
+    const thick = o.thick == null ? 5 : o.thick;
+    const shape = o.shape || 'rect';
+    let radius = shape === 'circle' ? '50%' : (o.radius == null ? 6 : o.radius) + 'px';
+    if (shape === 'blob') radius = '58% 42% 55% 45% / 48% 55% 45% 52%';
+    return '<div style="position:absolute;left:' + (o.x - w / 2).toFixed(1) + 'px;top:' + (o.y - h / 2).toFixed(1) +
+      'px;width:' + w + 'px;height:' + h + 'px;background:' + o.color + ';border-radius:' + radius +
+      ';box-shadow:' + thick + 'px ' + thick + 'px 0 ' + (o.shadow || 'rgba(59,42,28,.32)') +
+      ';transform:rotate(' + (o.rot || 0) + 'deg)' + (o.scale ? ' scale(' + o.scale + ')' : '') +
+      (o.opacity != null ? ';opacity:' + o.opacity : '') + (o.extra || '') + '"></div>';
+  }
+
+  // Paper-puppet joint: eased rotation between two angles, returned as a
+  // CSS transform value (like wiggle). The caller positions the element so
+  // its transform-origin sits on the joint. `steps` quantizes the swing for
+  // stop-motion stiffness.
+  function pivot(frame, o) {
+    const dur = o.dur || 30;
+    let p = (Easing[o.fn || 'cubicInOut'] || Easing.cubicInOut)(clamp01((frame - (o.at || 0)) / dur));
+    if (o.steps) p = Math.floor(p * o.steps) / o.steps;
+    const deg = (o.from || 0) + ((o.to || 0) - (o.from || 0)) * p;
+    return 'rotate(' + deg.toFixed(2) + 'deg)';
+  }
+
+  // Stop-motion progress: eased progress snapped to N discrete levels, so
+  // any motion driven by it advances in visible steps instead of gliding.
+  function stepped(frame, o) {
+    const dur = o.dur || 30, steps = o.steps || 6;
+    const raw = clamp01((frame - (o.at || 0)) / dur);
+    if (raw >= 1) return 1;
+    const p = (Easing[o.fn || 'cubicInOut'] || Easing.cubicInOut)(raw);
+    return Math.floor(p * steps) / steps;
+  }
+
+  // Shot-on-twos frame snap: feed the result into any primitive (or a
+  // whole composition) and time itself moves in steps — the cheapest
+  // stop-motion feel there is. `every: 3` shoots on threes.
+  function onTwos(frame, o) {
+    const every = (o && o.every) || 2;
+    return frame - (frame % every);
+  }
+
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
+    paperEl, pivot, stepped, onTwos,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,

@@ -2,6 +2,19 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.6.0] — 2026-10-21
+
+### Added — paper-cut pack (core)
+- `paperEl` — a cut-paper shape (rect / circle / blob) with flat fill, a
+  hard offset shadow for paper thickness, and a resting tilt.
+- `pivot` — paper-puppet joint rotation as a CSS transform value, with
+  optional step quantization for stop-motion stiffness.
+- `stepped` — eased progress snapped to N discrete levels; `onTwos` —
+  frame snapping (shot-on-twos) that gives a whole scene stop-motion
+  timing. Unit-tested; the site gains a "paper-cut" demo card (16 total)
+  built entirely from the pack. Remaining pack items (morphPoly,
+  parallax) stay in the backlog.
+
 ## [0.5.0] — 2026-10-21
 
 ### Added

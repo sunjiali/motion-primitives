@@ -27,6 +27,15 @@ slow zoom/pan · `breathe` idle micro-motion · `fx` film grain + vignette ·
 Showcase: `src/compositions/fx-showcase.js` (dark premium reel using the
 whole v0.3 stack).
 
+### Paper-cut pack, core (v0.6)
+- `paperEl({x, y, w, h, color, shape, thick, rot})` — cut-paper shape
+  (rect / circle / blob) with a hard offset thickness shadow.
+- `pivot(frame, {from, to, steps})` — puppet-joint rotation (transform
+  value), optionally step-quantized for stiffness.
+- `stepped(frame, {steps})` — eased progress snapped to N levels;
+  `onTwos(frame, {every})` — frame snap (shot-on-twos) for whole scenes.
+  Pack remainder (morphPoly, parallax) still in the style-pack backlog.
+
 ### Motion blur (v0.5)
 - `smear(frame, {from, to, arc, samples, span, opacity, fullAt})` — exposure
   ghosts sampled at earlier frames along a fly path; blur length follows
@@ -68,9 +77,7 @@ The look is fully procedural and fits this pipeline:
   paper rustle/cut SFX under the track.
 
 Primitives to build for it:
-- `paperEl` — wrap a shape with paper edge + thickness shadow + tilt
-- `pivot` — rotation around a joint point, optional stepped timing
-- `stepped` — quantize any frame-driven value to N-frame steps (stop-motion)
+- `paperEl` / `pivot` / `stepped` (+ `onTwos`) — shipped in v0.6
 - `morphPoly` — interpolate between two polygon point sets (same count)
 - `parallax` — depth-layer offsets from one camera move (pairs with `camera`)
 

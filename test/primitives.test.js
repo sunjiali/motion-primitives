@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -71,6 +71,25 @@ test('smear: motion blur exists only while moving, and scales with speed', () =>
   assert.ok(headGhost(slow) < headGhost(ghosts) / 3,
     `slow ${headGhost(slow)} should be << fast ${headGhost(ghosts)}`);
   assert.deepEqual(M.smear(15, fast), ghosts); // deterministic
+});
+
+test('paper-cut pack: paperEl, pivot, stepped, onTwos', () => {
+  const el = M.paperEl({ x: 100, y: 80, w: 120, h: 60, color: '#E4572E', thick: 6, rot: -3 });
+  assert.ok(el.includes('box-shadow:6px 6px 0'), 'thickness shadow');
+  assert.ok(el.includes('rotate(-3deg)'), 'resting tilt');
+  assert.ok(M.paperEl({ x: 0, y: 0, color: '#fff', shape: 'blob' }).includes('58% 42%'), 'blob edge');
+  // pivot swings between its angles and lands exactly on `to`.
+  assert.equal(M.pivot(0, { at: 0, dur: 30, from: -12, to: 20 }), 'rotate(-12.00deg)');
+  assert.equal(M.pivot(30, { at: 0, dur: 30, from: -12, to: 20 }), 'rotate(20.00deg)');
+  // stepped progress only ever takes steps+1 discrete values, then completes.
+  const vals = new Set();
+  for (let f = 0; f <= 30; f++) vals.add(M.stepped(f, { at: 0, dur: 30, steps: 5 }));
+  assert.ok(vals.size <= 6, `too many levels: ${vals.size}`);
+  assert.equal(M.stepped(30, { at: 0, dur: 30, steps: 5 }), 1);
+  // onTwos snaps frames down to even numbers.
+  assert.equal(M.onTwos(7), 6);
+  assert.equal(M.onTwos(8), 8);
+  assert.equal(M.onTwos(8, { every: 3 }), 6);
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

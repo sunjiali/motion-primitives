@@ -123,6 +123,37 @@
       },
     },
     {
+      name: 'paper-cut', desc: 'A cut-paper world: thickness shadows, a puppet-joint flag, everything shot on twos.',
+      code: 'M.paperEl(...) · M.pivot(frame, { steps }) · M.onTwos(frame)', cycle: 130,
+      draw(f) {
+        const f2 = M.onTwos(f); // the whole card runs on stop-motion time
+        let s = '';
+        s += M.paperEl({ x: 118, y: 248, w: 350, h: 96, color: '#2E6E6A', rot: -2, radius: 42 });
+        s += M.paperEl({ x: 445, y: 254, w: 370, h: 104, color: '#3E8E7E', rot: 1.5, radius: 46 });
+        // Sun: paper disc + a ray cross turning on a pivot, stepped stiffly.
+        s += '<div style="position:absolute;left:64px;top:12px;width:96px;height:96px;transform-origin:48px 48px;transform:' +
+          M.pivot(f2, { at: 0, dur: 128, from: 0, to: 360, fn: 'linear', steps: 24 }) + ';">' +
+          M.paperEl({ x: 48, y: 9, w: 11, h: 28, color: '#FFB84D', radius: 5 }) +
+          M.paperEl({ x: 48, y: 87, w: 11, h: 28, color: '#FFB84D', radius: 5 }) +
+          M.paperEl({ x: 9, y: 48, w: 28, h: 11, color: '#FFB84D', radius: 5 }) +
+          M.paperEl({ x: 87, y: 48, w: 28, h: 11, color: '#FFB84D', radius: 5 }) + '</div>';
+        s += M.paperEl({ x: 112, y: 60, w: 62, h: 62, color: '#FFCF5C', shape: 'circle' });
+        // Clouds drift on twos.
+        const cx1 = 330 + ((f2 * 2) % 300);
+        const cx2 = 180 + ((f2 * 1) % 340);
+        s += M.paperEl({ x: cx1 - 150, y: 52, w: 110, h: 40, color: '#FFF6E8', shape: 'blob' });
+        s += M.paperEl({ x: cx2, y: 108, w: 84, h: 32, color: '#FFF6E8', shape: 'blob', rot: 2 });
+        // A paper flag fluttering on its pole joint, out and back in steps.
+        const flagRot = f2 < 70
+          ? M.pivot(f2, { at: 6, dur: 54, from: 0, to: 14, steps: 5 })
+          : M.pivot(f2, { at: 70, dur: 54, from: 14, to: 0, steps: 5 });
+        s += M.paperEl({ x: 486, y: 168, w: 9, h: 118, color: '#8A5A33', radius: 4 });
+        s += '<div style="position:absolute;left:488px;top:112px;width:56px;height:30px;transform-origin:0 6px;transform:' + flagRot + ';">' +
+          M.paperEl({ x: 28, y: 15, w: 56, h: 30, color: '#E4572E', radius: 4 }) + '</div>';
+        return s;
+      },
+    },
+    {
       name: 'squash + ripple', desc: 'Drop, land, squash-and-settle, and a ripple to mark the moment.',
       code: 'M.squash(framesSinceLanding) · M.ripple(frame, { at })', cycle: 105,
       draw(f) {

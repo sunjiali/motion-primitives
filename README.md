@@ -77,6 +77,9 @@ Requirements: Node.js ≥ 18, Chrome/Chromium, ffmpeg.
 | `M.fly(frame, {at, dur, from, to, arc})` | Eased arc flight between two points |
 | `M.trail(frame, {...fly, ghosts})` | Ghost positions trailing a flight |
 | `M.smear(frame, {...fly, span, samples})` | Motion blur — exposure ghosts that stretch with velocity |
+| `M.paperEl({x, y, w, h, color, shape})` | Cut-paper shape with a hard thickness shadow |
+| `M.pivot(frame, {from, to, steps})` | Paper-puppet joint rotation (CSS transform value) |
+| `M.stepped(frame, {steps})` · `M.onTwos(frame)` | Stop-motion timing: quantized progress, shot-on-twos frames |
 | `M.squash(framesSinceLanding)` | Squash-and-settle after a landing |
 | `M.dot({x, y, r, color, candy, glow})` | A circle (optional glossy candy look) |
 | `M.ripple(frame, {x, y, at, color})` | Expanding ring after an event |
