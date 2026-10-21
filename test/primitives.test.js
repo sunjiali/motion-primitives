@@ -6,7 +6,7 @@ const assert = require('node:assert/strict');
 const M = require('../index.js');
 
 const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
-  'fly', 'trail', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
+  'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'meshBg', 'drawOn', 'poly',
   'bars', 'scramble', 'kenBurns', 'fx'];
@@ -55,6 +55,22 @@ test('countUp is monotonic and clamps at the target', () => {
     prev = v;
   }
   assert.equal(M.countUp(500, { at: 0, dur: 90, to: 13 }), 13);
+});
+
+test('smear: motion blur exists only while moving, and scales with speed', () => {
+  const fast = { at: 0, dur: 30, from: { x: 0, y: 100 }, to: { x: 600, y: 100 }, arc: 0 };
+  assert.equal(M.smear(-1, fast).length, 0);   // not started
+  assert.equal(M.smear(31, fast).length, 0);   // landed
+  const ghosts = M.smear(15, fast);
+  assert.equal(ghosts.length, 6);              // default samples
+  // Opacity rises toward the head (array runs tail -> head).
+  for (let i = 1; i < ghosts.length; i++) assert.ok(ghosts[i].opacity > ghosts[i - 1].opacity);
+  // A slow version of the same move blurs far less (exposure follows velocity).
+  const slow = M.smear(45, { at: 0, dur: 300, from: fast.from, to: fast.to, arc: 0 });
+  const headGhost = (a) => (a.length ? a[a.length - 1].opacity : 0);
+  assert.ok(headGhost(slow) < headGhost(ghosts) / 3,
+    `slow ${headGhost(slow)} should be << fast ${headGhost(ghosts)}`);
+  assert.deepEqual(M.smear(15, fast), ghosts); // deterministic
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

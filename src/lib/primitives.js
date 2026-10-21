@@ -98,6 +98,46 @@ __root.Motion = (function () {
     return out;
   }
 
+  // Motion blur: exposure ghosts sampled at earlier FRAMES along a fly()
+  // path (unlike trail(), which spaces ghosts by progress for a comet look).
+  // Blur length follows velocity — at rest the ghosts collapse onto the head
+  // and fade out; at speed they stretch behind it. The caller renders the
+  // ghosts with dot() under the head, exactly like trail(). Returns [] when
+  // the move has not started or has landed. Knob 03 of the six-knobs set.
+  function smear(frame, o) {
+    const out = [];
+    const samples = o.samples || 6;              // ghost count
+    const span = o.span == null ? 5 : o.span;    // exposure window, in frames
+    const maxOp = o.opacity == null ? 0.3 : o.opacity;
+    const arc = o.arc == null ? 170 : o.arc;
+    const easeFn = Easing[o.fn || 'cubicInOut'] || Easing.cubicInOut;
+    const posAt = (f) => {
+      const raw = clamp01((f - (o.at || 0)) / (o.dur || 90));
+      const p = easeFn(raw);
+      return {
+        x: o.from.x + (o.to.x - o.from.x) * p,
+        y: o.from.y + (o.to.y - o.from.y) * p - Math.sin(p * Math.PI) * arc,
+        raw,
+      };
+    };
+    const head = posAt(frame);
+    if (head.raw <= 0 || head.raw >= 1) return out;
+    const tailPos = posAt(frame - span);
+    const dist = Math.hypot(head.x - tailPos.x, head.y - tailPos.y);
+    // Exposure ∝ distance covered inside the window: slow move, no blur.
+    const strength = Math.min(1, dist / (o.fullAt || 60));
+    if (strength <= 0.01) return out;
+    for (let k = samples; k >= 1; k--) {
+      const g = posAt(frame - (span * k) / samples);
+      out.push({
+        x: g.x, y: g.y,
+        scale: 0.94 - (k / samples) * 0.1,
+        opacity: maxOp * strength * (1 - k / (samples + 1)),
+      });
+    }
+    return out;
+  }
+
   // Squash-and-settle after a landing: pass frames since landing.
   function squash(frame, o) {
     o = o || {};
@@ -418,7 +458,7 @@ __root.Motion = (function () {
   }
 
   return {
-    pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, squash,
+    pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,

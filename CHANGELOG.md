@@ -2,6 +2,26 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.5.0] — 2026-10-21
+
+### Added
+- `smear` — motion blur, knob 03 of the six-knobs decomposition
+  (@asteri_eth). Exposure ghosts are sampled at earlier frames along a
+  fly path, and the blur strength follows velocity (distance covered
+  inside the exposure window), so fast moves smear and slow moves stay
+  sharp; nothing renders before the move starts or after it lands.
+  Distinct from `trail`, which spaces ghosts by progress for a comet
+  look. Unit-tested for speed scaling, ordering and determinism;
+  still-verified at peak velocity and during deceleration.
+- Tuning-config convention: compositions declare a `TUNE` block with
+  their knobs as named numbers, so revision notes become number edits.
+  First used in the new site demo card, which runs the smear card with
+  a visible `TUNE.blur`.
+
+### Site
+- New live demo card "smear" (15 cards total): the same flight twice,
+  bare vs blurred.
+
 ## [0.4.2] — 2026-10-21
 
 ### Renderer quality

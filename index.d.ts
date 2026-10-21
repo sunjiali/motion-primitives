@@ -32,6 +32,10 @@ export function stagger(i: number, o?: { at?: number; gap?: number }): number;
 export function fly(frame: number, o: AtOpts & { from: XY; to: XY; arc?: number }): FlyResult;
 /** Ghost positions trailing a flight. */
 export function trail(frame: number, o: AtOpts & { from: XY; to: XY; arc?: number; n?: number }): XY[];
+export interface SmearGhost extends XY { scale: number; opacity: number }
+/** Motion blur: exposure ghosts sampled at earlier frames along a fly path.
+ *  Blur length follows velocity — no blur at rest, stretch at speed. */
+export function smear(frame: number, o: AtOpts & { from: XY; to: XY; arc?: number; samples?: number; span?: number; opacity?: number; fullAt?: number }): SmearGhost[];
 /** Squash-and-settle after a landing. Pass the frames since landing. */
 export function squash(frameOffset: number, o?: Record<string, unknown>): SquashResult;
 /** A circle, optional glossy candy look. Returns an HTML string. */
@@ -104,7 +108,7 @@ export interface RemotionModule {
 declare const Motion: {
   pop: typeof pop; ease: typeof ease; fadeUp: typeof fadeUp; pulse: typeof pulse;
   breathe: typeof breathe; countUp: typeof countUp; stagger: typeof stagger;
-  fly: typeof fly; trail: typeof trail; squash: typeof squash; dot: typeof dot;
+  fly: typeof fly; trail: typeof trail; smear: typeof smear; squash: typeof squash; dot: typeof dot;
   ripple: typeof ripple; burst: typeof burst; badge: typeof badge;
   targetSlot: typeof targetSlot; scene: typeof scene; transition: typeof transition;
   wiggle: typeof wiggle; typewriter: typeof typewriter; hash: typeof hash;

@@ -76,6 +76,7 @@ Requirements: Node.js ≥ 18, Chrome/Chromium, ffmpeg.
 | `M.stagger(i, {base, each})` | Start-frame helper for staggered groups |
 | `M.fly(frame, {at, dur, from, to, arc})` | Eased arc flight between two points |
 | `M.trail(frame, {...fly, ghosts})` | Ghost positions trailing a flight |
+| `M.smear(frame, {...fly, span, samples})` | Motion blur — exposure ghosts that stretch with velocity |
 | `M.squash(framesSinceLanding)` | Squash-and-settle after a landing |
 | `M.dot({x, y, r, color, candy, glow})` | A circle (optional glossy candy look) |
 | `M.ripple(frame, {x, y, at, color})` | Expanding ring after an event |

@@ -27,6 +27,16 @@ slow zoom/pan · `breathe` idle micro-motion · `fx` film grain + vignette ·
 Showcase: `src/compositions/fx-showcase.js` (dark premium reel using the
 whole v0.3 stack).
 
+### Motion blur (v0.5)
+- `smear(frame, {from, to, arc, samples, span, opacity, fullAt})` — exposure
+  ghosts sampled at earlier frames along a fly path; blur length follows
+  velocity (∝ distance covered inside the span window), so fast moves smear
+  and slow moves stay sharp. Knob 03 of @asteri_eth's six knobs. Verified:
+  unit tests (speed scaling, ordering, determinism) + stills at peak
+  velocity (long ghost chain) vs deceleration (ghosts collapse).
+- Tuning-config convention adopted: compositions declare a `TUNE` block
+  with their knobs as named numbers (first used in the site smear card).
+
 ### Sound (v0.4) — `src/sfx.js`
 Deterministic SFX synthesizer: pure math in, 16-bit WAV out, zero audio
 assets, seeded noise only (same score → identical file, hash-verified).
@@ -66,20 +76,7 @@ Primitives to build for it:
 
 ## Backlog (next rounds, roughly in order)
 
-- `smear` — **motion blur (next up; jumps the queue ahead of the paper-cut
-  pack)** — sub-frame ghosting along a motion's velocity: sample a position
-  function at f, f−1, f−2… and composite with fading opacity, so fast moves
-  (travel / drop / whip) stop looking CG-sharp. This is knob 03 of
-  @asteri_eth's "six knobs" decomposition (2026-10-21) and speaks directly
-  to Robin's video-质感 feedback; it is also the missing half of `whip`
-  below (its "blur streak").
-- Tuning-config convention — every composition declares one `TUNE` block
-  at the top holding its six knobs (spacing / typography / motionBlur /
-  easing / followThrough / anticipation) as named numbers, so revision
-  notes become number edits ("+4 frames of anticipation") instead of
-  code hunts. Also from @asteri_eth (2026-10-21); adopt on the next new
-  composition, backfill opportunistically.
-- `whip` — whip-pan transition between scenes (camera overshoot + blur streak)
+- `whip` — whip-pan transition between scenes (camera overshoot + blur streak; `smear` shipped in v0.5 is its missing half)
 - `pathFly` — flight along an arbitrary bezier/polyline path with heading
 - `flipIn` — 3D flip entrance (perspective rotateX/rotateY)
 - `counterRoll` — odometer-style digit roll for big numbers

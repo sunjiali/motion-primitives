@@ -104,6 +104,25 @@
       },
     },
     {
+      name: 'smear', desc: 'Motion blur that follows velocity: the top ball flies bare, the bottom one smears — same speed.',
+      code: 'M.smear(frame, { from, to, span: TUNE.blur })', cycle: 100,
+      draw(f) {
+        // TUNE — this card's knobs in one place (the six-knobs convention).
+        const TUNE = { spacing: 420, blur: 6, dur: 38, at: 6 };
+        const o = { at: TUNE.at, dur: TUNE.dur, from: { x: 70, y: 0 }, to: { x: 70 + TUNE.spacing, y: 0 }, arc: 0 };
+        const label = (y, t) => '<div style="position:absolute;left:24px;top:' + y + 'px;font:600 12px ui-monospace,Menlo,monospace;color:#8A7D68;letter-spacing:.08em;">' + t + '</div>';
+        let s = label(26, 'NO BLUR') + label(140, 'SMEAR');
+        const p1 = M.fly(f, { ...o, from: { ...o.from, y: 78 }, to: { ...o.to, y: 78 } });
+        s += M.dot({ x: p1.x, y: p1.y, r: 26, color: C.pink, candy: true });
+        const o2 = { ...o, from: { ...o.from, y: 192 }, to: { ...o.to, y: 192 } };
+        for (const g of M.smear(f, { ...o2, span: TUNE.blur })) {
+          s += M.dot({ x: g.x, y: g.y, r: 26, color: C.pink, scale: g.scale, opacity: g.opacity });
+        }
+        const p2 = M.fly(f, o2);
+        return s + M.dot({ x: p2.x, y: p2.y, r: 26, color: C.pink, candy: true, glow: true });
+      },
+    },
+    {
       name: 'squash + ripple', desc: 'Drop, land, squash-and-settle, and a ripple to mark the moment.',
       code: 'M.squash(framesSinceLanding) · M.ripple(frame, { at })', cycle: 105,
       draw(f) {
