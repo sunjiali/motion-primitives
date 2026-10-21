@@ -2,6 +2,20 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.45.0] — 2026-10-21
+
+### Added
+
+- `textOnPath(frame, o)` — a string typeset along a smoothed
+  polyline by arc length: every glyph sits on the curve,
+  rotated to its tangent, and the string flows along the path
+  at `speed` (with optional `loop` wrap). Kinetic type for
+  ribbons and labels. From the 2026-10-21 X sweep (@holke79).
+  The verification still caught a sampler bug (the segment
+  start drifted per step, bunching letters in the valley) —
+  fixed and re-verified before release. Skill bundle synced
+  (API catalog now 77 functions); site demo card #46.
+
 ## [0.44.0] — 2026-10-21
 
 ### Added

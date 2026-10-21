@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -488,6 +488,16 @@ test('assembleText: scattered at the start, typeset at the end', () => {
   assert.equal((landed.match(/translate\(0\.0px,0\.0px\)/g) || []).length, 5); // 5 non-space glyphs home
   const scattered = M.assembleText(200, { ...o, mode: 'out' });
   assert.ok(!scattered.includes('translate(0.0px,0.0px)')); // out mode disperses again
+});
+
+test('textOnPath: glyphs ride the curve, first at the path start, flow moves them', () => {
+  const o = { text: 'WAVE', pts: [[0, 100], [100, 40], [200, 100]], size: 20 };
+  const g = M.textOnPath(0, o);
+  assert.equal((g.match(/<span/g) || []).length, 4);
+  assert.ok(g.includes('translate(0.0px,100.0px)')); // first glyph exactly at the path start
+  assert.equal(M.textOnPath(0, o), g);
+  assert.notEqual(M.textOnPath(30, { ...o, speed: 2 }), g); // flow advances the string
+  assert.equal(M.textOnPath(0, { text: 'X', pts: [[0, 0]] }), ''); // degenerate path
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

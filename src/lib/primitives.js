@@ -644,6 +644,67 @@ __root.Motion = (function () {
         return '<div style="position:absolute;left:' + (o.x || 0) + 'px;top:' + (o.y || 0) + 'px;font-family:ui-monospace,Menlo,monospace;font-size:' +
             size + 'px;font-weight:' + (o.weight || 700) + ';color:' + (o.color || '#E8E4DA') + ';white-space:nowrap;">' + spans + '</div>';
     }
+    // textOnPath(): a string typeset along a smoothed polyline by
+    // arc length — each glyph sits on the curve, rotated to its
+    // tangent. The whole string flows along the path at `speed`
+    // px/frame (plus a static `offset`); glyphs past the end hide
+    // unless `loop` wraps them around. Kinetic type for ribbons,
+    // labels on wires, credits on a road. From the X sweep
+    // (@holke79's text-on-path work).
+    function textOnPath(frame, o) {
+        o = o || {};
+        const text = o.text || '', raw = o.pts || [];
+        if (raw.length < 2 || !text)
+            return '';
+        // smooth the polyline (midpoint quadratics), then sample it
+        const sm = [[raw[0][0], raw[0][1]]];
+        for (let i = 1; i < raw.length - 1; i++) {
+            const mx = (raw[i][0] + raw[i + 1][0]) / 2, my = (raw[i][1] + raw[i + 1][1]) / 2;
+            const sx = sm[sm.length - 1][0], sy = sm[sm.length - 1][1]; // segment start, fixed for all 8 steps
+            for (let s = 1; s <= 8; s++) {
+                const t = s / 8, u = 1 - t;
+                sm.push([u * u * sx + 2 * u * t * raw[i][0] + t * t * mx,
+                    u * u * sy + 2 * u * t * raw[i][1] + t * t * my]);
+            }
+        }
+        sm.push([raw[raw.length - 1][0], raw[raw.length - 1][1]]);
+        const cum = [0];
+        for (let i = 1; i < sm.length; i++)
+            cum.push(cum[i - 1] + Math.hypot(sm[i][0] - sm[i - 1][0], sm[i][1] - sm[i - 1][1]));
+        const total = cum[cum.length - 1];
+        const at = (d) => {
+            let lo = 0, hi = cum.length - 1;
+            while (lo < hi - 1) {
+                const mid = (lo + hi) >> 1;
+                if (cum[mid] <= d)
+                    lo = mid;
+                else
+                    hi = mid;
+            }
+            const segLen = cum[hi] - cum[lo] || 1, f = (d - cum[lo]) / segLen;
+            const x = sm[lo][0] + (sm[hi][0] - sm[lo][0]) * f, y = sm[lo][1] + (sm[hi][1] - sm[lo][1]) * f;
+            return [x, y, Math.atan2(sm[hi][1] - sm[lo][1], sm[hi][0] - sm[lo][0]) * 180 / Math.PI];
+        };
+        const size = o.size || 28, adv = size * 0.62;
+        const flow = (o.offset || 0) + frame * (o.speed || 0);
+        let spans = '';
+        for (let i = 0; i < text.length; i++) {
+            const ch = text.charAt(i);
+            if (ch === ' ')
+                continue;
+            let d = flow + i * adv;
+            if (o.loop && total > 0)
+                d = ((d % total) + total) % total;
+            if (d < 0 || d > total)
+                continue;
+            const [px, py, ang] = at(d);
+            spans += '<span style="position:absolute;left:0;top:0;transform:translate(' + px.toFixed(1) + 'px,' + py.toFixed(1) +
+                'px) rotate(' + ang.toFixed(1) + 'deg) translate(-50%,-50%);">' +
+                (ch === '<' ? '&lt;' : ch === '&' ? '&amp;' : ch) + '</span>';
+        }
+        return '<div style="position:absolute;left:' + (o.x || 0) + 'px;top:' + (o.y || 0) + 'px;font-family:ui-monospace,Menlo,monospace;font-size:' +
+            size + 'px;font-weight:' + (o.weight || 700) + ';color:' + (o.color || '#E8E4DA') + ';">' + spans + '</div>';
+    }
     // shake(): decaying screen shake {x, y} inside [at, at+dur].
     function shake(frame, o) {
         o = o || {};
@@ -1641,7 +1702,7 @@ __root.Motion = (function () {
     }
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
+        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
         beatGrid, beatFrames, inertia, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoSort,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

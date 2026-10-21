@@ -434,6 +434,15 @@
       },
     },
     {
+      name: 'textOnPath', desc: 'Type rides a curve by arc length, flowing along it like a ribbon.',
+      code: 'M.textOnPath(frame, { text, pts, speed, loop })', cycle: 9999,
+      draw(f) {
+        const pts = [[16, 210], [140, 60], [290, 190], [430, 50], [544, 160]];
+        const guide = '<svg style="position:absolute;inset:0;" width="560" height="315"><path d="M 16 210 Q 78 60 140 60 T 290 190 T 430 50 T 544 160" fill="none" stroke="#2C3547" stroke-width="2" stroke-dasharray="5 6"/></svg>';
+        return guide + M.textOnPath(f, { text: 'TYPE ON A PATH — IT FLOWS — ', pts, size: 25, color: '#FFD93D', speed: 1.6, loop: true });
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

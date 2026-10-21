@@ -262,7 +262,11 @@ what the posts showed at sweep time):
   counterpart to glitch. (@webflow pixelated transition demo.)
 - ~~`charGrid`~~ — shipped in v0.43.
 - ~~`assembleText`~~ — shipped in v0.44.
-- `textOnPath` — a whole string typeset along an SVG path by arc
+- ~~`textOnPath`~~ — shipped in v0.45 (smoothed-polyline input,
+  arc-length placement; a segment-start bug in the sampler was
+  caught on the verification still — letters bunched in the
+  valley — and fixed).
+- (original note) a whole string typeset along an SVG path by arc
   length, tangent-rotated, with a flowing offset: kinetic-type
   titles and circular badges. (@holke79 carousel.)
 - `isoTerrain` — iso pillar field whose heights follow a scripted

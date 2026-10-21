@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (76 functions)
+# motion-primitives API — the full catalog (77 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -297,6 +297,14 @@ M.charGrid(frame: number, o: { cols?: number; rows?: number; size?: number; x?: 
 ```
 
 A living wall of glyphs: every cell flips character at hash-staggered intervals. Returns a positioned div.
+
+### `textOnPath`
+
+```ts
+M.textOnPath(frame: number, o: { text: string; pts: number[][]; size?: number; color?: string; speed?: number; offset?: number; loop?: boolean; weight?: number; x?: number; y?: number }): string
+```
+
+A string typeset along a smoothed polyline by arc length, tangent-rotated, flowing at `speed`. Returns a positioned div.
 
 ## Shapes & drawing
 
