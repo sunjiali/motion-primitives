@@ -227,10 +227,8 @@ top, one per round:
 - ~~`swing`~~ — shipped in v0.30.
 - ~~`marquee`~~ — shipped in v0.31.
 - ~~`marchingAnts`~~ — shipped in v0.32 (rect form).
-- `highlightBox` — a marker box that draws itself around a region
-  (drawOn-style rect with a slight hand wobble) then settles:
-  the tutorial "look here" move. May land as a drawOn preset
-  rather than a new primitive — decide in the round.
+- ~~`highlightBox`~~ — shipped in v0.33 (standalone primitive,
+  not a drawOn preset — the wobble + pad ergonomics earned it).
 - `waveLine` — animated sine wave line (SVG path, phase scrolls):
   voice/audio visuals, dividers, "signal" motifs. Options for
   amplitude envelope so it can swell on a beatGrid pulse.

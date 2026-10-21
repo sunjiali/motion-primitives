@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -381,6 +381,18 @@ test('marchingAnts: dash pattern and crawl offset wrap', () => {
   assert.ok(a1.includes('stroke-dashoffset="-12.0"')); // 10 frames * 1.2 speed
   const a2 = M.marchingAnts(20, { w: 100, h: 60 });
   assert.ok(a2.includes('stroke-dashoffset="-10.0"')); // 24 mod 14 — wrapped over the dash period
+});
+
+test('highlightBox: draw-on progress from full offset to zero', () => {
+  const off = (s) => parseFloat(s.match(/stroke-dashoffset="([\d.]+)"/)[1]);
+  const before = M.highlightBox(0, { x: 10, y: 10, w: 100, h: 40, at: 5, dur: 10 });
+  assert.ok(before.includes(' Q ')); // wobbly sides are quadratic curves
+  const start = M.highlightBox(5, { x: 10, y: 10, w: 100, h: 40, at: 5, dur: 10 });
+  const mid = M.highlightBox(10, { x: 10, y: 10, w: 100, h: 40, at: 5, dur: 10 });
+  const done = M.highlightBox(15, { x: 10, y: 10, w: 100, h: 40, at: 5, dur: 10 });
+  assert.ok(off(before) >= off(start) && off(start) > off(mid) && off(mid) > off(done));
+  assert.equal(off(done), 0); // fully drawn at at + dur
+  assert.equal(M.highlightBox(9, { x: 1, y: 2, w: 30, h: 12, seed: 4 }), M.highlightBox(9, { x: 1, y: 2, w: 30, h: 12, seed: 4 })); // wobble is deterministic
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

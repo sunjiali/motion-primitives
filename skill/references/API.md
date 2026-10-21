@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (64 functions)
+# motion-primitives API — the full catalog (65 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -403,6 +403,14 @@ M.marchingAnts(frame: number, o: { x?: number; y?: number; w: number; h: number;
 ```
 
 Animated dashed selection outline (marching ants) around a rect. Returns an SVG string.
+
+### `highlightBox`
+
+```ts
+M.highlightBox(frame: number, o: { x?: number; y?: number; w: number; h: number; at?: number; dur?: number; color?: string; width?: number; pad?: number; wobble?: number; seed?: number }): string
+```
+
+Hand-drawn-feeling highlight box that sketches itself around a region over dur frames. Returns an SVG string.
 
 ## Scene, camera & ambience
 

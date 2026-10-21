@@ -2,6 +2,18 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.33.0] — 2026-10-21
+
+### Added
+
+- `highlightBox(frame, o)` — a hand-drawn-feeling box that
+  sketches itself around a region over `dur` frames and stays:
+  corners and side midpoints carry a small deterministic hash
+  wobble so it reads as drawn, not stamped; `pad` inflates the
+  box around the target. The tutorial "look here" move. Skill
+  bundle synced (API catalog now 65 functions); site demo card
+  #37.
+
 ## [0.32.0] — 2026-10-21
 
 ### Added

@@ -362,6 +362,44 @@ __root.Motion = (function () {
             '" fill="none" stroke="' + (o.color || '#E8E4DA') + '" stroke-width="' + lw +
             '" stroke-dasharray="' + dash + ' ' + dash + '" stroke-dashoffset="' + off.toFixed(1) + '"/></svg>';
     }
+    // highlightBox(): a hand-drawn-feeling box that sketches itself
+    // around a region over dur frames and stays — the tutorial
+    // "look here" move. Corners and side midpoints carry a small
+    // hash wobble (deterministic per seed) so it reads as drawn,
+    // not stamped; `pad` inflates the box around the region.
+    function highlightBox(frame, o) {
+        o = o || { w: 100, h: 40 };
+        const pad = o.pad == null ? 6 : o.pad;
+        const x = (o.x || 0) - pad, y = (o.y || 0) - pad;
+        const w = (o.w || 100) + pad * 2, h = (o.h || 40) + pad * 2;
+        const at = o.at || 0, dur = o.dur || 16, seed = o.seed || 0;
+        const wob = o.wobble == null ? 2 : o.wobble;
+        const j = (i) => (hash(seed * 31 + i * 7 + 3) - 0.5) * 2 * wob;
+        const c = [
+            [x + j(1), y + j(2)], [x + w + j(3), y + j(4)],
+            [x + w + j(5), y + h + j(6)], [x + j(7), y + h + j(8)],
+        ];
+        const mid = (a, b, i) => [(a[0] + b[0]) / 2 + j(i), (a[1] + b[1]) / 2 + j(i + 1)];
+        const m0 = mid(c[0], c[1], 9), m1 = mid(c[1], c[2], 11), m2 = mid(c[2], c[3], 13), m3 = mid(c[3], c[0], 15);
+        const ox = x - wob - 4, oy = y - wob - 4; // svg origin: stage point (ox, oy) becomes local (0, 0)
+        const L = (pt) => (pt[0] - ox).toFixed(1) + ' ' + (pt[1] - oy).toFixed(1);
+        const d = 'M ' + L(c[0]) +
+            ' Q ' + L(m0) + ' ' + L(c[1]) +
+            ' Q ' + L(m1) + ' ' + L(c[2]) +
+            ' Q ' + L(m2) + ' ' + L(c[3]) +
+            ' Q ' + L(m3) + ' ' + L(c[0]) + ' Z';
+        const per = 2 * (w + h) * 1.02; // slight over-estimate covers the curves
+        const p = clamp01((frame - at) / dur);
+        const eased = 1 - Math.pow(1 - p, 3);
+        const off = per * (1 - eased);
+        const sw = w + wob * 2 + 8, sh = h + wob * 2 + 8;
+        return '<svg style="position:absolute;left:' + ox.toFixed(1) + 'px;top:' + oy.toFixed(1) +
+            'px;" width="' + sw.toFixed(1) + '" height="' + sh.toFixed(1) +
+            '" viewBox="0 0 ' + sw.toFixed(1) + ' ' + sh.toFixed(1) +
+            '"><path d="' + d + '" fill="none" stroke="' + (o.color || '#FF8A4C') +
+            '" stroke-width="' + (o.width || 3) + '" stroke-linecap="round" stroke-dasharray="' + per.toFixed(1) +
+            '" stroke-dashoffset="' + off.toFixed(1) + '"/></svg>';
+    }
     // shake(): decaying screen shake {x, y} inside [at, at+dur].
     function shake(frame, o) {
         o = o || {};
@@ -1257,7 +1295,7 @@ __root.Motion = (function () {
     }
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
+        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
         beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoSort,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

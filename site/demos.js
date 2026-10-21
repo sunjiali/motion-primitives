@@ -330,6 +330,16 @@
       },
     },
     {
+      name: 'highlightBox', desc: 'A hand-drawn box sketches itself around the part that matters.',
+      code: 'M.highlightBox(frame, { x, y, w, h, at, dur })', cycle: 170,
+      draw(f) {
+        const lf = f % 170;
+        const phrase = (lf >= 34) ? '#FF8A4C' : '#E8E4DA';
+        return '<div style="position:absolute;left:110px;top:88px;font:600 25px system-ui;color:#E8E4DA;">the one number that <span style="color:' + phrase + ';">actually matters</span></div>' +
+          M.highlightBox(lf, { x: 350, y: 84, w: 208, h: 32, at: 12, dur: 20, seed: 7 });
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {
