@@ -123,6 +123,21 @@
       },
     },
     {
+      name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
+      code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
+      draw(f) {
+        let s = '';
+        const tiles = [['A', C.orange], ['B', C.blue], ['C', C.green]];
+        tiles.forEach((t, i) => {
+          s += '<div style="position:absolute;left:' + (92 + i * 138) + 'px;top:64px;width:114px;height:130px;' +
+            M.flipIn(f, { at: 12 + i * 14, dur: 24 }) + '">' +
+            '<div style="width:100%;height:100%;border-radius:14px;background:' + t[1] +
+            ';color:#fff;display:flex;align-items:center;justify-content:center;font:800 54px Georgia,serif;box-shadow:0 10px 24px rgba(51,48,43,.18);">' + t[0] + '</div></div>';
+        });
+        return s;
+      },
+    },
+    {
       name: 'pathFly', desc: 'Constant-speed flight along any path — the paper plane holds its pace through every curve.',
       code: 'M.pathFly(frame, { pts: loop, dur: 108 })', cycle: 120,
       draw(f) {

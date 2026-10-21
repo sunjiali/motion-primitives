@@ -102,6 +102,8 @@ export function whip(frame: number, o?: AtOpts & { dir?: 1 | -1; width?: number;
 export interface PathFlyResult extends XY { angle: number; p: number; done: boolean }
 /** Constant-speed flight along a polyline, with heading angle. */
 export function pathFly(frame: number, o: AtOpts & { pts: Array<[number, number]> }): PathFlyResult;
+/** 3D flip entrance with overshoot settle. Returns a CSS style string. */
+export function flipIn(frame: number, o?: AtOpts & { axis?: 'X' | 'Y'; from?: number; perspective?: number }): string;
 
 export interface SfxEvent { f: number; s: string; g?: number; pan?: number; seed?: number }
 export interface SfxScore { fps?: number; durationFrames: number; tailSec?: number; events: SfxEvent[] }
@@ -131,7 +133,7 @@ declare const Motion: {
   meshBg: typeof meshBg; drawOn: typeof drawOn; poly: typeof poly; bars: typeof bars;
   scramble: typeof scramble; kenBurns: typeof kenBurns; fx: typeof fx;
   paperEl: typeof paperEl; pivot: typeof pivot; stepped: typeof stepped; onTwos: typeof onTwos;
-  whip: typeof whip; pathFly: typeof pathFly;
+  whip: typeof whip; pathFly: typeof pathFly; flipIn: typeof flipIn;
   Motion: typeof Motion;
   Remotion: RemotionModule;
   sfx: SfxModule;

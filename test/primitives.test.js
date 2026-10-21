@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -117,6 +117,20 @@ test('pathFly: constant speed along the path, with heading', () => {
   const d1 = dist(M.pathFly(25, D), M.pathFly(50, D));
   const d2 = dist(M.pathFly(50, D), M.pathFly(75, D));
   assert.ok(Math.abs(d1 - d2) < 1e-6 && Math.abs(d1 - 125) < 1e-6, `${d1} vs ${d2}`);
+});
+
+test('flipIn: edge-on at start, settles at 0 with an overshoot', () => {
+  const start = M.flipIn(0, { at: 0, dur: 22 });
+  assert.ok(start.includes('rotateY(88.00deg)'), start);
+  assert.ok(start.includes('opacity:0'), start);
+  const end = M.flipIn(22, { at: 0, dur: 22 });
+  assert.ok(end.includes('rotateY(0.00deg)'), end);
+  assert.ok(end.includes('opacity:1'), end);
+  // backOut overshoots: some mid-late frame dips below zero degrees.
+  let overshot = false;
+  for (let f = 12; f < 22; f++) if (/rotateY\(-/.test(M.flipIn(f, { at: 0, dur: 22 }))) overshot = true;
+  assert.ok(overshot, 'expected a negative-degree overshoot frame');
+  assert.ok(M.flipIn(0, { axis: 'X', from: -80 }).includes('rotateX(-80.00deg)'));
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

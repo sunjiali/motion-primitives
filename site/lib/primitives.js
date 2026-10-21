@@ -552,9 +552,24 @@ __root.Motion = (function () {
     }
   }
 
+  // 3D flip entrance: the element rotates in from edge-on (±`from` degrees)
+  // around the X or Y axis and settles with a slight overshoot (backOut).
+  // Returns a style string like fadeUp — perspective is baked into the
+  // transform, so it works on any element without a prepared parent.
+  function flipIn(frame, o) {
+    o = o || {};
+    const dur = o.dur || 22;
+    const raw = clamp01((frame - (o.at || 0)) / dur);
+    const from = o.from == null ? 88 : o.from;
+    const p = (Easing.backOut || Easing.cubicOut)(raw);
+    const deg = from * (1 - p);
+    return 'transform:perspective(' + (o.perspective || 800) + 'px) rotate' + (o.axis || 'Y') +
+      '(' + deg.toFixed(2) + 'deg);opacity:' + Math.min(1, raw * 3).toFixed(3) + ';';
+  }
+
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,

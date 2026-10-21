@@ -2,6 +2,15 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.9.0] — 2026-10-21
+
+### Added
+- `flipIn` — 3D flip entrance: rotates in from edge-on around the X or Y
+  axis and settles with a slight overshoot; returns a style string with
+  perspective baked in, so it drops onto any element like `fadeUp`.
+  Site demo card included (19 cards). Unit-tested: start/end states,
+  overshoot dip, axis variant.
+
 ## [0.8.0] — 2026-10-21
 
 ### Added

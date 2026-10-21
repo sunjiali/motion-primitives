@@ -27,6 +27,11 @@ slow zoom/pan · `breathe` idle micro-motion · `fx` film grain + vignette ·
 Showcase: `src/compositions/fx-showcase.js` (dark premium reel using the
 whole v0.3 stack).
 
+### Entrances (v0.9)
+- `flipIn(frame, {at, dur, axis, from, perspective})` — 3D flip entrance:
+  rotates in from edge-on with a backOut overshoot settle; style string
+  like fadeUp, perspective baked into the transform.
+
 ### Path flight (v0.8)
 - `pathFly(frame, {pts, at, dur, fn})` — constant-speed flight along a
   polyline (arc-length parameterized), returns position + heading angle
