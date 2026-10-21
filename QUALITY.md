@@ -64,9 +64,9 @@ the release checklist (RELEASING.md) forbids shipping on a red gate.
   strict-mode TypeScript; the shipped artifact is still CommonJS +
   browser globals, exactly as before — consumers never run a build
   step. `tsc` is the only build tool (no bundler); the compiled `.js`
-  is committed next to its sources and CI verifies it is fresh. An
-  `exports` map / ESM wrapper is a roadmap item, to be added as a
-  non-breaking minor once the surface is designed.
+  is committed next to its sources and CI verifies it is fresh. The
+  package surface is declared with an `exports` map (root entry +
+  `src` passthrough, v0.12.0); an ESM wrapper remains a roadmap item.
 
 ## References
 

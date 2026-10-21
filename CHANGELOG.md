@@ -2,6 +2,24 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.12.0] — 2026-10-21
+
+### Package — a standard, complete package.json
+
+- Added an `exports` map (the roadmap item from QUALITY.md): the root
+  entry with its `types` condition, plus `./src/*` passthrough so the
+  documented deep paths keep working, and `./package.json`. Note: with
+  an exports map, *extensionless* deep imports (e.g.
+  `.../src/sfx` without `.js`) are no longer resolved by Node — use
+  the root entry or full paths with extensions.
+- Declared `sideEffects` accurately: the entry and the lib scripts
+  attach the global namespaces, everything else is pure.
+- `src/studio.js` (the preview-page generator) is now in the `files`
+  whitelist and ships in the tarball — it was previously repo-only.
+- Verified: 17/17 tests, tarball installs into a clean consumer and
+  both the root entry and deep imports resolve, package smoke green
+  (installed CLI still renders the 20,148-byte baseline still).
+
 ## [0.11.0] — 2026-10-21
 
 ### Internal — TypeScript refactor (no behavior change)

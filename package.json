@@ -10,14 +10,28 @@
     "puppeteer-core": "^25.14.0"
   },
   "description": "Frame-pure motion primitives for AI-generated videos: tiny building blocks (pop, fly, beat, camera, meshBg…) an AI composes instead of hand-writing animation math. Ships a headless-Chrome + ffmpeg renderer and a code-synthesized SFX engine.",
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "typescript": "^7.0.2"
+  },
   "engines": {
     "node": ">=18"
+  },
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./index.js": "./index.js",
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
   },
   "files": [
     "index.js",
     "index.d.ts",
     "src/lib",
     "src/render.js",
+    "src/studio.js",
     "src/sfx.js",
     "src/player.html",
     "src/compositions",
@@ -41,6 +55,9 @@
   "license": "MIT",
   "main": "index.js",
   "name": "@sunjiali/motion-primitives",
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sunjiali/motion-primitives.git"
@@ -56,14 +73,13 @@
     "build": "tsc",
     "typecheck": "tsc --noEmit"
   },
-  "publishConfig": {
-    "access": "public"
-  },
+  "sideEffects": [
+    "./index.js",
+    "./src/lib/animation.js",
+    "./src/lib/captions.js",
+    "./src/lib/primitives.js"
+  ],
   "type": "commonjs",
   "types": "index.d.ts",
-  "version": "0.11.0",
-  "devDependencies": {
-    "@types/node": "^20.19.43",
-    "typescript": "^7.0.2"
-  }
+  "version": "0.12.0"
 }
