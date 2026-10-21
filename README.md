@@ -4,6 +4,7 @@
 [![Deploy site](https://github.com/sunjiali/motion-primitives/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/sunjiali/motion-primitives/actions/workflows/deploy-pages.yml)
 [![CI](https://github.com/sunjiali/motion-primitives/actions/workflows/ci.yml/badge.svg)](https://github.com/sunjiali/motion-primitives/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![npm](https://img.shields.io/npm/v/@sunjiali/motion-primitives)](https://www.npmjs.com/package/@sunjiali/motion-primitives)
 
 🌐 **Website, live demos & playground:** https://sunjiali.github.io/motion-primitives/
 
@@ -28,7 +29,29 @@ Rendering is done by a small built-in pipeline (headless Chrome screenshots +
 ffmpeg, in the spirit of Remotion's architecture, implemented from scratch in
 `src/render.js`). No React, no build step.
 
-## Quick start
+## Install
+
+As an npm package (library + renderer CLI + TypeScript types):
+
+```bash
+npm install @sunjiali/motion-primitives
+```
+
+```js
+const M = require('@sunjiali/motion-primitives');
+// Every primitive is a pure function of the frame:
+const html = M.dot({ x: 320, y: 240, r: 44, color: '#3FB6FF',
+                     scale: M.pop(frame, { at: 10 }), candy: true });
+// Synthesized sound effects (no audio files, all code):
+const wav = M.sfx.renderScore({ fps: 30, durationFrames: 90,
+  events: [{ f: 10, s: 'pop' }, { f: 40, s: 'ting' }] });
+```
+
+Or use it in the browser with plain script tags — no build step:
+`src/lib/animation.js` then `src/lib/primitives.js` gives you
+`window.Motion` (alias `window.M`).
+
+## Quick start (from the repo)
 
 ```bash
 npm install

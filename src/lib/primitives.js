@@ -12,10 +12,11 @@
 // Every primitive is a pure function of `frame` — same frame, same picture —
 // which is what makes parallel screenshot rendering correct.
 //
-// Namespace: window.Motion (short alias M inside compositions).
+// Namespace: Motion on window (browser) or globalThis (Node); alias M.
 
-window.Motion = (function () {
-  const { interpolate, spring, Easing } = window.Remotion;
+var __root = typeof window !== "undefined" ? window : globalThis;
+__root.Motion = (function () {
+  const { interpolate, spring, Easing } = __root.Remotion;
   const FPS = 30;
   const clamp01 = (v) => Math.min(Math.max(v, 0), 1);
 
@@ -426,4 +427,4 @@ window.Motion = (function () {
 })();
 
 // Short alias for compositions.
-window.M = window.Motion;
+__root.M = __root.Motion;

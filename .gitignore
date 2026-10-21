@@ -2,3 +2,4 @@ node_modules/
 out/
 .player-*.html
 .DS_Store
+*.tgz

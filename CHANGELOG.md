@@ -2,6 +2,31 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.4.2] — 2026-10-21
+
+### Renderer quality
+- New default "master" encode: x264 preset slow + tune film (preserves
+  grain/texture instead of smoothing it) + aq-mode 3 (more bits for dark
+  areas and gradients, fights banding) + CRF 16. `--draft` keeps the old
+  fast settings for previews. Measured on fx-showcase frame 90 (gradient
+  scene): SSIM vs the lossless source frame 0.9932 -> 0.9944; overall
+  bitrate 0.94 -> 1.41 Mbps.
+
+### Package
+- Published-package ready: scoped name `@sunjiali/motion-primitives`,
+  proper metadata, `files` whitelist, `engines`, keywords.
+- The library now loads in Node as well as the browser (root-object shim
+  in src/lib) behind a package entry `index.js`, with hand-written
+  TypeScript types in `index.d.ts` covering the full public API and the
+  SFX module.
+- Unit tests (`npm test`, node:test): API surface, frame-purity /
+  determinism, spring/count-up/hash contracts, SFX WAV validity and
+  determinism. CI now runs the suite plus the smoke render.
+- Repo standards: CONTRIBUTING.md, issue/PR templates, .editorconfig.
+- Found by install smoke-testing (and fixed): `src/player.html` was
+  missing from the package files, and a `const` root shim broke the
+  browser build when both lib files are inlined into one page.
+
 ## [0.4.1] — 2026-10-21
 
 ### Site

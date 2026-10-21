@@ -1,7 +1,8 @@
 // mini-remotion 动画库（浏览器端）
 // 设计原则：全部是帧的纯函数 —— 同一帧永远渲染出同一画面。
 // 这是并发截图正确性的根基（Remotion 的 spring 也是确定性的）。
-window.Remotion = window.Remotion || {};
+var __root = typeof window !== 'undefined' ? window : globalThis;
+__root.Remotion = __root.Remotion || {};
 
 (function () {
   // ---------- interpolate ----------
@@ -70,7 +71,7 @@ window.Remotion = window.Remotion || {};
     return from + (to - from) * x;
   }
 
-  window.Remotion.interpolate = interpolate;
-  window.Remotion.Easing = Easing;
-  window.Remotion.spring = spring;
+  __root.Remotion.interpolate = interpolate;
+  __root.Remotion.Easing = Easing;
+  __root.Remotion.spring = spring;
 })();

@@ -6,6 +6,9 @@ on:
     paths:
       - 'src/**'
       - 'site/lib/**'
+      - 'index.js'
+      - 'index.d.ts'
+      - 'test/**'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/ci.yml'
@@ -13,6 +16,9 @@ on:
     paths:
       - 'src/**'
       - 'site/lib/**'
+      - 'index.js'
+      - 'index.d.ts'
+      - 'test/**'
       - 'package.json'
       - 'package-lock.json'
   workflow_dispatch:
@@ -36,10 +42,13 @@ jobs:
       - name: Syntax-check all JavaScript
         run: |
           set -e
-          for f in $(find src site -name '*.js' -not -path '*/node_modules/*'); do
+          for f in $(find src site test -name '*.js' -not -path '*/node_modules/*') index.js; do
             echo "checking $f"
             node --check "$f"
           done
+
+      - name: Unit tests
+        run: npm test
 
       - name: Install Chrome for the smoke render
         run: |

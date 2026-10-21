@@ -10,7 +10,7 @@
  *   stitchFramesToVideo -> ffmpeg 图片序列 -> MP4
  *
  * 用法：
- *   node src/render.js --comp demo --out out/demo.mp4 [--concurrency 4] [--audio bgm.mp3]
+ *   node src/render.js --comp demo --out out/demo.mp4 [--concurrency 4] [--audio bgm.mp3] [--draft]
  *   node src/render.js --comp demo --still 45 --out out/cover.png   # 单帧导出（封面）
  */
 const fs = require('fs');
@@ -145,11 +145,18 @@ async function main() {
     console.log('\n[motion-primitives] 截图完成，ffmpeg 缝合中…');
 
     // ---- ffmpeg 缝合 ----
+    // 编码质量（v0.4.2）：默认「成片档」——slow 预设 + film 调优（保颗粒/质感）
+    // + aq-mode 3（暗部与渐变多分码率，治色带）+ CRF 16。--draft 走快速预览档。
     const out = path.resolve(opts.out);
     fs.mkdirSync(path.dirname(out), { recursive: true });
     const tmpVideo = out + '.tmp.mp4';
+    const enc = opts.draft
+      ? ['-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-preset', 'veryfast', '-crf', '23']
+      : ['-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-preset', 'slow', '-tune', 'film',
+         '-crf', '16', '-profile:v', 'high', '-x264-params', 'aq-mode=3:deblock=-1,-1',
+         '-movflags', '+faststart'];
     await run('ffmpeg', ['-y', '-framerate', String(meta.fps), '-i', path.join(framesDir, 'f-%04d.png'),
-      '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18', tmpVideo]);
+      ...enc, tmpVideo]);
     if (opts.audio) {
       // 音频轨混流（对应 Remotion 的音频处理）
       await run('ffmpeg', ['-y', '-i', tmpVideo, '-i', path.resolve(opts.audio),
