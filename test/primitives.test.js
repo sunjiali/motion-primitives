@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoSort', 'orbit', 'swing'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoSort', 'orbit', 'swing', 'marquee'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -359,6 +359,18 @@ test('swing: pendulum angle, quarter-period peak, decay envelope', () => {
   assert.equal(M.swing(10, { maxDeg: 20, period: 40 }), 'rotate(20.00deg)'); // quarter period = peak
   assert.equal(M.swing(10, { maxDeg: 20, period: 40, decay: 0.05 }), 'rotate(12.13deg)'); // peak * e^-0.5
   assert.equal(M.swing(5, { at: 9, maxDeg: 20, period: 40 }), 'rotate(0.00deg)'); // before `at`, still at phase 0
+});
+
+test('marquee: copy count, modulo wrap, direction', () => {
+  const m0 = M.marquee(0, { content: 'X', unit: 100, width: 250 });
+  assert.equal((m0.match(/overflow:hidden/g) || []).length, 5); // 4 unit wrappers + the clip strip
+  assert.ok(m0.includes('translateX(0.0px)') || m0.includes('translateX(-0.0px)'));
+  const m1 = M.marquee(10, { content: 'X', unit: 100, width: 250, speed: 3 });
+  assert.ok(m1.includes('translateX(-30.0px)'));
+  const m2 = M.marquee(40, { content: 'X', unit: 100, width: 250, speed: 3 });
+  assert.ok(m2.includes('translateX(-20.0px)')); // 120 mod 100 — the seamless wrap
+  const m3 = M.marquee(10, { content: 'X', unit: 100, width: 250, speed: 3, dir: 'right' });
+  assert.ok(m3.includes('translateX(-70.0px)')); // right: offset - unit
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

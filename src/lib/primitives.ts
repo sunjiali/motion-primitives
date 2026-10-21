@@ -52,6 +52,10 @@ interface TravelResult { x: number; y: number; p: number; done: boolean }
 interface SwingOpts {
   at?: number; maxDeg?: number; period?: number; phase?: number; decay?: number;
 }
+interface MarqueeOpts {
+  content: string; unit: number; width: number;
+  x?: number; y?: number; speed?: number; dir?: string;
+}
 interface OrbitOpts {
   cx?: number; cy?: number; r?: number; speed?: number; phase?: number;
   squash?: number; depth?: boolean;
@@ -470,6 +474,28 @@ __root.Motion = (function () {
     const env = o.decay ? Math.exp(-o.decay * lf) : 1;
     const deg = maxDeg * Math.sin((lf / period) * Math.PI * 2 + (o.phase || 0)) * env;
     return 'rotate(' + deg.toFixed(2) + 'deg)';
+  }
+
+  // marquee(): a seamless infinite scroll strip. `content` is ONE
+  // unit of the strip and `unit` its exact width in px — the strip
+  // repeats it ceil(width / unit) + 1 times and translates by
+  // (frame * speed) mod unit, so the loop point is invisible.
+  // dir 'left' (default) or 'right'. Returns a clipped strip div
+  // positioned at (x, y).
+  function marquee(frame: number, o: MarqueeOpts): string {
+    o = o || { content: '', unit: 100, width: 300 };
+    const unit = o.unit || 100, width = o.width || 300;
+    const speed = o.speed == null ? 2 : o.speed;
+    const off = ((frame * speed) % unit + unit) % unit;
+    const shift = o.dir === 'right' ? off - unit : -off;
+    const copies = Math.ceil(width / unit) + 1;
+    let inner = '';
+    for (let i = 0; i < copies; i++) {
+      inner += '<div style="flex:none;width:' + unit + 'px;overflow:hidden;">' + (o.content || '') + '</div>';
+    }
+    return '<div style="position:absolute;left:' + (o.x || 0) + 'px;top:' + (o.y || 0) +
+      'px;width:' + width + 'px;overflow:hidden;"><div style="display:flex;transform:translateX(' +
+      shift.toFixed(1) + 'px);">' + inner + '</div></div>';
   }
 
   // shake(): decaying screen shake {x, y} inside [at, at+dur].
@@ -1356,7 +1382,7 @@ __root.Motion = (function () {
 
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
     beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

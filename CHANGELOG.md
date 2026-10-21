@@ -2,6 +2,18 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.31.0] — 2026-10-21
+
+### Added
+
+- `marquee(frame, o)` — a seamless infinite scroll strip: one
+  unit of content (`content`, exactly `unit` px wide) repeated
+  ceil(width / unit) + 1 times inside a clipped strip and
+  translated by (frame · speed) mod unit, so the wrap point is
+  invisible. `dir` 'left' (default) or 'right'. Tickers, logo
+  walls, promo crawls. Skill bundle synced (API catalog now 63
+  functions); site demo card #35.
+
 ## [0.30.0] — 2026-10-21
 
 ### Added

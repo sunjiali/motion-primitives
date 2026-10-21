@@ -311,6 +311,15 @@
       },
     },
     {
+      name: 'marquee', desc: 'Seamless infinite ticker — one unit of content, repeated and wrapped modulo its width.',
+      code: 'M.marquee(frame, { content, unit, width, speed })', cycle: 200,
+      draw(f) {
+        const unitHtml = '<div style="font:700 20px system-ui;color:#E8E4DA;white-space:nowrap;padding:10px 0;">MOTION <span style="color:#FF8A4C;">✦</span> ISO KIT <span style="color:#FF8A4C;">✦</span> SFX <span style="color:#FF8A4C;">✦</span>&nbsp;</div>';
+        return '<div style="position:absolute;left:0;top:86px;width:560px;border-top:1.5px solid #3A4152;border-bottom:1.5px solid #3A4152;">' +
+          M.marquee(f, { content: unitHtml, unit: 306, width: 560, speed: 2.4 }) + '</div>';
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

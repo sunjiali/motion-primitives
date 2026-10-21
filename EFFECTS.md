@@ -225,10 +225,7 @@ top, one per round:
 - ~~`orbit`~~ — shipped in v0.29 (as a pose object {x, y, angle,
   scale}, matching travel/pathFly conventions).
 - ~~`swing`~~ — shipped in v0.30.
-- `marquee` — seamless infinite scroll strip (text or repeated
-  HTML): content duplicated and translated by (frame * speed)
-  mod unitWidth; the promo/logo-ticker staple. Needs a measured
-  unit width option so the loop is truly seamless.
+- ~~`marquee`~~ — shipped in v0.31.
 - `marchingAnts` — animated dashed outline (stroke-dashoffset
   crawl) around a rect or along a path: selection/highlight
   language from editors, great for tutorials pointing at UI.

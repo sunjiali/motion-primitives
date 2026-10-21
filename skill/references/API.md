@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (62 functions)
+# motion-primitives API — the full catalog (63 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -207,6 +207,14 @@ M.swing(frame: number, o: { at?: number; maxDeg?: number; period?: number; phase
 ```
 
 Pendulum swing as a rotate() transform string; optional exponential decay settles it to rest.
+
+### `marquee`
+
+```ts
+M.marquee(frame: number, o: { content: string; unit: number; width: number; x?: number; y?: number; speed?: number; dir?: string }): string
+```
+
+Seamless infinite scroll strip: one content unit of `unit` px repeated and translated modulo unit. Returns a clipped strip div.
 
 ### `cursor`
 
