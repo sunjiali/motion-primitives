@@ -2,6 +2,28 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.49.0] — 2026-10-21
+
+### Added
+
+- `liquidMetal(frame, o)` + `liquidMetalDraw(root)` — the
+  library's first WebGL primitive, committed by Robin to close
+  the EFFECTS future track: a raymarched SDF liquid-chrome
+  cluster (one fullscreen-triangle fragment shader; smooth-min
+  union of a core sphere and hash-orbiting satellites that
+  merge and split; banded procedural environment reflections,
+  fresnel rim, key specular). Raw WebGL1 — no three.js
+  dependency. The primitive returns a canvas tag carrying its
+  parameters; the bundled player and the site paint it after
+  every render via liquidMetalDraw (one shared GL canvas,
+  shader compiled once; blob positions are computed in JS from
+  the frame, so output stays frame-pure). Palettes: chrome,
+  gold, copper. Without WebGL it degrades to soft 2-D chrome
+  blobs instead of a blank hole. Software-GL cost ≈ 0.7 s/frame
+  at 880×495 — keep the canvas modest and scale with `size`.
+  Skill bundle synced (API catalog now 82 functions); site
+  demo card #50.
+
 ## [0.48.0] — 2026-10-21
 
 ### Added

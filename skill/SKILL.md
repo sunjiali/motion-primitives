@@ -95,6 +95,10 @@ ffprobe the frame count, extract frames, look at them.
   `M.hash(n)` (deterministic).
 - **The meta field is `durationInFrames`** (plus width/height/fps).
   A wrong name renders 0 frames — the classic first-run failure.
+- **`liquidMetal` is WebGL.** It returns a canvas tag; the bundled
+  player paints it automatically after each render (as does the
+  render pipeline). Keep its canvas modest (≤ 880×495) — software
+  GL costs ~0.7 s/frame at that size; scale up with `size`.
 - **Entrances move ≥2 properties** (position + scale/opacity).
   Stagger lists/groups by 3–6 frames (`M.stagger`).
 - **Timing dialects.** Landings: 3–4 frames, hard stop + squash.

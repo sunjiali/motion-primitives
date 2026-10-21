@@ -10,7 +10,7 @@
 
   const runners = []; // {stage, cycle, draw(f) -> html}
   const visibility = new Map(); // inner stage -> on screen?
-  function apply(r, f) { r.stage.innerHTML = r.draw(((f % r.cycle) + r.cycle) % r.cycle); }
+  function apply(r, f) { r.stage.innerHTML = r.draw(((f % r.cycle) + r.cycle) % r.cycle); if (window.Motion && window.Motion.liquidMetalDraw) window.Motion.liquidMetalDraw(r.stage); }
   function addRunner(stage, cycle, draw) {
     const r = { stage, cycle, draw };
     runners.push(r);
@@ -464,6 +464,14 @@
           '<div style="position:absolute;left:60px;top:96px;font:800 74px system-ui;color:#E8E4DA;">STREAK</div>' +
           '<div style="position:absolute;left:64px;top:196px;width:330px;height:10px;border-radius:5px;background:#F59E4C;"></div>';
         return M.slitScan(f, { html: scene, h: 315, bands: 16, amp: 24, waves: 1.4, speed: 0.09 });
+      },
+    },
+    {
+      name: 'liquidMetal', desc: 'Raymarched SDF chrome — blobs merge and split like liquid metal (WebGL).',
+      code: "M.liquidMetal(frame, { palette: 'chrome' })", cycle: 9999,
+      draw(f) {
+        return '<div style="position:absolute;inset:0;background:radial-gradient(120% 120% at 50% 30%,#1A2230,#07090D);"></div>' +
+          M.liquidMetal(f, { w: 560, h: 315, palette: 'chrome', seed: 2, speed: 0.9 });
       },
     },
     {

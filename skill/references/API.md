@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (80 functions)
+# motion-primitives API — the full catalog (82 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -581,6 +581,22 @@ M.slitScan(frame: number, o: { html: string; h?: number; bands?: number; amp?: n
 ```
 
 Smooth slit-scan streak warp over wrapped HTML: band-clipped copies shifted by a travelling sine field. Returns an HTML string.
+
+### `liquidMetal`
+
+```ts
+M.liquidMetal(frame: number, o: { w?: number; h?: number; x?: number; y?: number; size?: number; palette?: string; speed?: number; seed?: number; fps?: number; blobs?: number }): string
+```
+
+Raymarched SDF liquid-chrome blob cluster (WebGL). Returns a canvas tag; the players paint it via liquidMetalDraw after each render.
+
+### `liquidMetalDraw`
+
+```ts
+M.liquidMetalDraw(root: unknown): void
+```
+
+Paints every liquidMetal canvas under a root element. Called automatically by the players; no-op without a DOM.
 
 ## Isometric kit
 

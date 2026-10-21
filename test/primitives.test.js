@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -519,6 +519,15 @@ test('slitScan: passthrough outside the window, banded warp inside', () => {
   const mid = M.slitScan(30, o);
   assert.equal((mid.match(/clip-path:inset/g) || []).length, 7); // one clipped copy per band
   assert.notEqual(M.slitScan(34, o), mid); // the field travels
+});
+
+test('liquidMetal: canvas tag carries its params; draw is a safe no-op without a DOM', () => {
+  const tag = M.liquidMetal(12, { w: 640, h: 360, palette: 'gold', seed: 3 });
+  assert.ok(tag.startsWith('<canvas class="mp-liquid" width="640" height="360"'));
+  assert.ok(tag.includes('data-frame="12"'));
+  assert.ok(tag.includes('"palette":"gold"'));
+  assert.equal(M.liquidMetal(12, { w: 640, h: 360, palette: 'gold', seed: 3 }), tag); // frame-pure tag
+  assert.doesNotThrow(() => M.liquidMetalDraw(null));
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

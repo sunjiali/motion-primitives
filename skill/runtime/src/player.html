@@ -26,6 +26,7 @@
   // 注意：多 tab 并发时后台页面的 rAF 可能被 Chrome 节流，用 setTimeout 做兜底保证进度
   window.__setFrame = async (f) => {
     window.Composition.render(f, stage);
+    if (window.Motion && window.Motion.liquidMetalDraw) window.Motion.liquidMetalDraw(stage);
     await Promise.race([
       new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))),
       new Promise((r) => setTimeout(r, 300)),

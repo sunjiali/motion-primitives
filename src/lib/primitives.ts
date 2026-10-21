@@ -98,6 +98,10 @@ interface SlitScanOpts {
   html: string; h?: number; bands?: number; amp?: number;
   waves?: number; speed?: number; at?: number; dur?: number;
 }
+interface LiquidMetalOpts {
+  w?: number; h?: number; x?: number; y?: number; size?: number;
+  palette?: string; speed?: number; seed?: number; fps?: number; blobs?: number;
+}
 interface AssembleTextOpts {
   text: string; at?: number; dur?: number; x?: number; y?: number;
   size?: number; color?: string; seed?: number; mode?: string; weight?: number;
@@ -970,6 +974,115 @@ __root.Motion = (function () {
         'px 0);transform:translateX(' + dx.toFixed(1) + 'px);">' + html + '</div>';
     }
     return '<div style="position:absolute;inset:0;overflow:hidden;">' + out + '</div>';
+  }
+
+  // liquidMetal(): the library's first WebGL primitive — a
+  // raymarched SDF chrome blob cluster (smooth-min union of a
+  // core sphere and hash-orbiting satellites that merge and
+  // split like liquid metal), the Motion Lab opener look. This
+  // function returns a <canvas> tag carrying its parameters;
+  // the players call liquidMetalDraw() after every render to
+  // paint it (one shared GL canvas, shader compiled once, blob
+  // positions computed here in JS from `frame` — frame-pure).
+  // If WebGL is unavailable it degrades to soft 2-D chrome
+  // blobs rather than a blank hole.
+  const LM_VERT = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+  const LM_FRAG = [
+    'precision highp float;',
+    'uniform vec2 u_res;uniform vec4 u_blobs[8];uniform int u_count;uniform vec3 u_tint;',
+    'float smin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}',
+    'float sdf(vec3 p){float d=1e5;for(int i=0;i<8;i++){if(i>=u_count)break;vec4 b=u_blobs[i];d=smin(d,length(p-b.xyz)-b.w,.55);}return d;}',
+    'vec3 nrm(vec3 p){vec2 e=vec2(.002,0.);float d=sdf(p);return normalize(vec3(sdf(p+e.xyy)-d,sdf(p+e.yxy)-d,sdf(p+e.yyx)-d));}',
+    'vec3 env(vec3 d){float y=d.y*.5+.5;vec3 c=mix(vec3(.03,.04,.06),vec3(.16,.19,.24),smoothstep(0.,.45,y));',
+    'c=mix(c,vec3(.92,.95,1.),smoothstep(.42,.58,y));c=mix(c,vec3(.35,.4,.48),smoothstep(.58,.78,y));',
+    'c=mix(c,vec3(.98),smoothstep(.78,.92,y));c=mix(c,vec3(.05,.06,.08),smoothstep(.92,1.,y));',
+    'c+=vec3(1.)*pow(max(0.,1.-abs(d.y+.15)*3.2),6.)*.55;return c*u_tint;}',
+    'void main(){vec2 uv=(gl_FragCoord.xy*2.-u_res)/u_res.y;vec3 ro=vec3(0.,0.,4.2);vec3 rd=normalize(vec3(uv,-1.6));',
+    'float t=0.;float hit=0.;vec3 p=ro;',
+    'for(int i=0;i<72;i++){p=ro+rd*t;float d=sdf(p);if(d<.0015){hit=1.;break;}t+=d;if(t>9.)break;}',
+    'if(hit<.5){gl_FragColor=vec4(0.,0.,0.,0.);return;}',
+    'vec3 n=nrm(p);vec3 v=-rd;vec3 r=reflect(rd,n);vec3 col=env(r);',
+    'float fres=pow(1.-max(0.,dot(n,v)),2.2);col+=vec3(.9,.95,1.)*fres*.5;',
+    'vec3 L=normalize(vec3(.5,.8,.6));col+=vec3(1.)*pow(max(0.,dot(reflect(-L,n),v)),90.)*1.1;',
+    'gl_FragColor=vec4(col,1.);}',
+  ].join('\n');
+  let __lmGl: any = null;
+  function liquidMetal(frame: number, o: LiquidMetalOpts): string {
+    o = o || {};
+    const w = o.w || 720, h = o.h || 405;
+    const data = { seed: o.seed || 1, palette: o.palette || 'chrome', speed: o.speed == null ? 1 : o.speed, blobs: o.blobs || 6, fps: o.fps || 30 };
+    return '<canvas class="mp-liquid" width="' + w + '" height="' + h + '" data-frame="' + frame + '" data-lm=\'' +
+      JSON.stringify(data) + '\' style="position:absolute;left:' + (o.x || 0) + 'px;top:' + (o.y || 0) + 'px;width:' +
+      (o.size || w) + 'px;height:' + (o.size ? Math.round((o.size * h) / w) : h) + 'px;"></canvas>';
+  }
+  function liquidMetalDraw(root: any): void {
+    const doc: any = (globalThis as any).document;
+    if (!doc || !root || !root.querySelectorAll) return;
+    const nodes = root.querySelectorAll('canvas.mp-liquid');
+    for (let n = 0; n < nodes.length; n++) {
+      const cv: any = nodes[n];
+      let o: LiquidMetalOpts & { seed?: number } = {};
+      try { o = JSON.parse(cv.getAttribute('data-lm') || '{}'); } catch (e) { o = {}; }
+      const frame = parseInt(cv.getAttribute('data-frame') || '0', 10);
+      const seed = o.seed || 1, fps = o.fps || 30, t = (frame / fps) * (o.speed == null ? 1 : o.speed);
+      // blob layout, a pure function of (frame, seed): core + satellites
+      const blobs: number[] = [];
+      blobs.push(0, Math.sin(t * 0.9) * 0.05, 0, 0.98);
+      const count = Math.min(6, o.blobs || 6);
+      for (let i = 0; i < count; i++) {
+        const ph = hash(seed * 7 + i * 3.3) * Math.PI * 2;
+        const sp = 0.35 + hash(seed * 11 + i * 5.1) * 0.5;
+        const R = 1.02 + hash(seed * 13 + i * 7.7) * 0.38;
+        const a = ph + t * sp;
+        blobs.push(Math.cos(a) * R, Math.sin(a) * R * 0.8, Math.sin(a * 0.7 + ph) * 0.35,
+          (0.4 + hash(seed * 17 + i * 9.3) * 0.22) * (1 + 0.16 * Math.sin(t * 1.3 + ph * 2)));
+      }
+      const tint = o.palette === 'gold' ? [1.15, 0.92, 0.55] : o.palette === 'copper' ? [1.18, 0.72, 0.5] : [1, 1, 1];
+      const ctx2d = cv.getContext('2d');
+      if (!ctx2d) continue;
+      try {
+        if (!__lmGl) {
+          const gc = doc.createElement('canvas');
+          const gl = gc.getContext('webgl', { alpha: true, antialias: false, preserveDrawingBuffer: true });
+          if (!gl) throw new Error('no webgl');
+          const sh = (type: number, src: string): any => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+          const prog = gl.createProgram();
+          gl.attachShader(prog, sh(gl.VERTEX_SHADER, LM_VERT));
+          gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, LM_FRAG));
+          gl.linkProgram(prog); gl.useProgram(prog);
+          const buf = gl.createBuffer();
+          gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+          gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+          const loc = gl.getAttribLocation(prog, 'p');
+          gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+          __lmGl = { canvas: gc, gl, prog };
+        }
+        const { canvas: gc, gl, prog } = __lmGl;
+        if (gc.width !== cv.width || gc.height !== cv.height) { gc.width = cv.width; gc.height = cv.height; }
+        gl.viewport(0, 0, gc.width, gc.height);
+        gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.uniform2f(gl.getUniformLocation(prog, 'u_res'), gc.width, gc.height);
+        gl.uniform1i(gl.getUniformLocation(prog, 'u_count'), count + 1);
+        gl.uniform3f(gl.getUniformLocation(prog, 'u_tint'), tint[0], tint[1], tint[2]);
+        const flat = new Float32Array(32);
+        flat.set(blobs); // up to 8 blobs; the rest stay (0,0,0,0), guarded by u_count
+        gl.uniform4fv(gl.getUniformLocation(prog, 'u_blobs'), flat);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        ctx2d.clearRect(0, 0, cv.width, cv.height);
+        ctx2d.drawImage(gc, 0, 0);
+      } catch (e) {
+        // WebGL unavailable: soft 2-D chrome-blob fallback, never a blank hole
+        ctx2d.clearRect(0, 0, cv.width, cv.height);
+        const cx = cv.width / 2, cy = cv.height / 2, u = cv.height / 3.4;
+        for (let i = blobs.length / 4 - 1; i >= 0; i--) {
+          const bx = cx + blobs[i * 4] * u, by = cy - blobs[i * 4 + 1] * u, br = blobs[i * 4 + 3] * u;
+          const g = ctx2d.createRadialGradient(bx - br * 0.35, by - br * 0.4, br * 0.1, bx, by, br);
+          g.addColorStop(0, '#f4f6fa'); g.addColorStop(0.45, '#9aa3b2'); g.addColorStop(0.8, '#3a4150'); g.addColorStop(1, '#14171d');
+          ctx2d.fillStyle = g;
+          ctx2d.beginPath(); ctx2d.arc(bx, by, br, 0, Math.PI * 2); ctx2d.fill();
+        }
+      }
+    }
   }
 
   // shake(): decaying screen shake {x, y} inside [at, at+dur].
@@ -1994,7 +2107,7 @@ __root.Motion = (function () {
 
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
     beatGrid, beatFrames, inertia, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

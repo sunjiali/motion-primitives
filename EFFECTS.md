@@ -281,9 +281,12 @@ what the posts showed at sweep time):
   by A·sin(phase + b·k), the Superman-titles streak warp; smooth
   where glitch is jagged. (@CcampFx's X thread on streaks and
   slit-scans — the sweep's one genuine X find.)
-- (Future track, not committed) WebGL/three.js liquid-metal logo sting —
-  the Motion Lab opener is raymarched SDF chrome with smooth-min blending;
-  out of scope for this 2D stack, revisit only if a 3D need appears.
+- ~~(Future track) WebGL liquid-metal logo sting~~ — committed
+  by Robin 2026-10-21 ("实现液态金属这部分") and shipped in
+  v0.49 as `liquidMetal`: raw WebGL1 raymarched SDF (no three.js
+  dependency — one fullscreen-triangle shader, smooth-min union
+  of JS-computed blob positions), players auto-paint the canvas
+  after each render; 2-D chrome fallback when WebGL is missing.
 
 ## Rules for new effects
 
