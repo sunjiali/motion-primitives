@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (58 functions)
+# motion-primitives API — the full catalog (59 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -471,6 +471,14 @@ M.isoCylinder(o: { x?: number; y?: number; z?: number; ox?: number; oy?: number;
 ```
 
 Isometric solid cylinder (projected-circle top ellipse). Returns an SVG string.
+
+### `isoWedge`
+
+```ts
+M.isoWedge(o: { x?: number; y?: number; z?: number; ox?: number; oy?: number; unit?: number; len?: number; d?: number; h?: number; color?: string; top?: string; side?: string; stroke?: string }): string
+```
+
+Isometric wedge (triangular prism): high edge at x, slope descending along +x. Returns an SVG string.
 
 ### `isoSort`
 

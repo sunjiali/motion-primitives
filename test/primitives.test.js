@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoSort'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoSort'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -321,6 +321,11 @@ test('iso kit: box shading order, cylinder ellipse, painter sort', () => {
   assert.equal(fills.length, 3); // left, right, top painted in that order
   assert.ok(lum(fills[2]) > lum(fills[0]) && lum(fills[0]) > lum(fills[1]), `tone order broken: ${fills}`);
   assert.ok(box.includes('width="173.2"')); // (w + d) * unit * cos30
+  const wedge = M.isoWedge({ x: 0, y: 0, len: 2, d: 2, h: 1, unit: 50, color: '#808080' });
+  const wfills = [...wedge.matchAll(/fill="(#[0-9a-f]{6})"/g)].map((m) => m[1]);
+  assert.equal(wfills.length, 2); // side triangle, then slope
+  assert.ok(lum(wfills[1]) > lum(wfills[0]), 'slope must be lighter than the side');
+  assert.ok(wedge.includes('width="173.2"')); // (len + d) * unit * cos30, same span rule as the box
   const cyl = M.isoCylinder({ x: 0, y: 0, r: 1, h: 2, unit: 50 });
   assert.ok(cyl.includes('<ellipse'));
   assert.ok(cyl.includes('rx="61.2"')); // r * unit * sqrt(3/2)

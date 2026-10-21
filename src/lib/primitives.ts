@@ -131,6 +131,10 @@ interface IsoBoxOpts extends IsoBase {
 interface IsoCylinderOpts extends IsoBase {
   r?: number; h?: number; color?: string; top?: string; stroke?: string;
 }
+interface IsoWedgeOpts extends IsoBase {
+  len?: number; d?: number; h?: number; color?: string;
+  top?: string; side?: string; stroke?: string;
+}
 interface IsoPart { x: number; y: number; z?: number; html: string }
 interface CursorKey { f: number; x: number; y: number }
 interface CursorOpts {
@@ -1248,6 +1252,27 @@ __root.Motion = (function () {
       '" fill="' + (o.top || shade(color, 30)) + '"' + edge + '/>');
   }
 
+  // A wedge (triangular prism): high edge at x, sloping down
+  // along +x for `len`, depth d, height h. Two visible faces: the
+  // slope and the +y triangle.
+  function isoWedge(o: IsoWedgeOpts): string {
+    o = o || {};
+    const x = o.x || 0, y = o.y || 0, z = o.z || 0;
+    const len = o.len || 1, d = o.d || 1, h = o.h == null ? 1 : o.h;
+    const color = o.color || '#8A93A6';
+    const P = (dx: number, dy: number, dz: number): [number, number] => isoPt(o, x + dx, y + dy, z + dz);
+    const B = P(len, 0, 0), C = P(len, d, 0), D = P(0, d, 0), E = P(0, 0, h), F = P(0, d, h);
+    const all = [B, C, D, E, F];
+    const minX = Math.min(...all.map((p) => p[0])), maxX = Math.max(...all.map((p) => p[0]));
+    const minY = Math.min(...all.map((p) => p[1])), maxY = Math.max(...all.map((p) => p[1]));
+    const pts = (list: [number, number][]): string => list.map((p) => (p[0] - minX).toFixed(1) + ',' + (p[1] - minY).toFixed(1)).join(' ');
+    const edge = o.stroke === 'none' ? '' : ' stroke="' + (o.stroke || shade(color, -48)) + '" stroke-width="1" stroke-linejoin="round"';
+    const poly = (list: [number, number][], fill: string): string => '<polygon points="' + pts(list) + '" fill="' + fill + '"' + edge + '/>';
+    return isoSvg(minX, minY, maxX - minX, maxY - minY,
+      poly([D, C, F], o.side || shade(color, -6)) +      // +y triangle
+      poly([E, F, C, B], o.top || shade(color, 16)));    // the slope
+  }
+
   // Painter's order for iso parts: ascending (x + y), ties by z.
   // Parts carry their resting coords; the html may be built at an
   // animated offset without changing the paint order.
@@ -1260,7 +1285,7 @@ __root.Motion = (function () {
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
     paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
-    beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoSort,
+    beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,

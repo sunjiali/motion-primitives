@@ -134,6 +134,8 @@ export function cursor(frame: number, o: { path: { f: number; x: number; y: numb
 export function isoBox(o: { x?: number; y?: number; z?: number; ox?: number; oy?: number; unit?: number; w?: number; d?: number; h?: number; color?: string; top?: string; left?: string; right?: string; stroke?: string }): string;
 /** Isometric solid cylinder (projected-circle top ellipse). Returns an SVG string. */
 export function isoCylinder(o: { x?: number; y?: number; z?: number; ox?: number; oy?: number; unit?: number; r?: number; h?: number; color?: string; top?: string; stroke?: string }): string;
+/** Isometric wedge (triangular prism): high edge at x, slope descending along +x. Returns an SVG string. */
+export function isoWedge(o: { x?: number; y?: number; z?: number; ox?: number; oy?: number; unit?: number; len?: number; d?: number; h?: number; color?: string; top?: string; side?: string; stroke?: string }): string;
 /** Painter's-order join for iso parts: sorts by (x + y), then z, and concatenates their html. */
 export function isoSort(parts: { x: number; y: number; z?: number; html: string }[]): string;
 
@@ -178,6 +180,7 @@ declare const Motion: {
   cursor: typeof cursor;
   isoBox: typeof isoBox;
   isoCylinder: typeof isoCylinder;
+  isoWedge: typeof isoWedge;
   isoSort: typeof isoSort;
   Motion: typeof Motion;
   Remotion: RemotionModule;

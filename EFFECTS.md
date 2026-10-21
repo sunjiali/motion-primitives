@@ -28,7 +28,9 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
   overshoot / fade). Spans are inline-block, so line layout never
   shifts while letters land.
 
-### Isometric kit (v0.26)
+### Isometric kit (v0.26–0.27)
+- `isoWedge` (v0.27) — triangular prism: high edge at x, slope
+  descending along +x, two visible faces (slope + side triangle).
 - `isoBox` / `isoCylinder` / `isoSort` — native isometric solids
   on one fixed camera (30°, no perspective): filled faces shaded
   by orientation from a single base color (top lightest), crisp

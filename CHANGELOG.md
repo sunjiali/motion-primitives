@@ -2,6 +2,21 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.27.0] — 2026-10-21
+
+### Added
+
+- `isoWedge(o)` — an isometric wedge (triangular prism): high
+  edge at `x`, slope descending along +x for `len`, depth `d`,
+  height `h`. Two visible faces (the slope, lit; the +y side
+  triangle, mid tone), shaded from one `color` like the rest of
+  the iso kit — ramps, chocks, and loading slopes for machine
+  scenes. Skill bundle synced (API catalog now 59 functions).
+  Verified with tests (face count, slope/side tone order,
+  projected span) and a composed render still alongside the
+  v0.26 machine. The site iso demo now drops a ramp in as its
+  sixth part.
+
 ## [0.26.0] — 2026-10-21
 
 ### Added
