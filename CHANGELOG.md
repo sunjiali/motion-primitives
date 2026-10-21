@@ -2,6 +2,21 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.48.0] — 2026-10-21
+
+### Added
+
+- `slitScan(frame, o)` — a smooth streak warp over wrapped
+  HTML: the content is re-rendered in horizontal bands, each
+  clipped and shifted by a travelling sine field — the
+  Superman-titles smear, continuous where glitch is jagged.
+  Band copies are overscanned past both edges so a shift never
+  opens a gap (caught on the verification still). Windowed
+  with a sine envelope when `dur` is set, sustained otherwise.
+  From the 2026-10-21 X sweep (@CcampFx's streak thread).
+  Skill bundle synced (API catalog now 80 functions); site
+  demo card #49. This completes the sweep backlog.
+
 ## [0.47.0] — 2026-10-21
 
 ### Added

@@ -457,6 +457,16 @@
       },
     },
     {
+      name: 'slitScan', desc: 'A smooth streak warp — every band of the scene slides on a sine field.',
+      code: 'M.slitScan(frame, { html, bands, amp })', cycle: 9999,
+      draw(f) {
+        const scene = '<div style="position:absolute;inset:0;background:linear-gradient(160deg,#1D2733,#10151D);"></div>' +
+          '<div style="position:absolute;left:60px;top:96px;font:800 74px system-ui;color:#E8E4DA;">STREAK</div>' +
+          '<div style="position:absolute;left:64px;top:196px;width:330px;height:10px;border-radius:5px;background:#F59E4C;"></div>';
+        return M.slitScan(f, { html: scene, h: 315, bands: 16, amp: 24, waves: 1.4, speed: 0.09 });
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

@@ -132,6 +132,8 @@ export function assembleText(frame: number, o: { text: string; at?: number; dur?
 export function textOnPath(frame: number, o: { text: string; pts: number[][]; size?: number; color?: string; speed?: number; offset?: number; loop?: boolean; weight?: number; x?: number; y?: number }): string;
 /** Seamless animated pattern backdrop: one motif tiled with a travelling per-tile phase (spin / pulse / wave). Returns a positioned div. */
 export function patternField(frame: number, o: { w?: number; h?: number; tile?: number; motif?: string; motion?: string; color?: string; bg?: string; speed?: number; x?: number; y?: number }): string;
+/** Smooth slit-scan streak warp over wrapped HTML: band-clipped copies shifted by a travelling sine field. Returns an HTML string. */
+export function slitScan(frame: number, o: { html: string; h?: number; bands?: number; amp?: number; waves?: number; speed?: number; at?: number; dur?: number }): string;
 /** 3D flip entrance with overshoot settle. Returns a CSS style string. */
 export function flipIn(frame: number, o?: AtOpts & { axis?: 'X' | 'Y'; from?: number; perspective?: number }): string;
 /** Odometer digit roll from one integer to another. Returns an HTML string. */
@@ -218,6 +220,7 @@ declare const Motion: {
   assembleText: typeof assembleText;
   textOnPath: typeof textOnPath;
   patternField: typeof patternField;
+  slitScan: typeof slitScan;
   wipeReveal: typeof wipeReveal;
   confetti: typeof confetti;
   cursor: typeof cursor;

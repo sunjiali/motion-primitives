@@ -274,7 +274,10 @@ what the posts showed at sweep time):
 - ~~`isoTerrain`~~ — shipped in v0.46 (gaussian hill, fixed or
   orbiting focus).
 - ~~`patternField`~~ — shipped in v0.47.
-- `slitScan` — smooth per-band time displacement: band b shifted
+- ~~`slitScan`~~ — shipped in v0.48 (band copies overscanned by
+  amp on both sides so shifts never open an edge gap). With
+  this, the 2026-10-21 sweep backlog is fully shipped.
+- (original note) smooth per-band time displacement: band b shifted
   by A·sin(phase + b·k), the Superman-titles streak warp; smooth
   where glitch is jagged. (@CcampFx's X thread on streaks and
   slit-scans — the sweep's one genuine X find.)

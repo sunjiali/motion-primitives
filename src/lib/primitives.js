@@ -745,6 +745,40 @@ __root.Motion = (function () {
         return '<div style="position:absolute;left:' + (o.x || 0) + 'px;top:' + (o.y || 0) + 'px;width:' + w + 'px;height:' + h +
             'px;overflow:hidden;' + (o.bg ? 'background:' + o.bg + ';' : '') + '"><svg width="' + w + '" height="' + h + '">' + tiles + '</svg></div>';
     }
+    // slitScan(): a smooth streak warp over wrapped HTML — the
+    // content is re-rendered in horizontal bands, each band
+    // clipped and shifted by a travelling sine field,
+    // A·sin(phase + band·k): the Superman-titles smear. Where
+    // glitch is jagged and random, this is continuous. With
+    // `dur` set it windows over [at, at + dur] under a sine
+    // envelope; without, it runs sustained. From the X sweep
+    // (@CcampFx's streak thread — the sweep's one true X post).
+    function slitScan(frame, o) {
+        o = o || {};
+        const html = o.html || '';
+        const at = o.at || 0;
+        if (frame < at)
+            return html;
+        let env = 1;
+        if (o.dur != null) {
+            if (frame >= at + o.dur)
+                return html;
+            env = Math.sin(Math.PI * (frame - at) / o.dur);
+        }
+        const h = o.h || 720, bands = o.bands || 14;
+        const rawAmp = o.amp == null ? 26 : o.amp;
+        const amp = rawAmp * env, waves = o.waves || 1.5, speed = o.speed || 0.11;
+        const bh = h / bands;
+        const over = Math.ceil(Math.abs(rawAmp)) + 1; // overscan: band copies widen past both edges so a shift never opens a gap
+        let out = '';
+        for (let b = 0; b < bands; b++) {
+            const dx = amp * Math.sin(frame * speed + b * (Math.PI * 2 * waves / bands));
+            out += '<div style="position:absolute;top:0;bottom:0;left:-' + over + 'px;right:-' + over +
+                'px;clip-path:inset(' + (b * bh).toFixed(1) + 'px 0 ' + (h - (b + 1) * bh).toFixed(1) +
+                'px 0);transform:translateX(' + dx.toFixed(1) + 'px);">' + html + '</div>';
+        }
+        return '<div style="position:absolute;inset:0;overflow:hidden;">' + out + '</div>';
+    }
     // shake(): decaying screen shake {x, y} inside [at, at+dur].
     function shake(frame, o) {
         o = o || {};
@@ -1772,7 +1806,7 @@ __root.Motion = (function () {
     }
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
+        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
         beatGrid, beatFrames, inertia, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
