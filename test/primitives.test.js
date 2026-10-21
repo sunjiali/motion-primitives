@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -131,6 +131,22 @@ test('flipIn: edge-on at start, settles at 0 with an overshoot', () => {
   for (let f = 12; f < 22; f++) if (/rotateY\(-/.test(M.flipIn(f, { at: 0, dur: 22 }))) overshot = true;
   assert.ok(overshot, 'expected a negative-degree overshoot frame');
   assert.ok(M.flipIn(0, { axis: 'X', from: -80 }).includes('rotateX(-80.00deg)'));
+});
+
+test('counterRoll: starts on `from`, settles exactly on `to`, cascades', () => {
+  const o = { at: 0, dur: 40, stagger: 4, size: 50, from: 7, to: 2026 };
+  const stepsOf = (html) => [...html.matchAll(/translateY\((-?[\d.]+)px\)/g)].map((m) => -parseFloat(m[1]) / 50 + 0); // +0: no -0
+  assert.deepEqual(stepsOf(M.counterRoll(0, o)), [0, 0, 0, 0]);
+  const end = stepsOf(M.counterRoll(200, o));
+  // Visible digit per column = (start digit + steps) % 10 must equal 2,0,2,6.
+  const sd = [0, 0, 0, 7], want = [2, 0, 2, 6];
+  end.forEach((s, i) => {
+    assert.ok(Math.abs(s - Math.round(s)) < 1e-9, `column ${i} not aligned: ${s}`);
+    assert.equal((sd[i] + Math.round(s)) % 10, want[i], `column ${i} shows wrong digit`);
+  });
+  // Mid-roll, the ones column (rightmost) is ahead of the thousands column.
+  const mid = stepsOf(M.counterRoll(20, o));
+  assert.ok(mid[3] > mid[0], `cascade broken: ${mid}`);
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

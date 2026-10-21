@@ -567,9 +567,44 @@ __root.Motion = (function () {
       '(' + deg.toFixed(2) + 'deg);opacity:' + Math.min(1, raw * 3).toFixed(3) + ';';
   }
 
+  // Odometer digit roll: every decimal column is a digit strip sliding
+  // inside a clipped window, rolling forward from the `from` digit to the
+  // `to` digit (plus `spin` extra full turns for flair). Columns start
+  // staggered from the ones place up, so the roll settles in a leftward
+  // cascade and lands perfectly aligned. Returns an HTML string.
+  function counterRoll(frame, o) {
+    o = o || {};
+    const from = Math.max(0, Math.round(o.from || 0));
+    const to = Math.max(0, Math.round(o.to == null ? 100 : o.to));
+    const size = o.size || 64;
+    const digits = Math.max(String(from).length, String(to).length);
+    const dur = o.dur || 45, staggerF = o.stagger == null ? 4 : o.stagger;
+    const spin = o.spin == null ? 1 : o.spin;
+    let cols = '';
+    for (let i = 0; i < digits; i++) {
+      const k = digits - 1 - i; // place from the right (0 = ones)
+      const place = Math.pow(10, k);
+      const sd = Math.floor(from / place) % 10;
+      const ed = Math.floor(to / place) % 10;
+      const delta = (ed - sd + 10) % 10 + 10 * spin;
+      const rawK = clamp01((frame - (o.at || 0) - k * staggerF) / dur);
+      const p = (Easing[o.fn || 'cubicOut'] || Easing.cubicOut)(rawK);
+      let strip = '';
+      for (let j = 0; j <= delta; j++) {
+        strip += '<div style="height:' + size + 'px;line-height:' + size + 'px;">' + ((sd + j) % 10) + '</div>';
+      }
+      cols += '<div style="display:inline-block;width:' + (size * 0.62).toFixed(1) + 'px;height:' + size +
+        'px;overflow:hidden;vertical-align:top;"><div style="transform:translateY(' +
+        (-delta * p * size).toFixed(2) + 'px);">' + strip + '</div></div>';
+    }
+    return '<div style="display:inline-block;font:800 ' + size + 'px ' +
+      (o.fontFamily || 'ui-monospace, Menlo, monospace') + ';color:' + (o.color || '#33302B') +
+      ';text-align:center;">' + cols + '</div>';
+  }
+
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,

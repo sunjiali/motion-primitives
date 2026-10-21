@@ -104,6 +104,8 @@ export interface PathFlyResult extends XY { angle: number; p: number; done: bool
 export function pathFly(frame: number, o: AtOpts & { pts: Array<[number, number]> }): PathFlyResult;
 /** 3D flip entrance with overshoot settle. Returns a CSS style string. */
 export function flipIn(frame: number, o?: AtOpts & { axis?: 'X' | 'Y'; from?: number; perspective?: number }): string;
+/** Odometer digit roll from one integer to another. Returns an HTML string. */
+export function counterRoll(frame: number, o?: AtOpts & { from?: number; to?: number; size?: number; stagger?: number; spin?: number; color?: string }): string;
 
 export interface SfxEvent { f: number; s: string; g?: number; pan?: number; seed?: number }
 export interface SfxScore { fps?: number; durationFrames: number; tailSec?: number; events: SfxEvent[] }
@@ -133,7 +135,7 @@ declare const Motion: {
   meshBg: typeof meshBg; drawOn: typeof drawOn; poly: typeof poly; bars: typeof bars;
   scramble: typeof scramble; kenBurns: typeof kenBurns; fx: typeof fx;
   paperEl: typeof paperEl; pivot: typeof pivot; stepped: typeof stepped; onTwos: typeof onTwos;
-  whip: typeof whip; pathFly: typeof pathFly; flipIn: typeof flipIn;
+  whip: typeof whip; pathFly: typeof pathFly; flipIn: typeof flipIn; counterRoll: typeof counterRoll;
   Motion: typeof Motion;
   Remotion: RemotionModule;
   sfx: SfxModule;

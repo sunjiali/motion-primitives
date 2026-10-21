@@ -123,6 +123,15 @@
       },
     },
     {
+      name: 'counterRoll', desc: 'Odometer roll: every column spins forward and settles in a leftward cascade.',
+      code: 'M.counterRoll(frame, { from: 0, to: 8848 })', cycle: 160,
+      draw(f) {
+        return '<div style="position:absolute;left:0;right:0;top:74px;text-align:center;">' +
+          M.counterRoll(f, { at: 12, dur: 74, stagger: 5, from: 0, to: 8848, size: 74, color: INK }) +
+          '<div style="margin-top:14px;font:600 13px ui-monospace,Menlo,monospace;color:#8A7D68;letter-spacing:.22em;">METERS ABOVE SEA LEVEL</div></div>';
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

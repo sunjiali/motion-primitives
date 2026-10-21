@@ -2,6 +2,16 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.10.0] — 2026-10-21
+
+### Added
+- `counterRoll` — odometer digit roll: each decimal column is a digit
+  strip that rolls forward to its target digit (plus optional extra
+  full turns), starting staggered from the ones place so the number
+  settles in a leftward cascade and lands perfectly aligned. Site demo
+  card included (20 cards). Unit-tested: start state, exact settle
+  digits, cascade ordering.
+
 ## [0.9.1] — 2026-10-21
 
 ### Internal

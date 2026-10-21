@@ -27,6 +27,12 @@ slow zoom/pan · `breathe` idle micro-motion · `fx` film grain + vignette ·
 Showcase: `src/compositions/fx-showcase.js` (dark premium reel using the
 whole v0.3 stack).
 
+### Numbers (v0.10)
+- `counterRoll(frame, {from, to, size, stagger, spin})` — odometer digit
+  roll: per-column strips roll forward to their target digits with a
+  ones-first stagger, settling in a leftward cascade, perfectly aligned
+  at rest. Supersedes nothing — `countUp` stays the plain readout.
+
 ### Entrances (v0.9)
 - `flipIn(frame, {at, dur, axis, from, perspective})` — 3D flip entrance:
   rotates in from edge-on with a backOut overshoot settle; style string
@@ -98,7 +104,6 @@ Primitives to build for it:
 
 ## Backlog (next rounds, roughly in order)
 
-- `counterRoll` — odometer-style digit roll for big numbers
 - `drawText` — handwriting-style stroke text (SVG paths for common glyphs)
 - `particleField` — ambient drifting particle layer (stars/dust/snow)
 - `morphShape` — shape A→B morph (circle→star→heart…) for icons
