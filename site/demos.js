@@ -218,6 +218,14 @@
       },
     },
     {
+      name: 'splitText', desc: 'Split-text entrance: every character lands on its own stagger — rise, pop, fade.',
+      code: 'M.splitText(frame, { text: "Split Text" })', cycle: 170,
+      draw(f) {
+        return M.splitText(f, { text: 'Split Text', at: 8, dur: 13, stagger: 3, size: 63, x: 280, y: 92, color: INK }) +
+          M.splitText(f, { text: 'one letter at a time', at: 36, dur: 12, stagger: 2, size: 27, mode: 'pop', x: 280, y: 172, color: C.pink, weight: 700 });
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

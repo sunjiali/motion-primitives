@@ -122,6 +122,8 @@ export function beatGrid(frame: number, o: { bpm: number; at?: number; fps?: num
 export function beatFrames(o: { bpm: number; at?: number; fps?: number; perBar?: number; count: number }): number[];
 /** Morph between two raw polygon point sets (uneven counts are subdivided to match). Returns an SVG string. */
 export function morphPoly(frame: number, o: AtOpts & { fn?: string; from: [number, number][]; to: [number, number][]; x?: number; y?: number; color?: string; stroke?: string; strokeWidth?: number; rot?: number }): string;
+/** Split-text entrance: every character animates in on its own stagger (rise / pop / fade). Returns an HTML string. */
+export function splitText(frame: number, o: AtOpts & { fn?: string; text: string; x?: number; y?: number; size?: number; stagger?: number; mode?: 'rise' | 'pop' | 'fade'; color?: string; fontFamily?: string; weight?: number }): string;
 
 export interface SfxEvent { f: number; s: string; g?: number; pan?: number; seed?: number }
 export interface SfxScore { fps?: number; durationFrames: number; tailSec?: number; events: SfxEvent[] }
@@ -158,6 +160,7 @@ declare const Motion: {
   glitch: typeof glitch;
   beatGrid: typeof beatGrid; beatFrames: typeof beatFrames;
   morphPoly: typeof morphPoly;
+  splitText: typeof splitText;
   Motion: typeof Motion;
   Remotion: RemotionModule;
   sfx: SfxModule;

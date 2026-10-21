@@ -109,6 +109,10 @@ interface MorphPolyOpts extends EaseOpts {
   from: [number, number][]; to: [number, number][]; x?: number; y?: number;
   color?: string; stroke?: string; strokeWidth?: number; rot?: number;
 }
+interface SplitTextOpts extends EaseOpts {
+  text: string; x?: number; y?: number; size?: number; stagger?: number;
+  mode?: 'rise' | 'pop' | 'fade'; color?: string; fontFamily?: string; weight?: number;
+}
 
 __root.Motion = (function () {
   const { interpolate, spring, Easing } = __root.Remotion as RemotionStatic;
@@ -1003,10 +1007,40 @@ __root.Motion = (function () {
       '/></svg>';
   }
 
+  // Split-text entrance: every character animates in on its own
+  // stagger — the title workhorse. Modes: 'rise' (floats up while
+  // fading in), 'pop' (scales in with an easeOutBack overshoot),
+  // 'fade' (opacity only). Characters are inline-block spans, so the
+  // line layout never shifts; the wrapper centers on (x, y).
+  function splitText(frame: number, o: SplitTextOpts): string {
+    o = o || ({} as SplitTextOpts);
+    const size = o.size || 64;
+    const stag = o.stagger == null ? 3 : o.stagger;
+    const dur = o.dur || 16;
+    const mode = o.mode || 'rise';
+    const fn = Easing[o.fn || 'cubicOut'] || Easing.cubicOut;
+    const esc = (ch: string): string => (ch === '&' ? '&amp;' : ch === '<' ? '&lt;' : ch === '>' ? '&gt;' : ch);
+    const spans = String(o.text || '').split('').map((ch, i) => {
+      const raw = clamp01((frame - (o.at || 0) - i * stag) / dur);
+      const p = fn(raw);
+      let transform = '';
+      if (mode === 'rise') transform = 'transform:translateY(' + ((1 - p) * size * 0.55).toFixed(1) + 'px);';
+      else if (mode === 'pop') {
+        const c1 = 1.70158, c3 = c1 + 1; // easeOutBack, applied to the raw progress
+        const back = 1 + c3 * Math.pow(raw - 1, 3) + c1 * Math.pow(raw - 1, 2);
+        transform = 'transform:scale(' + (raw <= 0 ? 0 : 0.3 + 0.7 * back).toFixed(3) + ');';
+      }
+      return '<span style="display:inline-block;white-space:pre;opacity:' + p.toFixed(3) + ';' + transform + '">' + esc(ch) + '</span>';
+    }).join('');
+    return '<div style="position:absolute;left:' + (o.x || 0) + 'px;top:' + (o.y || 0) + 'px;transform:translate(-50%,-50%);font-family:' +
+      (o.fontFamily || 'sans-serif') + ';font-size:' + size + 'px;font-weight:' + (o.weight || 800) + ';color:' + (o.color || '#26221F') +
+      ';white-space:nowrap;">' + spans + '</div>';
+  }
+
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
     paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
-    beatGrid, beatFrames, morphPoly,
+    beatGrid, beatFrames, morphPoly, splitText,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,

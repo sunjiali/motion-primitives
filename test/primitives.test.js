@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -254,6 +254,21 @@ test('camera/parallax: camera output pinned, depth scales the same move', () => 
   assert.equal(M.parallax(30, keys, 1, stage), M.camera(30, keys, stage));
   assert.equal(M.parallax(30, keys, 0, stage), 'translate(640px,360px) scale(1.0000) translate(-640.0px,-360.0px)');
   assert.equal(M.parallax(30, keys, 0.5, stage), 'translate(640px,360px) scale(1.1247) translate(-690.0px,-345.0px)');
+});
+
+test('splitText: per-character stagger — leaders land first, all settle clean', () => {
+  const o = { text: 'Hey', at: 10, dur: 10, stagger: 5, size: 40 };
+  const ops = (h) => [...h.matchAll(/opacity:([\d.]+)/g)].map((m) => parseFloat(m[1]));
+  assert.deepEqual(ops(M.splitText(0, o)), [0, 0, 0]);
+  const mid = ops(M.splitText(22, o));
+  assert.equal(mid[0], 1);
+  assert.ok(mid[0] > mid[1] && mid[1] > mid[2], `stagger order broken: ${mid}`);
+  const end = M.splitText(60, o);
+  assert.deepEqual(ops(end), [1, 1, 1]);
+  assert.ok(end.includes('translateY(0.0px)')); // settled with no residual offset
+  assert.equal((end.match(/<span/g) || []).length, 3);
+  assert.ok(M.splitText(60, { text: 'a<b', at: 0 }).includes('&lt;'));
+  assert.equal(M.splitText(22, o), M.splitText(22, o)); // determinism
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

@@ -6,6 +6,12 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Text (v0.21)
+- `splitText` — split-text entrance: every character animates in on
+  its own stagger, three modes (rise / pop with easeOutBack
+  overshoot / fade). Spans are inline-block, so line layout never
+  shifts while letters land.
+
 ### Platform (v0.20)
 - Installable skill bundle (`skill/`): self-contained agent skill —
   SKILL.md playbook, vendored runtime synced from the build (drift

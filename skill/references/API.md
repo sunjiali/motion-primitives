@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (51 functions)
+# motion-primitives API — the full catalog (52 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -233,6 +233,14 @@ M.scramble(frame: number, o: AtOpts & { text: string; pool?: string }): string
 ```
 
 Text that decodes out of a glyph pool.
+
+### `splitText`
+
+```ts
+M.splitText(frame: number, o: AtOpts & { fn?: string; text: string; x?: number; y?: number; size?: number; stagger?: number; mode?: 'rise' | 'pop' | 'fade'; color?: string; fontFamily?: string; weight?: number }): string
+```
+
+Split-text entrance: every character animates in on its own stagger (rise / pop / fade). Returns an HTML string.
 
 ## Shapes & drawing
 

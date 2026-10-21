@@ -2,6 +2,22 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.21.0] — 2026-10-21
+
+### Added
+
+- `splitText(frame, o)` — split-text entrance: every character of
+  `text` animates in on its own `stagger` (default 3 frames), in
+  three modes — `rise` (floats up while fading in), `pop` (scales
+  in with an easeOutBack overshoot), `fade` (opacity only).
+  Characters are inline-block spans inside a wrapper centered on
+  (`x`, `y`), so the line's layout never shifts while letters land.
+  Plus the usual `size`, `color`, `fontFamily`, `weight`, `at`,
+  `dur`, `fn`. The skill bundle is synced to this version (API
+  catalog now 52 functions). Verified with unit tests (stagger
+  ordering, settled state, escaping) and mid/end render stills.
+  Site demo card #28.
+
 ## [0.20.0] — 2026-10-21
 
 ### Added

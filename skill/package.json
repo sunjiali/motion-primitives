@@ -1,1 +1,13 @@
-{"dependencies":{"puppeteer-core":"^25.14.0"},"description":"Installable agent skill: make motion-graphics videos from code with the bundled motion-primitives runtime.","engines":{"node":">=18"},"license":"MIT","name":"motion-skill","private":true,"version":"0.20.0"}
+{
+  "dependencies": {
+    "puppeteer-core": "^25.14.0"
+  },
+  "description": "Installable agent skill: make motion-graphics videos from code with the bundled motion-primitives runtime.",
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "name": "motion-skill",
+  "private": true,
+  "version": "0.21.0"
+}
