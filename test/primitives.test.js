@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -339,6 +339,9 @@ test('iso kit: box shading order, cylinder ellipse, painter sort', () => {
   assert.equal((cone.match(/<path/g) || []).length, 2); // two shaded halves
   const cfills = [...cone.matchAll(/fill="(#[0-9a-f]{6})"/g)].map((m) => m[1]);
   assert.ok(lum(cfills[0]) > lum(cfills[1]), 'left half lighter than right');
+  const bolt = M.isoBolt({ x: 0, y: 0, r: 0.4, unit: 50 });
+  assert.equal((bolt.match(/<polygon/g) || []).length, 7); // 6 head sides + the hex top
+  assert.ok(bolt.includes('<ellipse')); // the shaft is a cylinder
   const cyl = M.isoCylinder({ x: 0, y: 0, r: 1, h: 2, unit: 50 });
   assert.ok(cyl.includes('<ellipse'));
   assert.ok(cyl.includes('rx="61.2"')); // r * unit * sqrt(3/2)

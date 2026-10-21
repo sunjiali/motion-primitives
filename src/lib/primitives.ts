@@ -174,6 +174,9 @@ interface IsoGearOpts extends IsoBase {
 interface IsoConeOpts extends IsoBase {
   r?: number; h?: number; color?: string; stroke?: string;
 }
+interface IsoBoltOpts extends IsoBase {
+  r?: number; headH?: number; shaftH?: number; color?: string; top?: string; stroke?: string;
+}
 interface IsoPart { x: number; y: number; z?: number; html: string }
 interface CursorKey { f: number; x: number; y: number }
 interface CursorOpts {
@@ -1580,6 +1583,40 @@ __root.Motion = (function () {
       '<path d="' + rightHalf + '" fill="' + shade(color, -20) + '"' + edge + '/>');
   }
 
+  // A bolt: a hex-head prism on a short cylinder shaft. The head
+  // is a regular hexagon in the ground plane, projected vertex
+  // by vertex; all six side quads are drawn first (the top face,
+  // drawn last, covers the back ones — the standard prism trick),
+  // sides toned by which half of the screen they fall on.
+  function isoBolt(o: IsoBoltOpts): string {
+    o = o || {};
+    const x = o.x || 0, y = o.y || 0, z = o.z || 0;
+    const r = o.r || 0.32, headH = o.headH == null ? 0.22 : o.headH, shaftH = o.shaftH == null ? 0.3 : o.shaftH;
+    const color = o.color || '#9AA7BD';
+    const hz = z + shaftH;
+    const verts: [number, number][] = [];
+    for (let k = 0; k < 6; k++) {
+      const a = (k / 6) * Math.PI * 2;
+      verts.push(isoPt(o, x + Math.cos(a) * r, y + Math.sin(a) * r, hz + headH));
+    }
+    const drop: [number, number][] = verts.map((v) => [v[0], v[1] + headH * (o.unit || 36)]);
+    const all = verts.concat(drop);
+    const minX = Math.min(...all.map((p) => p[0])), maxX = Math.max(...all.map((p) => p[0]));
+    const minY = Math.min(...all.map((p) => p[1])), maxY = Math.max(...all.map((p) => p[1]));
+    const pts = (list: [number, number][]): string => list.map((p) => (p[0] - minX).toFixed(1) + ',' + (p[1] - minY).toFixed(1)).join(' ');
+    const edge = o.stroke === 'none' ? '' : ' stroke="' + (o.stroke || shade(color, -48)) + '" stroke-width="1" stroke-linejoin="round"';
+    const centreX = (minX + maxX) / 2;
+    let sides = '';
+    for (let k = 0; k < 6; k++) {
+      const a = verts[k], b = verts[(k + 1) % 6];
+      const midX = (a[0] + b[0]) / 2;
+      sides += '<polygon points="' + pts([a, b, drop[(k + 1) % 6], drop[k]]) + '" fill="' + shade(color, midX < centreX ? -4 : -22) + '"' + edge + '/>';
+    }
+    const head = isoSvg(minX, minY, maxX - minX, maxY - minY,
+      sides + '<polygon points="' + pts(verts) + '" fill="' + (o.top || shade(color, 28)) + '"' + edge + '/>');
+    return isoCylinder({ ...o, r: r * 0.55, h: shaftH }) + head;
+  }
+
   // Painter's order for iso parts: ascending (x + y), ties by z.
   // Parts carry their resting coords; the html may be built at an
   // animated offset without changing the paint order.
@@ -1592,7 +1629,7 @@ __root.Motion = (function () {
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
     paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
-    beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoSort,
+    beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,

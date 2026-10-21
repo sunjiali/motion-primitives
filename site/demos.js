@@ -275,6 +275,7 @@
         ];
         parts.push({ x: 2.0, y: 1.15, html: M.isoGear({ ...base, x: 2.0, y: 1.15, z: 0.35, r: 0.52, h: 0.3, teeth: 9, rot: f * 0.03, color: '#B08D57' }) });
         parts.push({ x: 0.35, y: 1.15, html: M.isoCone({ ...base, x: 0.35, y: 1.15, z: 0.35, r: 0.32, h: 0.85, color: '#C96F4A' }) });
+        parts.push({ x: 1.0, y: -0.2, z: 1.4, html: M.isoBolt({ ...base, x: 1.0, y: -0.2, z: 1.4, r: 0.3, headH: 0.22, shaftH: 0.3, color: '#B9C2D0' }) });
         if (f > 64) { // the pipe run goes on last, floating down onto its ports
           const lift = drop(72, 14) * 0.5;
           parts.push({ x: 9, y: 9, html: M.isoPipe({ ...base, r: 0.13, color: '#9AA7BD', path: [

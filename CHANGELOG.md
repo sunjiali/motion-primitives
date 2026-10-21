@@ -2,6 +2,19 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.38.0] — 2026-10-21
+
+### Added
+
+- `isoBolt(o)` — an isometric bolt: a hex-head prism (a regular
+  hexagon projected vertex by vertex; all six side quads drawn
+  first and the top face last, which covers the back sides —
+  the standard prism trick; sides toned by screen half) on a
+  short cylinder shaft. Assembly-scene hardware, pairs with
+  isoGear. Skill bundle synced (API catalog now 70 functions);
+  the site iso machine gains a bolt on its housing. This
+  completes the iso kit's planned parts list.
+
 ## [0.37.0] — 2026-10-21
 
 ### Added

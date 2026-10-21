@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (69 functions)
+# motion-primitives API — the full catalog (70 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -559,6 +559,14 @@ M.isoCone(o: { x?: number; y?: number; z?: number; ox?: number; oy?: number; uni
 ```
 
 Isometric cone: true tangent silhouettes to the base ellipse, two-tone side shading. Returns an SVG string.
+
+### `isoBolt`
+
+```ts
+M.isoBolt(o: { x?: number; y?: number; z?: number; ox?: number; oy?: number; unit?: number; r?: number; headH?: number; shaftH?: number; color?: string; top?: string; stroke?: string }): string
+```
+
+Isometric bolt: hex-head prism on a short cylinder shaft. Returns SVG strings.
 
 ### `isoSort`
 
