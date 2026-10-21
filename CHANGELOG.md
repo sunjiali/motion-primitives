@@ -2,6 +2,19 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.25.1] — 2026-10-21
+
+### Fixed
+
+- Recorder CLI crashed at load time on Node 18 — before even
+  `--help` could run — because `puppeteer-core` 25 (Node ≥ 22.12)
+  was required at module top. It is now lazy-loaded inside `main`,
+  so help and argument validation work on any Node, and an actual
+  recording attempt on an old Node fails with a clear message
+  naming the version requirement. Caught by the Node 18 CI compat
+  job within minutes of the 0.25.0 push; the library core and the
+  renderer were unaffected.
+
 ## [0.25.0] — 2026-10-21
 
 ### Added

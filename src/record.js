@@ -26,7 +26,8 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const child_process_1 = require("child_process");
-const puppeteer = require("puppeteer-core");
+// puppeteer-core 不在顶层加载：它要求 Node ≥ 22.12，而 --help 与
+// 参数校验在任何 Node 上都该工作。真正录制前再懒加载（见 main）。
 const CHROME = process.env.CHROME_PATH || '/opt/meta-chromium/chrome';
 function parseArgs() {
     const a = process.argv.slice(2);
@@ -173,6 +174,13 @@ async function main() {
         throw new Error('--mode 只支持 cast 或 virtual');
     fs.mkdirSync(path.dirname(o.out), { recursive: true });
     const framesDir = fs.mkdtempSync(path.join(os.tmpdir(), 'mp-record-'));
+    let puppeteer;
+    try {
+        puppeteer = require('puppeteer-core');
+    }
+    catch (e) {
+        throw new Error('加载 puppeteer-core 失败（它需要 Node ≥ 22.12，当前 ' + process.version + '）：' + e.message);
+    }
     const browser = await puppeteer.launch({ executablePath: CHROME, args: ['--no-sandbox'], protocolTimeout: 120000 });
     try {
         const page = await browser.newPage();
