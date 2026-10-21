@@ -132,6 +132,15 @@
       },
     },
     {
+      name: 'drawText', desc: 'Handwriting stroke text: the outlines draw themselves, then the fill settles in.',
+      code: 'M.drawText(frame, { text: "Draw it." })', cycle: 170,
+      draw(f) {
+        return '<div style="position:absolute;inset:0;">' +
+          M.drawText(f, { text: 'Draw it.', at: 14, dur: 84, size: 92, x: 280, y: 128, color: INK }) +
+          '<div style="position:absolute;left:0;right:0;top:168px;text-align:center;font:600 13px ui-monospace,Menlo,monospace;color:#8A7D68;letter-spacing:.22em;">ANY SCRIPT THE FONT COVERS</div></div>';
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

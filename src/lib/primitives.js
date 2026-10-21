@@ -604,9 +604,35 @@ __root.Motion = (function () {
             (o.fontFamily || 'ui-monospace, Menlo, monospace') + ';color:' + (o.color || '#33302B') +
             ';text-align:center;">' + cols + '</div>';
     }
+    // Handwriting-style stroke text: the glyph outlines draw themselves
+    // at pen speed, then the fill settles in over the final stretch. The
+    // glyph shapes come from the rendered font itself (SVG <text> with a
+    // normalized pathLength), so any script the font covers — Latin, CJK,
+    // digits — draws the same way; there is no built-in glyph set to run
+    // out of. Returns an absolutely-positioned SVG string; '' before `at`.
+    function drawText(frame, o) {
+        o = o || {};
+        const p = (Easing[o.fn || 'linear'] || Easing.linear)(clamp01((frame - (o.at || 0)) / (o.dur || 45)));
+        if (p <= 0)
+            return '';
+        const size = o.size || 64;
+        const fill = o.color || '#33302B';
+        const fillFrom = o.fillFrom == null ? 0.65 : o.fillFrom;
+        const fo = clamp01((p - fillFrom) / (1 - fillFrom));
+        const esc = String(o.text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return '<svg style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none;">' +
+            '<text x="' + (o.x || 0) + '" y="' + (o.y || 0) + '" text-anchor="' + (o.anchor || 'middle') + '"' +
+            ' font-family="' + (o.fontFamily || 'sans-serif') + '" font-size="' + size + '" font-weight="' + (o.weight || 700) + '"' +
+            (o.letterSpacing ? ' letter-spacing="' + o.letterSpacing + '"' : '') +
+            ' fill="' + fill + '" fill-opacity="' + fo.toFixed(3) + '"' +
+            ' stroke="' + (o.stroke || fill) + '" stroke-width="' + (o.strokeWidth == null ? Math.max(1, size / 30) : o.strokeWidth) + '"' +
+            ' stroke-linejoin="round" stroke-linecap="round"' +
+            ' pathLength="100" stroke-dasharray="100" stroke-dashoffset="' + (100 * (1 - p)).toFixed(2) + '">' +
+            esc + '</text></svg>';
+    }
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-        paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll,
+        paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll, drawText,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, meshBg, drawOn, poly, bars,
         scramble, kenBurns, breathe, fx, hash,

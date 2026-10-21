@@ -106,6 +106,8 @@ export function pathFly(frame: number, o: AtOpts & { pts: Array<[number, number]
 export function flipIn(frame: number, o?: AtOpts & { axis?: 'X' | 'Y'; from?: number; perspective?: number }): string;
 /** Odometer digit roll from one integer to another. Returns an HTML string. */
 export function counterRoll(frame: number, o?: AtOpts & { from?: number; to?: number; size?: number; stagger?: number; spin?: number; color?: string }): string;
+/** Handwriting-style stroke text: glyph outlines draw themselves, then the fill settles in. Returns an SVG string. */
+export function drawText(frame: number, o: AtOpts & { fn?: string; text: string; x?: number; y?: number; size?: number; color?: string; stroke?: string; strokeWidth?: number; fillFrom?: number; fontFamily?: string; weight?: number; anchor?: 'start' | 'middle' | 'end'; letterSpacing?: number }): string;
 
 export interface SfxEvent { f: number; s: string; g?: number; pan?: number; seed?: number }
 export interface SfxScore { fps?: number; durationFrames: number; tailSec?: number; events: SfxEvent[] }
@@ -136,6 +138,7 @@ declare const Motion: {
   scramble: typeof scramble; kenBurns: typeof kenBurns; fx: typeof fx;
   paperEl: typeof paperEl; pivot: typeof pivot; stepped: typeof stepped; onTwos: typeof onTwos;
   whip: typeof whip; pathFly: typeof pathFly; flipIn: typeof flipIn; counterRoll: typeof counterRoll;
+  drawText: typeof drawText;
   Motion: typeof Motion;
   Remotion: RemotionModule;
   sfx: SfxModule;

@@ -11,6 +11,14 @@ TypeScript refactor — all sources are strict-mode `.ts`, compiled by
 `tsc` to the same committed JavaScript (no behavior change; CI
 build-freshness gate). No new effects this round.
 
+### Text (v0.13)
+- `drawText` — handwriting-style stroke text: glyph outlines draw
+  themselves at pen speed (linear by default), fill settles in over
+  the last stretch. Glyph shapes come from the rendered font (SVG
+  `<text>` + normalized `pathLength`) rather than a built-in glyph
+  set, so Latin, CJK and digits all draw — verified with a bilingual
+  still.
+
 ### Core (v0.1)
 `pop` spring entrance · `fadeUp` · `pulse` (scale value) · `countUp` ·
 `stagger` · `fly` arc flight · `trail` ghosts · `squash` · `dot` ·
@@ -109,7 +117,6 @@ Primitives to build for it:
 
 ## Backlog (next rounds, roughly in order)
 
-- `drawText` — handwriting-style stroke text (SVG paths for common glyphs)
 - `particleField` — ambient drifting particle layer (stars/dust/snow)
 - `morphShape` — shape A→B morph (circle→star→heart…) for icons
 - `glitch` — RGB-split glitch transition (short, tasteful)

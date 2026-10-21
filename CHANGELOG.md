@@ -2,6 +2,22 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.13.0] — 2026-10-21
+
+### Added
+
+- `drawText(frame, o)` — handwriting-style stroke text. The glyph
+  outlines draw themselves at pen speed (linear easing by default),
+  then the fill settles in over the final stretch (`fillFrom`, default
+  0.65). Glyph shapes come from the rendered font itself — an SVG
+  `<text>` with a normalized `pathLength` — so Latin, CJK, and digits
+  all draw; there is no built-in glyph set to run out of. Options:
+  `text`, `x`, `y`, `size`, `color`, `stroke`, `strokeWidth`,
+  `fontFamily`, `weight`, `anchor`, `letterSpacing`, plus the usual
+  `at` / `dur` / `fn`. Verified with unit tests (stroke/fill timing,
+  XML escaping, determinism), a bilingual render still (mid-draw and
+  settled frames), and site demo card #21.
+
 ## [0.12.0] — 2026-10-21
 
 ### Package — a standard, complete package.json

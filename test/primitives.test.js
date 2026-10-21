@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -147,6 +147,21 @@ test('counterRoll: starts on `from`, settles exactly on `to`, cascades', () => {
   // Mid-roll, the ones column (rightmost) is ahead of the thousands column.
   const mid = stepsOf(M.counterRoll(20, o));
   assert.ok(mid[3] > mid[0], `cascade broken: ${mid}`);
+});
+
+test('drawText: stroke draws at pen speed, fill settles last, text is escaped', () => {
+  const o = { text: 'Hi', at: 10, dur: 40, x: 100, y: 80 };
+  assert.equal(M.drawText(5, o), '');
+  const mid = M.drawText(30, o); // p = 0.5 (linear pen speed)
+  assert.ok(mid.includes('stroke-dashoffset="50.00"'), mid);
+  assert.ok(mid.includes('fill-opacity="0.000"'), mid); // fill waits for the last stretch
+  const late = M.drawText(46, o); // p = 0.9 -> fill (0.9-0.65)/0.35
+  assert.ok(late.includes('fill-opacity="0.714"'), late);
+  const end = M.drawText(50, o);
+  assert.ok(end.includes('stroke-dashoffset="0.00"'), end);
+  assert.ok(end.includes('fill-opacity="1.000"'), end);
+  assert.ok(M.drawText(30, { text: 'a<b>&', at: 0, dur: 10 }).includes('a&lt;b&gt;&amp;'));
+  assert.equal(M.drawText(30, o), mid); // determinism
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {
