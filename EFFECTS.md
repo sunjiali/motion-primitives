@@ -6,6 +6,12 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Reveal (v0.22)
+- `wipeReveal` — directional wipe reveal of arbitrary HTML via an
+  animated clip-path inset (right / left / up / down). The content
+  never moves, only the mask sweeps — the complement to whip's
+  whole-scene pan.
+
 ### Text (v0.21)
 - `splitText` — split-text entrance: every character animates in on
   its own stagger, three modes (rise / pop with easeOutBack

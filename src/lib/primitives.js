@@ -944,10 +944,36 @@ __root.Motion = (function () {
             (o.fontFamily || 'sans-serif') + ';font-size:' + size + 'px;font-weight:' + (o.weight || 800) + ';color:' + (o.color || '#26221F') +
             ';white-space:nowrap;">' + spans + '</div>';
     }
+    // Directional wipe reveal: wraps any HTML in a full-stage layer
+    // whose clip-path inset sweeps open in `dir` (the direction the
+    // reveal travels). The content itself never moves — unlike whip,
+    // which pans whole scenes — so text and diagrams land exactly
+    // where they will stay.
+    function wipeReveal(frame, o) {
+        o = o || {};
+        const dur = o.dur || 24;
+        const fn = Easing[o.fn || 'cubicInOut'] || Easing.cubicInOut;
+        const p = fn(clamp01((frame - (o.at || 0)) / dur));
+        const hidden = ((1 - p) * 100).toFixed(1);
+        let inset;
+        switch (o.dir || 'right') {
+            case 'left':
+                inset = 'inset(0 0 0 ' + hidden + '%)';
+                break;
+            case 'up':
+                inset = 'inset(' + hidden + '% 0 0 0)';
+                break;
+            case 'down':
+                inset = 'inset(0 0 ' + hidden + '% 0)';
+                break;
+            default: inset = 'inset(0 ' + hidden + '% 0 0)';
+        }
+        return '<div style="position:absolute;inset:0;clip-path:' + inset + ';">' + (o.html || '') + '</div>';
+    }
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
         paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
-        beatGrid, beatFrames, morphPoly, splitText,
+        beatGrid, beatFrames, morphPoly, splitText, wipeReveal,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
         scramble, kenBurns, breathe, fx, hash,

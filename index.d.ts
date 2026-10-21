@@ -124,6 +124,8 @@ export function beatFrames(o: { bpm: number; at?: number; fps?: number; perBar?:
 export function morphPoly(frame: number, o: AtOpts & { fn?: string; from: [number, number][]; to: [number, number][]; x?: number; y?: number; color?: string; stroke?: string; strokeWidth?: number; rot?: number }): string;
 /** Split-text entrance: every character animates in on its own stagger (rise / pop / fade). Returns an HTML string. */
 export function splitText(frame: number, o: AtOpts & { fn?: string; text: string; x?: number; y?: number; size?: number; stagger?: number; mode?: 'rise' | 'pop' | 'fade'; color?: string; fontFamily?: string; weight?: number }): string;
+/** Directional wipe reveal of arbitrary HTML via an animated clip-path inset. Returns an HTML string. */
+export function wipeReveal(frame: number, o: AtOpts & { fn?: string; html: string; dir?: 'right' | 'left' | 'up' | 'down' }): string;
 
 export interface SfxEvent { f: number; s: string; g?: number; pan?: number; seed?: number }
 export interface SfxScore { fps?: number; durationFrames: number; tailSec?: number; events: SfxEvent[] }
@@ -161,6 +163,7 @@ declare const Motion: {
   beatGrid: typeof beatGrid; beatFrames: typeof beatFrames;
   morphPoly: typeof morphPoly;
   splitText: typeof splitText;
+  wipeReveal: typeof wipeReveal;
   Motion: typeof Motion;
   Remotion: RemotionModule;
   sfx: SfxModule;

@@ -226,6 +226,16 @@
       },
     },
     {
+      name: 'wipeReveal', desc: 'Directional clip-path wipe: reveals any HTML in place — content lands, never slides.',
+      code: 'M.wipeReveal(frame, { html, dir: "right" })', cycle: 170,
+      draw(f) {
+        const panel = '<div style="position:absolute;left:70px;top:40px;width:420px;height:100px;border-radius:18px;background:#2F6DB3;color:#fff;font:800 41px sans-serif;display:flex;align-items:center;justify-content:center;">WIPE REVEAL</div>';
+        const sub = '<div style="position:absolute;left:0;right:0;top:168px;text-align:center;font:700 24px sans-serif;color:' + INK + ';">content lands, no slide</div>';
+        return M.wipeReveal(f, { html: panel, at: 10, dur: 26 }) +
+          M.wipeReveal(f, { html: sub, at: 46, dur: 22, dir: 'left' });
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

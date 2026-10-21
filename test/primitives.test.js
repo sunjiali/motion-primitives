@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -269,6 +269,18 @@ test('splitText: per-character stagger — leaders land first, all settle clean'
   assert.equal((end.match(/<span/g) || []).length, 3);
   assert.ok(M.splitText(60, { text: 'a<b', at: 0 }).includes('&lt;'));
   assert.equal(M.splitText(22, o), M.splitText(22, o)); // determinism
+});
+
+test('wipeReveal: clip edge sweeps in the chosen direction, ends fully open', () => {
+  const o = { html: '<div>X</div>', at: 10, dur: 20 };
+  assert.ok(M.wipeReveal(0, o).includes('inset(0 100.0% 0 0)')); // right: still fully hidden
+  assert.ok(M.wipeReveal(40, o).includes('inset(0 0.0% 0 0)')); // fully open
+  assert.ok(M.wipeReveal(20, o).includes('inset(0 50.0% 0 0)')); // cubicInOut midpoint
+  assert.ok(M.wipeReveal(0, { ...o, dir: 'down' }).includes('inset(0 0 100.0% 0)'));
+  assert.ok(M.wipeReveal(0, { ...o, dir: 'left' }).includes('inset(0 0 0 100.0%)'));
+  assert.ok(M.wipeReveal(0, { ...o, dir: 'up' }).includes('inset(100.0% 0 0 0)'));
+  assert.ok(M.wipeReveal(40, o).includes('<div>X</div>')); // content passes through untouched
+  assert.equal(M.wipeReveal(20, o), M.wipeReveal(20, o)); // determinism
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

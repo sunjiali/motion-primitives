@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (52 functions)
+# motion-primitives API — the full catalog (53 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -429,4 +429,12 @@ M.fx(frame: number, o?: { grain?: number; vignette?: number }): string
 ```
 
 Film grain + vignette finishing overlay. Returns an HTML string.
+
+### `wipeReveal`
+
+```ts
+M.wipeReveal(frame: number, o: AtOpts & { fn?: string; html: string; dir?: 'right' | 'left' | 'up' | 'down' }): string
+```
+
+Directional wipe reveal of arbitrary HTML via an animated clip-path inset. Returns an HTML string.
 

@@ -2,6 +2,21 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.22.0] — 2026-10-21
+
+### Added
+
+- `wipeReveal(frame, o)` — directional wipe reveal of arbitrary
+  HTML: the content is wrapped in a full-stage layer whose
+  `clip-path` inset sweeps open in `dir` (`right` default, `left`,
+  `up`, `down`) over `at`/`dur`/`fn`. Unlike `whip` (which pans
+  whole scenes), the content itself never moves — text and diagrams
+  land exactly where they will stay, which makes it the reveal for
+  titles, panels, screenshots, and code blocks. Skill bundle
+  synced in lockstep (API catalog now 53 functions). Verified with
+  unit tests (per-direction insets, midpoint, passthrough) and
+  mid/end render stills. Site demo card #29.
+
 ## [0.21.0] — 2026-10-21
 
 ### Added
