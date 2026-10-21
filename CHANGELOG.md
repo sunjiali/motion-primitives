@@ -2,6 +2,17 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.50.1] — 2026-10-21
+
+### Fixed
+
+- Site: the Docs section never appeared. Its reveal-on-scroll
+  observer used a 10%-of-element threshold, but the docs grid
+  is ~9,300 px tall — no phone or laptop viewport can ever
+  show 10% of it at once, so it stayed at opacity 0 forever
+  (the content was always in the page). The observer now
+  reveals on first contact (threshold 0 + root margin).
+
 ## [0.50.0] — 2026-10-21
 
 ### Added
