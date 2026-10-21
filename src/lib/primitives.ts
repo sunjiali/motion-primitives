@@ -103,6 +103,8 @@ interface GlitchOpts {
   at?: number; dur?: number; html: string; amount?: number; slices?: number;
   seed?: number; blend?: 'multiply' | 'screen';
 }
+interface BeatGridOpts { bpm: number; at?: number; fps?: number; perBar?: number }
+interface BeatInfo { beat: number; index: number; phase: number; pulse: number; bar: number; inBar: number }
 
 __root.Motion = (function () {
   const { interpolate, spring, Easing } = __root.Remotion as RemotionStatic;
@@ -900,9 +902,39 @@ __root.Motion = (function () {
     return layer(s);
   }
 
+  // Beat tools — the BPM half of music-synced work. (Named beatGrid,
+  // not beat: `beat` is the older anticipation-entrance primitive.)
+  // `beatGrid` reports where a frame sits inside the grid: which beat
+  // (index), how far through it (phase 0..1), a decaying pulse for
+  // scale/opacity accents, and bar position. `beatFrames` generates
+  // the grid itself as frame numbers — drop them straight into an SFX
+  // score (frames.map(f => ({ f, s: 'kick' }))) or use as cut points.
+  // fps defaults to 30 (the renderer default); pass 60 for the site
+  // player or any 60 fps timeline.
+  function beatGrid(frame: number, o: BeatGridOpts): BeatInfo {
+    const fpb = (60 / (o.bpm || 120)) * (o.fps || 30);
+    const t = (frame - (o.at || 0)) / fpb;
+    const index = Math.floor(t);
+    const phase = t - index;
+    const perBar = o.perBar || 4;
+    return {
+      beat: t, index, phase,
+      pulse: (1 - phase) * (1 - phase),
+      bar: Math.floor(index / perBar),
+      inBar: ((index % perBar) + perBar) % perBar,
+    };
+  }
+  function beatFrames(o: BeatGridOpts & { count: number }): number[] {
+    const fpb = (60 / (o.bpm || 120)) * (o.fps || 30);
+    const out: number[] = [];
+    for (let i = 0; i < (o.count || 0); i++) out.push(Math.round((o.at || 0) + i * fpb));
+    return out;
+  }
+
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
     paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
+    beatGrid, beatFrames,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,

@@ -171,6 +171,20 @@
       },
     },
     {
+      name: 'beatGrid', desc: 'BPM grid: a pulse on every beat and the frame numbers an SFX score needs.',
+      code: 'M.beatGrid(frame, { bpm: 132 })', cycle: 218,
+      draw(f) {
+        const b = M.beatGrid(f, { bpm: 132, fps: 60 });
+        const dots = [0, 1, 2, 3].map((i) =>
+          '<span style="display:inline-block;width:13px;height:13px;border-radius:50%;margin:0 7px;background:' +
+          (i === b.inBar ? C.orange : '#D8CFBB') + ';"></span>').join('');
+        return '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;">' +
+          '<div style="width:104px;height:104px;border-radius:50%;background:' + C.pink + ';transform:scale(' + (1 + 0.3 * b.pulse).toFixed(3) + ');"></div>' +
+          '<div>' + dots + '</div>' +
+          '<div style="font:600 13px ui-monospace,Menlo,monospace;color:#8A7D68;letter-spacing:.22em;">132 BPM · BAR ' + (b.bar % 2 + 1) + '</div></div>';
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

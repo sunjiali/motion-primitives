@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -207,6 +207,23 @@ test('glitch: passthrough outside the window, sliced RGB ghosts inside', () => {
   assert.ok(Math.max(...shifts(mid)) > 1, 'mid-window slices are displaced');
   assert.ok(Math.max(...shifts(M.glitch(10, o))) < 0.05, 'first frame is clean (envelope 0)');
   assert.equal(M.glitch(20, o), mid); // determinism
+});
+
+test('beat tools: grid math, phase, pulse decay, bars, frame generation', () => {
+  const o = { bpm: 120, fps: 30 }; // 15 frames per beat
+  const b0 = M.beatGrid(0, o);
+  assert.deepEqual([b0.index, b0.phase, b0.pulse, b0.bar, b0.inBar], [0, 0, 1, 0, 0]);
+  assert.equal(M.beatGrid(15, o).index, 1);
+  const mid = M.beatGrid(22, o);
+  assert.equal(mid.index, 1);
+  assert.ok(Math.abs(mid.phase - 7 / 15) < 1e-9);
+  assert.ok(Math.abs(mid.pulse - (8 / 15) * (8 / 15)) < 1e-9);
+  const b6 = M.beatGrid(90, o); // beat 6 = bar 1, second beat of the bar
+  assert.deepEqual([b6.bar, b6.inBar], [1, 2]);
+  const pre = M.beatGrid(-1, { ...o, at: 0 }); // one frame before the downbeat
+  assert.deepEqual([pre.index, pre.inBar], [-1, 3]);
+  assert.deepEqual(M.beatFrames({ bpm: 120, fps: 30, at: 10, count: 4 }), [10, 25, 40, 55]);
+  assert.deepEqual(M.beatFrames({ bpm: 128, fps: 30, count: 4 }), [0, 14, 28, 42]); // 14.0625 fpb, rounded
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

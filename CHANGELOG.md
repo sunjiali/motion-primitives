@@ -2,6 +2,24 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.17.0] — 2026-10-21
+
+### Added
+
+- Beat tools — the BPM half of music-synced work, pairing with the
+  v0.4 SFX kit. `beatGrid(frame, { bpm, at, fps, perBar })` reports
+  where a frame sits in the grid: `index` (which beat), `phase`
+  (0..1 through the beat), `pulse` (a (1-phase)² decay for
+  scale/opacity accents), `bar` and `inBar`. `beatFrames({ bpm, at,
+  fps, count })` generates the grid itself as frame numbers — drop
+  them straight into an SFX score
+  (`frames.map(f => ({ f, s: 'kick' }))`) or use them as cut points.
+  `fps` defaults to 30. Named `beatGrid` rather than `beat` because
+  `beat` is the older anticipation-entrance primitive. Verified with
+  unit tests (grid math incl. pre-downbeat negatives and non-integer
+  frames-per-beat rounding) and on-beat / mid-beat render stills.
+  Site demo card #25.
+
 ## [0.16.0] — 2026-10-21
 
 ### Added

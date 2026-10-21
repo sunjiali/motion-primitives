@@ -11,6 +11,13 @@ TypeScript refactor — all sources are strict-mode `.ts`, compiled by
 `tsc` to the same committed JavaScript (no behavior change; CI
 build-freshness gate). No new effects this round.
 
+### Music (v0.17)
+- `beatGrid` / `beatFrames` — BPM grid tools: `beatGrid` reports a
+  frame's beat index, phase, decay pulse and bar position;
+  `beatFrames` generates the grid as frame numbers for SFX scores
+  and cut points. (Named beatGrid because `beat` is the older
+  anticipation-entrance primitive.)
+
 ### Transitions (v0.16)
 - `glitch` — RGB-split glitch transition: content rebuilt from
   horizontal slices with hash jitter (re-rolled every 2 frames) plus
@@ -139,9 +146,6 @@ Primitives to build for it:
 
 ## Backlog (next rounds, roughly in order)
 
-- Beat tools — BPM/beat detection for music-synced cuts (from code-video-director beats.py);
-  pairs with the v0.4 SFX kit (scores are frame-based today; a BPM grid
-  generator is the missing half for music-first pieces)
 - (Future track, not committed) WebGL/three.js liquid-metal logo sting —
   the Motion Lab opener is raymarched SDF chrome with smooth-min blending;
   out of scope for this 2D stack, revisit only if a 3D need appears.

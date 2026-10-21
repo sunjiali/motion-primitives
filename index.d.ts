@@ -114,6 +114,10 @@ export function particleField(frame: number, o?: { n?: number; w?: number; h?: n
 export function morphShape(frame: number, o?: AtOpts & { fn?: string; from?: 'circle' | 'square' | 'triangle' | 'diamond' | 'hexagon' | 'star' | 'heart'; to?: 'circle' | 'square' | 'triangle' | 'diamond' | 'hexagon' | 'star' | 'heart'; x?: number; y?: number; size?: number; color?: string; stroke?: string; strokeWidth?: number; rot?: number }): string;
 /** RGB-split glitch transition over wrapped HTML. Returns an HTML string. */
 export function glitch(frame: number, o: { at?: number; dur?: number; html: string; amount?: number; slices?: number; seed?: number; blend?: 'multiply' | 'screen' }): string;
+/** Where a frame sits in a BPM grid: beat index, phase, decay pulse, bar position. */
+export function beatGrid(frame: number, o: { bpm: number; at?: number; fps?: number; perBar?: number }): { beat: number; index: number; phase: number; pulse: number; bar: number; inBar: number };
+/** The BPM grid as frame numbers — SFX score events and cut points. */
+export function beatFrames(o: { bpm: number; at?: number; fps?: number; perBar?: number; count: number }): number[];
 
 export interface SfxEvent { f: number; s: string; g?: number; pan?: number; seed?: number }
 export interface SfxScore { fps?: number; durationFrames: number; tailSec?: number; events: SfxEvent[] }
@@ -148,6 +152,7 @@ declare const Motion: {
   particleField: typeof particleField;
   morphShape: typeof morphShape;
   glitch: typeof glitch;
+  beatGrid: typeof beatGrid; beatFrames: typeof beatFrames;
   Motion: typeof Motion;
   Remotion: RemotionModule;
   sfx: SfxModule;
