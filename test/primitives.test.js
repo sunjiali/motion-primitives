@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -176,6 +176,24 @@ test('particleField: deterministic, bounded, alive across frames and modes', () 
   assert.notEqual(M.particleField(90, o), a); // drifts over time
   assert.notEqual(M.particleField(30, { ...o, mode: 'rise' }), a); // modes differ
   assert.ok(M.particleField(0, { n: 1, twinkle: 0, opacity: 0.5 }).includes('opacity:0.500'));
+});
+
+test('morphShape: endpoints are true shapes, midpoint interpolates, names validated', () => {
+  const o = { from: 'circle', to: 'star', at: 10, dur: 40, x: 100, y: 100, size: 50 };
+  const radii = (html) => [...html.match(/points="([^"]+)"/)[1].trim().split(/\s+/).map((s) => {
+    const [px, py] = s.split(',').map(Number);
+    return Math.hypot(px - 100, py - 100);
+  })];
+  const start = radii(M.morphShape(10, o));
+  assert.equal(start.length, 72);
+  assert.ok(start.every((r) => Math.abs(r - 50) < 1), `p=0 is not a circle: ${Math.min(...start)}..${Math.max(...start)}`);
+  const end = radii(M.morphShape(50, o));
+  assert.ok(Math.abs(Math.max(...end) - 50) < 1, 'star tips reach size');
+  assert.ok(Math.min(...end) < 30, `star valleys are deep: ${Math.min(...end)}`);
+  const mid = radii(M.morphShape(30, o)); // cubicInOut(0.5) = 0.5
+  assert.ok(Math.min(...mid) > 30 && Math.min(...mid) < 45, `mid valleys interpolate: ${Math.min(...mid)}`);
+  assert.equal(M.morphShape(10, { ...o, from: 'nope' }), M.morphShape(10, o)); // unknown name -> circle
+  assert.equal(M.morphShape(30, o), M.morphShape(30, o)); // determinism
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

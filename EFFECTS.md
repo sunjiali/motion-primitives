@@ -11,6 +11,14 @@ TypeScript refactor — all sources are strict-mode `.ts`, compiled by
 `tsc` to the same committed JavaScript (no behavior change; CI
 build-freshness gate). No new effects this round.
 
+### Shapes (v0.15)
+- `morphShape` — shape-to-shape morph across seven built-ins
+  (circle, square, triangle, diamond, hexagon, star, heart). Both
+  shapes are ray-sampled at the same 72 angles around the center and
+  lerped point by point; angle (not arc-length) correspondence keeps
+  features at their compass positions — no mid-morph swoop, verified
+  against render stills after the first cut failed that check.
+
 ### Ambience (v0.14)
 - `particleField` — ambient particle layer with three modes:
   `float` (stars / dust motes wandering in place), `snow` (falls,
@@ -125,7 +133,6 @@ Primitives to build for it:
 
 ## Backlog (next rounds, roughly in order)
 
-- `morphShape` — shape A→B morph (circle→star→heart…) for icons
 - `glitch` — RGB-split glitch transition (short, tasteful)
 - Beat tools — BPM/beat detection for music-synced cuts (from code-video-director beats.py);
   pairs with the v0.4 SFX kit (scores are frame-based today; a BPM grid

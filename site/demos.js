@@ -150,6 +150,18 @@
       },
     },
     {
+      name: 'morphShape', desc: 'Shape-to-shape morph — circle, star, heart — resampled and interpolated point by point.',
+      code: 'M.morphShape(frame, { from: "circle", to: "heart" })', cycle: 180,
+      draw(f) {
+        let args;
+        if (f < 60) args = { from: 'circle', to: 'star', at: 12, dur: 36 };
+        else if (f < 120) args = { from: 'star', to: 'heart', at: 72, dur: 36 };
+        else args = { from: 'heart', to: 'circle', at: 132, dur: 36 };
+        return M.morphShape(f, { ...args, size: 78, x: 280, y: 116, color: C.orange }) +
+          '<div style="position:absolute;left:0;right:0;top:214px;text-align:center;font:600 13px ui-monospace,Menlo,monospace;color:#8A7D68;letter-spacing:.22em;">CIRCLE → STAR → HEART</div>';
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

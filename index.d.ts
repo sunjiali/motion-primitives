@@ -110,6 +110,8 @@ export function counterRoll(frame: number, o?: AtOpts & { from?: number; to?: nu
 export function drawText(frame: number, o: AtOpts & { fn?: string; text: string; x?: number; y?: number; size?: number; color?: string; stroke?: string; strokeWidth?: number; fillFrom?: number; fontFamily?: string; weight?: number; anchor?: 'start' | 'middle' | 'end'; letterSpacing?: number }): string;
 /** Ambient particle layer (stars / dust / snow). Returns an HTML string. */
 export function particleField(frame: number, o?: { n?: number; w?: number; h?: number; mode?: 'float' | 'snow' | 'rise'; speed?: number; sway?: number; color?: string; opacity?: number; rMin?: number; rMax?: number; twinkle?: number; seed?: number }): string;
+/** Shape-to-shape morph (circle / square / triangle / diamond / hexagon / star / heart). Returns an SVG string. */
+export function morphShape(frame: number, o?: AtOpts & { fn?: string; from?: 'circle' | 'square' | 'triangle' | 'diamond' | 'hexagon' | 'star' | 'heart'; to?: 'circle' | 'square' | 'triangle' | 'diamond' | 'hexagon' | 'star' | 'heart'; x?: number; y?: number; size?: number; color?: string; stroke?: string; strokeWidth?: number; rot?: number }): string;
 
 export interface SfxEvent { f: number; s: string; g?: number; pan?: number; seed?: number }
 export interface SfxScore { fps?: number; durationFrames: number; tailSec?: number; events: SfxEvent[] }
@@ -142,6 +144,7 @@ declare const Motion: {
   whip: typeof whip; pathFly: typeof pathFly; flipIn: typeof flipIn; counterRoll: typeof counterRoll;
   drawText: typeof drawText;
   particleField: typeof particleField;
+  morphShape: typeof morphShape;
   Motion: typeof Motion;
   Remotion: RemotionModule;
   sfx: SfxModule;

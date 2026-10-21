@@ -2,6 +2,27 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.15.0] — 2026-10-21
+
+### Added
+
+- `morphShape(frame, o)` — shape-to-shape morph across seven built-in
+  shapes: `circle`, `square`, `triangle`, `diamond`, `hexagon`,
+  `star`, `heart`. Both shapes are ray-sampled at the same 72 angles
+  around their center (sampled points lie exactly on the boundary)
+  and interpolated point by point. Angle correspondence — rather than
+  arc-length — keeps features at their compass positions during the
+  morph: a heart's dip forms at the top and its point at the bottom,
+  with no sideways swoop mid-flight. Options: `from`, `to`, `x`, `y`,
+  `size` (bounding radius), `color`, `stroke`, `strokeWidth`, `rot`,
+  plus `at` / `dur` / `fn`; progress clamps, so the shape holds
+  `from` before `at` and `to` afterwards — chain calls for sequences.
+  Verified with unit tests (true-shape endpoints, midpoint radii,
+  name fallback) and three render stills (circle / mid / heart); the
+  mid-frame still is what caught — and then confirmed the fix for —
+  the arc-length swoop. Site demo card #23 chains circle → star →
+  heart → circle.
+
 ## [0.14.0] — 2026-10-21
 
 ### Added

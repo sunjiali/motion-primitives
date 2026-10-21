@@ -94,6 +94,11 @@ interface ParticleFieldOpts {
   speed?: number; sway?: number; color?: string; opacity?: number;
   rMin?: number; rMax?: number; twinkle?: number; seed?: number;
 }
+type ShapeName = 'circle' | 'square' | 'triangle' | 'diamond' | 'hexagon' | 'star' | 'heart';
+interface MorphShapeOpts extends EaseOpts {
+  from?: ShapeName; to?: ShapeName; x?: number; y?: number; size?: number;
+  color?: string; stroke?: string; strokeWidth?: number; rot?: number;
+}
 
 __root.Motion = (function () {
   const { interpolate, spring, Easing } = __root.Remotion as RemotionStatic;
@@ -761,9 +766,101 @@ __root.Motion = (function () {
     return s;
   }
 
+  // ---- shape morphing ------------------------------------------------
+  // Every shape is a closed polygon. Both shapes are sampled at the
+  // same K angles around the center (ray-cast onto the polygon, so the
+  // sampled points lie exactly on the boundary), then corresponding
+  // points are lerped. Angle correspondence keeps features at their
+  // compass positions — a star's tip grows out of the circle's top
+  // instead of swooping in from the side, which is what arc-length
+  // correspondence does. All seven shapes are star-convex around their
+  // center, so every ray lands exactly once. `size` = bounding radius.
+  function shapeVertices(name: ShapeName, R: number): [number, number][] {
+    const P = (deg: number, r: number): [number, number] => {
+      const a = (deg * Math.PI) / 180;
+      return [r * Math.cos(a), r * Math.sin(a)];
+    };
+    switch (name) {
+      case 'square': return [-135, -45, 45, 135].map((d) => P(d, R));
+      case 'diamond': return [-90, 0, 90, 180].map((d) => P(d, R));
+      case 'triangle': return [-90, 30, 150].map((d) => P(d, R));
+      case 'hexagon': return [-90, -30, 30, 90, 150, 210].map((d) => P(d, R));
+      case 'star': {
+        const v: [number, number][] = [];
+        for (let k = 0; k < 5; k++) { v.push(P(-90 + k * 72, R)); v.push(P(-90 + 36 + k * 72, R * 0.45)); }
+        return v;
+      }
+      case 'heart': {
+        // Classic parametric heart, recentered by its bounding box and
+        // scaled so the larger half-extent equals R.
+        const raw: [number, number][] = [];
+        for (let k = 0; k < 64; k++) {
+          const t = (k / 64) * Math.PI * 2;
+          const s = Math.sin(t);
+          raw.push([16 * s * s * s, -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t))]);
+        }
+        let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+        for (const p of raw) { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); y0 = Math.min(y0, p[1]); y1 = Math.max(y1, p[1]); }
+        const sc = R / Math.max((x1 - x0) / 2, (y1 - y0) / 2);
+        return raw.map((p): [number, number] => [(p[0] - (x0 + x1) / 2) * sc, (p[1] - (y0 + y1) / 2) * sc]);
+      }
+      default: { // circle
+        const v: [number, number][] = [];
+        for (let k = 0; k < 64; k++) v.push(P((k / 64) * 360, R));
+        return v;
+      }
+    }
+  }
+  function sampleShape(verts: [number, number][], K: number, fallbackR: number): [number, number][] {
+    const cross = (ax: number, ay: number, bx: number, by: number): number => ax * by - ay * bx;
+    const out: [number, number][] = [];
+    for (let k = 0; k < K; k++) {
+      const a = -Math.PI / 2 + (k / K) * Math.PI * 2;
+      const dx = Math.cos(a), dy = Math.sin(a);
+      let best = -1;
+      for (let i = 0; i < verts.length; i++) {
+        const A = verts[i], B = verts[(i + 1) % verts.length];
+        const ex = B[0] - A[0], ey = B[1] - A[1];
+        const den = cross(dx, dy, ex, ey);
+        if (Math.abs(den) < 1e-12) continue;
+        const t = cross(A[0], A[1], ex, ey) / den;
+        const u = cross(A[0], A[1], dx, dy) / den;
+        if (t > 0 && u >= -1e-9 && u <= 1 + 1e-9 && t > best) best = t;
+      }
+      const r = best > 0 ? best : fallbackR;
+      out.push([dx * r, dy * r]);
+    }
+    return out;
+  }
+  // Shape A -> B morph (circle, square, triangle, diamond, hexagon,
+  // star, heart). Always renders the current interpolated shape —
+  // progress clamps, so it holds `from` before `at` and `to` after.
+  function morphShape(frame: number, o?: MorphShapeOpts): string {
+    o = o || {};
+    const names: ShapeName[] = ['circle', 'square', 'triangle', 'diamond', 'hexagon', 'star', 'heart'];
+    const pick = (n?: ShapeName): ShapeName => (n && names.indexOf(n) >= 0 ? n : 'circle');
+    const R = o.size || 60;
+    const A = sampleShape(shapeVertices(pick(o.from), R), 72, R);
+    const B = sampleShape(shapeVertices(pick(o.to), R), 72, R);
+    const p = (Easing[o.fn || 'cubicInOut'] || Easing.cubicInOut)(clamp01((frame - (o.at || 0)) / (o.dur || 40)));
+    const rot = ((o.rot || 0) * Math.PI) / 180;
+    const cr = Math.cos(rot), sr = Math.sin(rot);
+    const cx = o.x || 0, cy = o.y || 0;
+    const pts: string[] = [];
+    for (let k = 0; k < A.length; k++) {
+      const x = A[k][0] + (B[k][0] - A[k][0]) * p;
+      const y = A[k][1] + (B[k][1] - A[k][1]) * p;
+      pts.push((cx + x * cr - y * sr).toFixed(1) + ',' + (cy + x * sr + y * cr).toFixed(1));
+    }
+    return '<svg style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none;">' +
+      '<polygon points="' + pts.join(' ') + '" fill="' + (o.color || '#E4572E') + '"' +
+      (o.stroke ? ' stroke="' + o.stroke + '" stroke-width="' + (o.strokeWidth == null ? 3 : o.strokeWidth) + '" stroke-linejoin="round"' : '') +
+      '/></svg>';
+  }
+
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll, drawText, particleField,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll, drawText, particleField, morphShape,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,
