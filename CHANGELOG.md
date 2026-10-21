@@ -2,6 +2,15 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.7.0] — 2026-10-21
+
+### Added
+- `whip` — whip-pan transition helper: the offset for a two-scene strip
+  (slow at both ends, fastest mid-pan where the cut hides) plus a blur
+  value peaking mid-pan, ready to feed a CSS blur on the strip or to
+  pair with `smear` on the moving elements. Site demo card included
+  (17 cards). Unit-tested: endpoints, direction, blur peak.
+
 ## [0.6.0] — 2026-10-21
 
 ### Added — paper-cut pack (core)

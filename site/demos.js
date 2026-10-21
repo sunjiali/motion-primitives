@@ -123,6 +123,20 @@
       },
     },
     {
+      name: 'whip', desc: 'Whip-pan transition: the strip slingshots sideways, blur peaking where the cut hides.',
+      code: 'M.whip(frame, { at, dur: 16, width: 560 })', cycle: 120,
+      draw(f) {
+        const w = M.whip(f, { at: 46, dur: 16, width: 560 });
+        const panel = (left, bg, dotC, label) =>
+          '<div style="position:absolute;left:' + left + 'px;top:0;width:560px;height:260px;background:' + bg + ';">' +
+          M.dot({ x: 280, y: 118, r: 44, color: dotC, candy: true }) +
+          '<div style="position:absolute;left:0;right:0;top:188px;text-align:center;font:700 17px ui-monospace,Menlo,monospace;color:#33302B;letter-spacing:.14em;">' + label + '</div></div>';
+        return '<div style="position:absolute;left:0;top:0;width:1120px;height:260px;transform:translateX(' +
+          w.x.toFixed(1) + 'px);filter:blur(' + w.blur.toFixed(1) + 'px);">' +
+          panel(0, '#FBF0DC', C.orange, 'SCENE A') + panel(560, '#BFE3DD', C.pink, 'SCENE B') + '</div>';
+      },
+    },
+    {
       name: 'paper-cut', desc: 'A cut-paper world: thickness shadows, a puppet-joint flag, everything shot on twos.',
       code: 'M.paperEl(...) · M.pivot(frame, { steps }) · M.onTwos(frame)', cycle: 130,
       draw(f) {

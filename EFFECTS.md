@@ -27,6 +27,11 @@ slow zoom/pan · `breathe` idle micro-motion · `fx` film grain + vignette ·
 Showcase: `src/compositions/fx-showcase.js` (dark premium reel using the
 whole v0.3 stack).
 
+### Transitions (v0.7)
+- `whip(frame, {at, dur, dir, width, maxBlur})` — whip-pan: strip offset
+  on a cubicInOut curve (fastest mid-pan, where the cut hides) plus a
+  blur value peaking mid-pan. Pairs with `smear` for element-level streaks.
+
 ### Paper-cut pack, core (v0.6)
 - `paperEl({x, y, w, h, color, shape, thick, rot})` — cut-paper shape
   (rect / circle / blob) with a hard offset thickness shadow.
@@ -83,7 +88,6 @@ Primitives to build for it:
 
 ## Backlog (next rounds, roughly in order)
 
-- `whip` — whip-pan transition between scenes (camera overshoot + blur streak; `smear` shipped in v0.5 is its missing half)
 - `pathFly` — flight along an arbitrary bezier/polyline path with heading
 - `flipIn` — 3D flip entrance (perspective rotateX/rotateY)
 - `counterRoll` — odometer-style digit roll for big numbers

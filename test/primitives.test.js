@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -90,6 +90,17 @@ test('paper-cut pack: paperEl, pivot, stepped, onTwos', () => {
   assert.equal(M.onTwos(7), 6);
   assert.equal(M.onTwos(8), 8);
   assert.equal(M.onTwos(8, { every: 3 }), 6);
+});
+
+test('whip: strip travels one width, blur peaks mid-pan', () => {
+  const o = { at: 10, dur: 14, width: 560 };
+  assert.equal(M.whip(10, o).x, 0);
+  assert.equal(M.whip(24, o).x, -560);
+  assert.equal(M.whip(24, o).active, false);
+  const mid = M.whip(17, o);
+  assert.ok(mid.active && mid.blur > 13, `mid blur ${mid.blur}`);
+  assert.ok(M.whip(12, o).blur < mid.blur, 'blur rises toward the middle');
+  assert.equal(M.whip(24, { ...o, dir: -1 }).x, 560);
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

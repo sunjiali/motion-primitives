@@ -96,6 +96,9 @@ export function pivot(frame: number, o?: AtOpts & { from?: number; to?: number; 
 export function stepped(frame: number, o?: AtOpts & { steps?: number }): number;
 /** Snap a frame down to a multiple of `every` (shot-on-twos timing). */
 export function onTwos(frame: number, o?: { every?: number }): number;
+export interface WhipResult { x: number; blur: number; raw: number; active: boolean }
+/** Whip-pan transition: strip offset + mid-pan blur peak for two side-by-side scenes. */
+export function whip(frame: number, o?: AtOpts & { dir?: 1 | -1; width?: number; maxBlur?: number }): WhipResult;
 
 export interface SfxEvent { f: number; s: string; g?: number; pan?: number; seed?: number }
 export interface SfxScore { fps?: number; durationFrames: number; tailSec?: number; events: SfxEvent[] }
@@ -125,6 +128,7 @@ declare const Motion: {
   meshBg: typeof meshBg; drawOn: typeof drawOn; poly: typeof poly; bars: typeof bars;
   scramble: typeof scramble; kenBurns: typeof kenBurns; fx: typeof fx;
   paperEl: typeof paperEl; pivot: typeof pivot; stepped: typeof stepped; onTwos: typeof onTwos;
+  whip: typeof whip;
   Motion: typeof Motion;
   Remotion: RemotionModule;
   sfx: SfxModule;

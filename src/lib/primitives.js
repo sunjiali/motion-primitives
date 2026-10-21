@@ -507,9 +507,26 @@ __root.Motion = (function () {
     return frame - (frame % every);
   }
 
+  // Whip-pan transition: lay the outgoing and incoming scenes side by side
+  // on a strip of width 2W and translate the strip by `x`. The offset curve
+  // is slowest at both ends and fastest mid-pan (where the cut hides), and
+  // `blur` peaks there too — feed it to a CSS blur on the strip, or smear
+  // the moving elements. dir: 1 pans left (incoming from the right).
+  function whip(frame, o) {
+    o = o || {};
+    const dur = o.dur || 14, dir = o.dir || 1, W = o.width || 1280;
+    const raw = clamp01((frame - (o.at || 0)) / dur);
+    const p = (Easing.cubicInOut)(raw);
+    return {
+      x: -dir * W * p + 0, // +0 normalizes -0 at the start point
+      blur: Math.sin(raw * Math.PI) * (o.maxBlur == null ? 14 : o.maxBlur),
+      raw, active: raw > 0 && raw < 1,
+    };
+  }
+
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos,
+    paperEl, pivot, stepped, onTwos, whip,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,
