@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (74 functions)
+# motion-primitives API — the full catalog (75 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -541,6 +541,14 @@ M.pixelDissolve(frame: number, o: { at?: number; dur?: number; w?: number; h?: n
 ```
 
 Mosaic scene transition: a grid of flat cells in the outgoing colour flips away at hash-staggered frames. Returns an overlay div ('' once dissolved).
+
+### `charGrid`
+
+```ts
+M.charGrid(frame: number, o: { cols?: number; rows?: number; size?: number; x?: number; y?: number; chars?: string; color?: string; accent?: string; seed?: number; interval?: number }): string
+```
+
+A living wall of glyphs: every cell flips character at hash-staggered intervals. Returns a positioned div.
 
 ## Isometric kit
 

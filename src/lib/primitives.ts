@@ -86,6 +86,10 @@ interface PixelDissolveOpts {
   at?: number; dur?: number; w?: number; h?: number;
   cols?: number; rows?: number; color?: string; seed?: number;
 }
+interface CharGridOpts {
+  cols?: number; rows?: number; size?: number; x?: number; y?: number;
+  chars?: string; color?: string; accent?: string; seed?: number; interval?: number;
+}
 interface OrbitOpts {
   cx?: number; cy?: number; r?: number; speed?: number; phase?: number;
   squash?: number; depth?: boolean;
@@ -767,6 +771,36 @@ __root.Motion = (function () {
       }
     }
     return '<div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">' + cells + '</div>';
+  }
+
+  // charGrid(): a living wall of glyphs — every cell flips to a
+  // new character at hash-staggered intervals, brightness and the
+  // occasional accent cell hash-picked per flip. Data-wall /
+  // terminal ambience that stays frame-pure. From the X sweep
+  // (@antonin.work's character walls).
+  function charGrid(frame: number, o: CharGridOpts): string {
+    o = o || {};
+    const cols = o.cols || 28, rows = o.rows || 10, size = o.size || 18;
+    const chars = o.chars || '01<>/#@$%&*+=';
+    const color = o.color || '#7FB069', accent = o.accent || '#D9ED92';
+    const seed = o.seed || 1, interval = o.interval || 6;
+    let spans = '';
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const i = r * cols + c;
+        const step = Math.floor(frame / interval + hash(seed * 3 + i * 1.37) * 9);
+        const pick = hash(seed * 13 + i * 7.3 + step * 3.1);
+        const glyph = chars.charAt(Math.floor(pick * chars.length) % chars.length);
+        const isAccent = hash(seed * 29 + i * 3.9 + step * 1.7) > 0.93;
+        const op = 0.3 + 0.7 * hash(seed * 7 + i * 5.1 + step * 2.3);
+        spans += '<span style="display:inline-block;width:' + (size * 0.62).toFixed(1) + 'px;color:' +
+          (isAccent ? accent : color) + ';opacity:' + op.toFixed(2) + ';">' +
+          (glyph === '<' ? '&lt;' : glyph === '&' ? '&amp;' : glyph) + '</span>';
+      }
+      spans += '<br/>';
+    }
+    return '<div style="position:absolute;left:' + (o.x || 0) + 'px;top:' + (o.y || 0) + 'px;font-family:ui-monospace,Menlo,monospace;font-size:' +
+      size + 'px;line-height:1.25;white-space:nowrap;">' + spans + '</div>';
   }
 
   // shake(): decaying screen shake {x, y} inside [at, at+dur].
@@ -1760,7 +1794,7 @@ __root.Motion = (function () {
 
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, pixelDissolve, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, pixelDissolve, charGrid, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
     beatGrid, beatFrames, inertia, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

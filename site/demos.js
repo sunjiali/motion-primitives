@@ -416,6 +416,14 @@
       },
     },
     {
+      name: 'charGrid', desc: 'A living wall of glyphs flipping at staggered intervals — data ambience.',
+      code: 'M.charGrid(frame, { cols, rows, chars })', cycle: 9999,
+      draw(f) {
+        return '<div style="position:absolute;inset:0;background:#0B0F0C;"></div>' +
+          M.charGrid(f, { cols: 37, rows: 11, size: 21, x: 14, y: 16, color: '#5C9467', accent: '#C6F16D', seed: 4, interval: 5 });
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

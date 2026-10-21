@@ -124,6 +124,8 @@ export function maskReveal(frame: number, o: { at?: number; dur?: number; x?: nu
 export function matchCut(frame: number, o: { at?: number; out?: number }): { phase: string; p: number; v: number };
 /** Mosaic scene transition: a grid of flat cells in the outgoing colour flips away at hash-staggered frames. Returns an overlay div ('' once dissolved). */
 export function pixelDissolve(frame: number, o: { at?: number; dur?: number; w?: number; h?: number; cols?: number; rows?: number; color?: string; seed?: number }): string;
+/** A living wall of glyphs: every cell flips character at hash-staggered intervals. Returns a positioned div. */
+export function charGrid(frame: number, o: { cols?: number; rows?: number; size?: number; x?: number; y?: number; chars?: string; color?: string; accent?: string; seed?: number; interval?: number }): string;
 /** 3D flip entrance with overshoot settle. Returns a CSS style string. */
 export function flipIn(frame: number, o?: AtOpts & { axis?: 'X' | 'Y'; from?: number; perspective?: number }): string;
 /** Odometer digit roll from one integer to another. Returns an HTML string. */
@@ -197,7 +199,7 @@ declare const Motion: {
   meshBg: typeof meshBg; drawOn: typeof drawOn; poly: typeof poly; bars: typeof bars;
   scramble: typeof scramble; kenBurns: typeof kenBurns; fx: typeof fx;
   paperEl: typeof paperEl; pivot: typeof pivot; stepped: typeof stepped; onTwos: typeof onTwos;
-  whip: typeof whip; pathFly: typeof pathFly; orbit: typeof orbit; swing: typeof swing; marquee: typeof marquee; marchingAnts: typeof marchingAnts; highlightBox: typeof highlightBox; waveLine: typeof waveLine; spotlight: typeof spotlight; maskReveal: typeof maskReveal; matchCut: typeof matchCut; pixelDissolve: typeof pixelDissolve; flipIn: typeof flipIn; counterRoll: typeof counterRoll;
+  whip: typeof whip; pathFly: typeof pathFly; orbit: typeof orbit; swing: typeof swing; marquee: typeof marquee; marchingAnts: typeof marchingAnts; highlightBox: typeof highlightBox; waveLine: typeof waveLine; spotlight: typeof spotlight; maskReveal: typeof maskReveal; matchCut: typeof matchCut; pixelDissolve: typeof pixelDissolve; charGrid: typeof charGrid; flipIn: typeof flipIn; counterRoll: typeof counterRoll;
   drawText: typeof drawText;
   particleField: typeof particleField;
   morphShape: typeof morphShape;

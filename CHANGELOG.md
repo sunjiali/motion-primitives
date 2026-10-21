@@ -2,6 +2,17 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.43.0] — 2026-10-21
+
+### Added
+
+- `charGrid(frame, o)` — a living wall of glyphs: every cell
+  flips to a new character at hash-staggered intervals, with
+  per-flip brightness and the occasional accent cell. Data-wall
+  and terminal ambience, frame-pure. From the 2026-10-21 X
+  sweep (@antonin.work's digit grid). Skill bundle synced (API
+  catalog now 75 functions); site demo card #44.
+
 ## [0.42.0] — 2026-10-21
 
 ### Added

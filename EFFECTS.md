@@ -260,9 +260,7 @@ what the posts showed at sweep time):
 - (original note) mosaic transition: grid cells flip A→B at
   hash delays while cell size swells mid-transition; the orderly
   counterpart to glitch. (@webflow pixelated transition demo.)
-- `charGrid` — living glyph lattice: fixed grid whose glyphs and
-  colors cycle by per-cell hash phase — a data-wall ambience
-  layer. (@antonin.work digit grid, 13K likes.)
+- ~~`charGrid`~~ — shipped in v0.43.
 - `assembleText` — glyphs fly in from hash scatter to their
   typeset slots (and disperse in reverse): splitText's travelling
   sibling. (@antonin.work, 28K likes.)
