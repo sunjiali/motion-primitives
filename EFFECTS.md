@@ -66,6 +66,19 @@ Primitives to build for it:
 
 ## Backlog (next rounds, roughly in order)
 
+- `smear` — **motion blur (next up; jumps the queue ahead of the paper-cut
+  pack)** — sub-frame ghosting along a motion's velocity: sample a position
+  function at f, f−1, f−2… and composite with fading opacity, so fast moves
+  (travel / drop / whip) stop looking CG-sharp. This is knob 03 of
+  @asteri_eth's "six knobs" decomposition (2026-10-21) and speaks directly
+  to Robin's video-质感 feedback; it is also the missing half of `whip`
+  below (its "blur streak").
+- Tuning-config convention — every composition declares one `TUNE` block
+  at the top holding its six knobs (spacing / typography / motionBlur /
+  easing / followThrough / anticipation) as named numbers, so revision
+  notes become number edits ("+4 frames of anticipation") instead of
+  code hunts. Also from @asteri_eth (2026-10-21); adopt on the next new
+  composition, backfill opportunistically.
 - `whip` — whip-pan transition between scenes (camera overshoot + blur streak)
 - `pathFly` — flight along an arbitrary bezier/polyline path with heading
 - `flipIn` — 3D flip entrance (perspective rotateX/rotateY)
