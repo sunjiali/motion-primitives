@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -281,6 +281,21 @@ test('wipeReveal: clip edge sweeps in the chosen direction, ends fully open', ()
   assert.ok(M.wipeReveal(0, { ...o, dir: 'up' }).includes('inset(100.0% 0 0 0)'));
   assert.ok(M.wipeReveal(40, o).includes('<div>X</div>')); // content passes through untouched
   assert.equal(M.wipeReveal(20, o), M.wipeReveal(20, o)); // determinism
+});
+
+test('confetti: seeded paper burst — rises, gravity wins, fades out, deterministic', () => {
+  const o = { at: 10, n: 24, x: 640, y: 500, seed: 4, life: 70 };
+  assert.equal(M.confetti(5, o), ''); // before the pop
+  assert.equal(M.confetti(90, o), ''); // after life ends (at 10 + 70)
+  const early = M.confetti(16, o);
+  assert.equal((early.match(/border-radius:2px/g) || []).length, 24); // every bit present
+  const meanTop = (h) => {
+    const ts = [...h.matchAll(/top:(-?[\d.]+)px/g)].map((m) => parseFloat(m[1]));
+    return ts.reduce((a, b) => a + b, 0) / ts.length;
+  };
+  assert.ok(meanTop(M.confetti(79, o)) > meanTop(early) + 60, 'on average the burst must fall');
+  assert.ok(M.confetti(78, o).includes('opacity:0.11')); // fade: (70 - 68) / 18 ≈ 0.11
+  assert.equal(M.confetti(40, o), M.confetti(40, o)); // determinism
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

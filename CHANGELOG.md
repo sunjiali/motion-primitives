@@ -2,6 +2,23 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.23.0] — 2026-10-21
+
+### Added
+
+- `confetti(frame, o)` — a confetti cannon: `n` paper bits burst
+  from (`x`, `y`) in an upward cone (`spread` degrees around
+  vertical, `power` launch speed), tumble as they fly (rotation
+  plus a scaleX paper-flip), and fall under `gravity`. Every bit's
+  launch, size, color, and tumble derives from `hash()` mixes of
+  its index and `seed` — same seed, same celebration. Bits fade
+  over the last 18 frames of `life` (default 75). Tunables: `at`,
+  `n`, `power`, `spread`, `gravity`, `size`, `colors`. Skill
+  bundle synced in lockstep (API catalog now 54 functions).
+  Verified with unit tests (bit count, lifetime window, mean-fall
+  under gravity, fade value, determinism) and rise/fall render
+  stills. Site demo card #30.
+
 ## [0.22.0] — 2026-10-21
 
 ### Added

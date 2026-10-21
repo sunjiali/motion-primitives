@@ -236,6 +236,16 @@
       },
     },
     {
+      name: 'confetti', desc: 'Confetti cannon: seeded paper bits burst up, tumble, and fall under gravity.',
+      code: 'M.confetti(frame, { x, y, seed })', cycle: 190,
+      draw(f) {
+        const cyc = f % 190;
+        return M.splitText(cyc, { text: 'Ship it!', at: 4, dur: 12, stagger: 3, size: 58, x: 280, y: 74, color: INK }) +
+          M.confetti(cyc, { at: 12, n: 42, x: 120, y: 212, seed: 3, power: 11 }) +
+          M.confetti(cyc, { at: 24, n: 42, x: 440, y: 212, seed: 9, power: 11 });
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

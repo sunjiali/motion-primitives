@@ -6,6 +6,11 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Celebration (v0.23)
+- `confetti` — confetti cannon: seeded paper bits burst from a
+  point in an upward cone, tumble (rotation + scaleX paper-flip),
+  and fall under gravity; fades over the last 18 frames of `life`.
+
 ### Reveal (v0.22)
 - `wipeReveal` — directional wipe reveal of arbitrary HTML via an
   animated clip-path inset (right / left / up / down). The content

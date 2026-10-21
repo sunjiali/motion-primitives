@@ -970,10 +970,48 @@ __root.Motion = (function () {
         }
         return '<div style="position:absolute;inset:0;clip-path:' + inset + ';">' + (o.html || '') + '</div>';
     }
+    // Confetti cannon: n paper bits burst from (x, y) in an upward
+    // cone (spread degrees around vertical), tumble as they fly
+    // (rotation + a scaleX paper-flip), and fall under gravity.
+    // Every bit's launch, size, color, and tumble derive from
+    // hash() mixes of the bit index and `seed` — same seed, same
+    // celebration. Bits fade over the last 18 frames of `life`,
+    // then the layer is gone.
+    function confetti(frame, o) {
+        o = o || {};
+        const t = frame - (o.at || 0);
+        const life = o.life || 75;
+        if (t < 0 || t > life)
+            return '';
+        const n = o.n || 60;
+        const power = o.power || 13;
+        const spread = o.spread || 80;
+        const g = o.gravity == null ? 0.32 : o.gravity;
+        const seed = o.seed || 1;
+        const base = o.size || 9;
+        const colors = o.colors || ['#F4604E', '#FFC53D', '#3FB6FF', '#39D98A', '#FF7AB6'];
+        const fade = clamp01((life - t) / 18);
+        let bits = '';
+        for (let i = 0; i < n; i++) {
+            const H = (a, b) => hash(i * a + seed * b);
+            const ang = (-90 + (H(12.9, 7.1) - 0.5) * spread) * Math.PI / 180;
+            const v = power * (0.45 + 0.6 * H(78.2, 3.7));
+            const px = (o.x || 0) + Math.cos(ang) * v * t;
+            const py = (o.y || 0) + Math.sin(ang) * v * t + 0.5 * g * t * t;
+            const rot = H(37.7, 1.9) * 360 + t * (2 + 5 * H(53.3, 0.7));
+            const flip = Math.cos(t * (0.12 + 0.15 * H(91.7, 2.3)) + H(17.3, 5.9) * 6.2832);
+            const w = base * (0.6 + 0.7 * H(67.1, 11.3));
+            const color = colors[Math.floor(H(29.9, 17.7) * colors.length) % colors.length];
+            bits += '<div style="position:absolute;left:' + px.toFixed(1) + 'px;top:' + py.toFixed(1) +
+                'px;width:' + w.toFixed(1) + 'px;height:' + (w * 0.62).toFixed(1) + 'px;border-radius:2px;background:' + color +
+                ';opacity:' + fade.toFixed(2) + ';transform:rotate(' + rot.toFixed(0) + 'deg) scaleX(' + flip.toFixed(2) + ');"></div>';
+        }
+        return '<div style="position:absolute;inset:0;">' + bits + '</div>';
+    }
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
         paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
-        beatGrid, beatFrames, morphPoly, splitText, wipeReveal,
+        beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
         scramble, kenBurns, breathe, fx, hash,

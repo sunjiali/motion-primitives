@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (53 functions)
+# motion-primitives API — the full catalog (54 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -355,6 +355,14 @@ M.onTwos(frame: number, o?: { every?: number }): number
 ```
 
 Snap a frame down to a multiple of `every` (shot-on-twos timing).
+
+### `confetti`
+
+```ts
+M.confetti(frame: number, o: { at?: number; n?: number; x?: number; y?: number; power?: number; spread?: number; gravity?: number; life?: number; seed?: number; size?: number; colors?: string[] }): string
+```
+
+Confetti cannon: seeded paper bits burst upward, tumble, and fall under gravity. Returns an HTML string.
 
 ## Scene, camera & ambience
 
