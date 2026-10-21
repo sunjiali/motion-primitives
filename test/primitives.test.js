@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -448,6 +448,19 @@ test('matchCut: 80% at the cut, pose and velocity continuous, lands at rest', ()
   assert.ok(Math.abs(vBefore - vAfter) < 0.01, 'velocity survives the cut: ' + vBefore + ' vs ' + vAfter);
   const done = M.matchCut(35, o); // in-phase lasts out / 4 = 5 frames
   assert.deepEqual([done.phase, done.p, done.v], ['done', 1, 0]);
+});
+
+test('inertia: closed-form glide lands exactly at x0 + v0 / k', () => {
+  const o = { x0: 10, y0: 0, vx: 12, vy: -3, k: 0.06, at: 5 };
+  const start = M.inertia(5, o);
+  assert.equal(start.x, 10);
+  assert.equal(start.vx, 12);
+  assert.equal(M.inertia(2, o).x, 10); // before `at`, still at the start
+  const end = M.inertia(500, o);
+  assert.ok(Math.abs(end.x - (10 + 12 / 0.06)) < 1e-6); // total travel is exactly v0 / k
+  assert.ok(Math.abs(end.y - (0 + -3 / 0.06)) < 1e-6);
+  const mid = M.inertia(20, o);
+  assert.ok(mid.x > 10 && mid.x < end.x && mid.vx < 12 && mid.vx > 0); // gliding, decaying
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

@@ -138,6 +138,8 @@ export function glitch(frame: number, o: { at?: number; dur?: number; html: stri
 export function beatGrid(frame: number, o: { bpm: number; at?: number; fps?: number; perBar?: number }): { beat: number; index: number; phase: number; pulse: number; bar: number; inBar: number };
 /** The BPM grid as frame numbers — SFX score events and cut points. */
 export function beatFrames(o: { bpm: number; at?: number; fps?: number; perBar?: number; count: number }): number[];
+/** Closed-form inertial glide: position/velocity of a thrown object; total travel is exactly v0 / k. */
+export function inertia(frame: number, o: { x0?: number; y0?: number; vx?: number; vy?: number; k?: number; at?: number }): { x: number; y: number; vx: number; vy: number; t: number };
 /** Morph between two raw polygon point sets (uneven counts are subdivided to match). Returns an SVG string. */
 export function morphPoly(frame: number, o: AtOpts & { fn?: string; from: [number, number][]; to: [number, number][]; x?: number; y?: number; color?: string; stroke?: string; strokeWidth?: number; rot?: number }): string;
 /** Split-text entrance: every character animates in on its own stagger (rise / pop / fade). Returns an HTML string. */
@@ -198,7 +200,7 @@ declare const Motion: {
   particleField: typeof particleField;
   morphShape: typeof morphShape;
   glitch: typeof glitch;
-  beatGrid: typeof beatGrid; beatFrames: typeof beatFrames;
+  beatGrid: typeof beatGrid; beatFrames: typeof beatFrames; inertia: typeof inertia;
   morphPoly: typeof morphPoly;
   splitText: typeof splitText;
   wipeReveal: typeof wipeReveal;

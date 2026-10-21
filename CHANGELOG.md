@@ -2,6 +2,21 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.41.0] — 2026-10-21
+
+### Added
+
+- `inertia(frame, o)` — a thrown object's glide in closed form:
+  position x0 + v·(1 − e^(−k·t))/k with the decaying velocity
+  alongside. The endpoint is physics, not a keyframe — total
+  travel is exactly v0 / k, predictable to the pixel. From the
+  2026-10-21 X sweep (@webflow's GSAP Inertia notes). Skill
+  bundle synced (API catalog now 73 functions); site demo
+  card #42. Note: the v0.40 push's CI/Deploy runs never fired
+  (GitHub-side trigger miss; Actions itself verified healthy) —
+  the site was deployed by manual dispatch, and this release's
+  CI run covers the combined tree.
+
 ## [0.40.0] — 2026-10-21
 
 ### Added

@@ -80,6 +80,8 @@ interface MaskRevealOpts {
 }
 interface MatchCutResult { phase: string; p: number; v: number }
 interface MatchCutOpts { at?: number; out?: number }
+interface InertiaResult { x: number; y: number; vx: number; vy: number; t: number }
+interface InertiaOpts { x0?: number; y0?: number; vx?: number; vy?: number; k?: number; at?: number }
 interface OrbitOpts {
   cx?: number; cy?: number; r?: number; speed?: number; phase?: number;
   squash?: number; depth?: boolean;
@@ -712,6 +714,26 @@ __root.Motion = (function () {
     if (tau >= inDur) return { phase: 'done', p: 1, v: 0 };
     const v0 = 1.6 / out;
     return { phase: 'in', p: 0.8 + v0 * tau - (v0 / (2 * inDur)) * tau * tau, v: v0 * (1 - tau / inDur) };
+  }
+
+  // inertia(): a thrown object's glide, closed form — position
+  // x(t) = x0 + vx * (1 - e^(-k*t)) / k, velocity vx * e^(-k*t).
+  // The endpoint is physics, not a keyframe: total travel is
+  // exactly v0 / k, so where it stops is predictable to the
+  // pixel. Returns { x, y, vx, vy, t }; k is per-frame friction
+  // (0.06 ≈ a long glide). From the X sweep (@webflow's GSAP
+  // Inertia notes).
+  function inertia(frame: number, o: InertiaOpts): InertiaResult {
+    o = o || {};
+    const k = o.k || 0.06, at = o.at || 0;
+    const t = Math.max(0, frame - at);
+    const decay = Math.exp(-k * t);
+    const span = (1 - decay) / k;
+    return {
+      x: (o.x0 || 0) + (o.vx || 0) * span,
+      y: (o.y0 || 0) + (o.vy || 0) * span,
+      vx: (o.vx || 0) * decay, vy: (o.vy || 0) * decay, t,
+    };
   }
 
   // shake(): decaying screen shake {x, y} inside [at, at+dur].
@@ -1706,7 +1728,7 @@ __root.Motion = (function () {
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
     paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
-    beatGrid, beatFrames, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoSort,
+    beatGrid, beatFrames, inertia, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,

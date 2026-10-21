@@ -254,10 +254,7 @@ what the posts showed at sweep time):
   a possible later variant).
 - ~~`matchCut`~~ — shipped in v0.40 (shared-path driver:
   quadratic out-leg to p = 0.8, derivative-matched in-leg).
-- `inertia` — velocity-driven glide, closed form
-  x(t) = x0 + v0·(1 − e^(−k·t))/k: the throw/flick primitive —
-  endpoint distance is v0/k, not a fixed keyframe. (@webflow's
-  GSAP Inertia Slider template.)
+- ~~`inertia`~~ — shipped in v0.41.
 - `pixelDissolve` — mosaic transition: grid cells flip A→B at
   hash delays while cell size swells mid-transition; the orderly
   counterpart to glitch. (@webflow pixelated transition demo.)

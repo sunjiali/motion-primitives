@@ -390,6 +390,22 @@
       },
     },
     {
+      name: 'inertia', desc: 'A thrown puck glides to a stop — the ring marks v0 / k, physics lands it there.',
+      code: 'M.inertia(frame, { x0, vx, k })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        const s = M.inertia(lf, { x0: 52, y0: 150, vx: 13.2, vy: -2.6, k: 0.055, at: 12 });
+        const landX = 52 + 13.2 / 0.055, landY = 150 + -2.6 / 0.055;
+        let trail = '';
+        for (let b = 1; b <= 5; b++) {
+          const p = M.inertia(Math.max(12, lf - b * 2), { x0: 52, y0: 150, vx: 13.2, vy: -2.6, k: 0.055, at: 12 });
+          if (lf - b * 2 >= 12) trail += '<div style="position:absolute;left:' + (p.x - 4) + 'px;top:' + (p.y - 4) + 'px;width:8px;height:8px;border-radius:50%;background:#F59E4C;opacity:' + (0.4 - b * 0.06) + ';"></div>';
+        }
+        return '<div style="position:absolute;left:' + (landX - 17) + 'px;top:' + (landY - 17) + 'px;width:34px;height:34px;border-radius:50%;border:3px dashed #57C7D4;"></div>' + trail +
+          '<div style="position:absolute;left:' + (s.x - 13) + 'px;top:' + (s.y - 13) + 'px;width:26px;height:26px;border-radius:50%;background:#F59E4C;"></div>';
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (72 functions)
+# motion-primitives API — the full catalog (73 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -71,6 +71,14 @@ M.beatFrames(o: { bpm: number; at?: number; fps?: number; perBar?: number; count
 ```
 
 The BPM grid as frame numbers — SFX score events and cut points.
+
+### `inertia`
+
+```ts
+M.inertia(frame: number, o: { x0?: number; y0?: number; vx?: number; vy?: number; k?: number; at?: number }): { x: number
+```
+
+Closed-form inertial glide: position/velocity of a thrown object; total travel is exactly v0 / k.
 
 ## Entrances & motion
 
