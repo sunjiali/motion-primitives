@@ -23,6 +23,7 @@ on:
       - 'scripts/**'
       - 'package.json'
       - 'package-lock.json'
+      - '.github/workflows/**'
   workflow_dispatch:
 
 # Least privilege: CI reads the repo, nothing more. (GitHub's secure-use
