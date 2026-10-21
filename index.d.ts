@@ -108,6 +108,8 @@ export function flipIn(frame: number, o?: AtOpts & { axis?: 'X' | 'Y'; from?: nu
 export function counterRoll(frame: number, o?: AtOpts & { from?: number; to?: number; size?: number; stagger?: number; spin?: number; color?: string }): string;
 /** Handwriting-style stroke text: glyph outlines draw themselves, then the fill settles in. Returns an SVG string. */
 export function drawText(frame: number, o: AtOpts & { fn?: string; text: string; x?: number; y?: number; size?: number; color?: string; stroke?: string; strokeWidth?: number; fillFrom?: number; fontFamily?: string; weight?: number; anchor?: 'start' | 'middle' | 'end'; letterSpacing?: number }): string;
+/** Ambient particle layer (stars / dust / snow). Returns an HTML string. */
+export function particleField(frame: number, o?: { n?: number; w?: number; h?: number; mode?: 'float' | 'snow' | 'rise'; speed?: number; sway?: number; color?: string; opacity?: number; rMin?: number; rMax?: number; twinkle?: number; seed?: number }): string;
 
 export interface SfxEvent { f: number; s: string; g?: number; pan?: number; seed?: number }
 export interface SfxScore { fps?: number; durationFrames: number; tailSec?: number; events: SfxEvent[] }
@@ -139,6 +141,7 @@ declare const Motion: {
   paperEl: typeof paperEl; pivot: typeof pivot; stepped: typeof stepped; onTwos: typeof onTwos;
   whip: typeof whip; pathFly: typeof pathFly; flipIn: typeof flipIn; counterRoll: typeof counterRoll;
   drawText: typeof drawText;
+  particleField: typeof particleField;
   Motion: typeof Motion;
   Remotion: RemotionModule;
   sfx: SfxModule;

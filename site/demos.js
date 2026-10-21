@@ -141,6 +141,15 @@
       },
     },
     {
+      name: 'particleField', desc: 'Ambient particle layer — stars, dust, snow — pure atmosphere behind any scene.',
+      code: 'M.particleField(frame, { mode: "snow" })', cycle: 220,
+      draw(f) {
+        return '<div style="position:absolute;inset:0;background:linear-gradient(170deg,#171233,#0B0916);">' +
+          M.particleField(f, { n: 52, w: 560, h: 260, mode: 'snow', color: '#EAF2FF', rMin: 1.2, rMax: 3.2 }) +
+          '<div style="position:absolute;left:0;right:0;top:196px;text-align:center;font:600 13px ui-monospace,Menlo,monospace;color:#9FB4D8;letter-spacing:.22em;">FIRST SNOW</div></div>';
+      },
+    },
+    {
       name: 'flipIn', desc: '3D flip entrance with an overshoot settle — flashcards, tiles, reveals.',
       code: 'M.flipIn(frame, { at, axis: "Y" })', cycle: 130,
       draw(f) {

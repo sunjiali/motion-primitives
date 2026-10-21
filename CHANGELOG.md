@@ -2,6 +2,22 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.14.0] — 2026-10-21
+
+### Added
+
+- `particleField(frame, o)` — ambient particle layer. Three modes:
+  `float` (stars / dust motes wandering in place), `snow` (falls,
+  sways, wraps at the bottom), `rise` (bubbles / embers climbing,
+  wraps at the top). Every particle's home, size, speed, sway and
+  twinkle phase derive from `hash(seed, i)`, so the field is a pure
+  function of the frame and layers stack freely (a star layer under a
+  snow layer is the canonical night scene). Options: `n`, `w`, `h`,
+  `mode`, `speed`, `sway`, `color`, `opacity`, `rMin`, `rMax`,
+  `twinkle`, `seed`. Verified with unit tests (count, bounds,
+  determinism, mode separation), two render stills 75 frames apart,
+  and site demo card #22.
+
 ## [0.13.0] — 2026-10-21
 
 ### Added

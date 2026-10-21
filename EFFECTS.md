@@ -11,6 +11,14 @@ TypeScript refactor — all sources are strict-mode `.ts`, compiled by
 `tsc` to the same committed JavaScript (no behavior change; CI
 build-freshness gate). No new effects this round.
 
+### Ambience (v0.14)
+- `particleField` — ambient particle layer with three modes:
+  `float` (stars / dust motes wandering in place), `snow` (falls,
+  sways, wraps), `rise` (bubbles / embers climbing, wraps). Particle
+  homes, sizes, speeds and twinkle phases all derive from
+  `hash(seed, i)` — frame-pure, stackable (stars + snow verified in
+  one scene).
+
 ### Text (v0.13)
 - `drawText` — handwriting-style stroke text: glyph outlines draw
   themselves at pen speed (linear by default), fill settles in over
@@ -117,7 +125,6 @@ Primitives to build for it:
 
 ## Backlog (next rounds, roughly in order)
 
-- `particleField` — ambient drifting particle layer (stars/dust/snow)
 - `morphShape` — shape A→B morph (circle→star→heart…) for icons
 - `glitch` — RGB-split glitch transition (short, tasteful)
 - Beat tools — BPM/beat detection for music-synced cuts (from code-video-director beats.py);

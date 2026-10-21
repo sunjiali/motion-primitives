@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -162,6 +162,20 @@ test('drawText: stroke draws at pen speed, fill settles last, text is escaped', 
   assert.ok(end.includes('fill-opacity="1.000"'), end);
   assert.ok(M.drawText(30, { text: 'a<b>&', at: 0, dur: 10 }).includes('a&lt;b&gt;&amp;'));
   assert.equal(M.drawText(30, o), mid); // determinism
+});
+
+test('particleField: deterministic, bounded, alive across frames and modes', () => {
+  const o = { n: 12, w: 400, h: 200, mode: 'snow' };
+  const a = M.particleField(30, o);
+  assert.equal(M.particleField(30, o), a); // determinism
+  assert.equal((a.match(/border-radius:50%/g) || []).length, 12); // one div per particle
+  for (const m of a.matchAll(/left:(-?[\d.]+)px;top:(-?[\d.]+)px/g)) {
+    const x = parseFloat(m[1]), y = parseFloat(m[2]);
+    assert.ok(x > -40 && x < 440 && y > -20 && y < 220, `out of bounds: ${x},${y}`);
+  }
+  assert.notEqual(M.particleField(90, o), a); // drifts over time
+  assert.notEqual(M.particleField(30, { ...o, mode: 'rise' }), a); // modes differ
+  assert.ok(M.particleField(0, { n: 1, twinkle: 0, opacity: 0.5 }).includes('opacity:0.500'));
 });
 
 test('hash is deterministic and stays in [0, 1)', () => {

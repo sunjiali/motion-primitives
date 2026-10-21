@@ -89,6 +89,11 @@ interface DrawTextOpts extends EaseOpts {
   color?: string; stroke?: string; strokeWidth?: number; fillFrom?: number;
   fontFamily?: string; weight?: number; anchor?: 'start' | 'middle' | 'end'; letterSpacing?: number;
 }
+interface ParticleFieldOpts {
+  n?: number; w?: number; h?: number; mode?: 'float' | 'snow' | 'rise';
+  speed?: number; sway?: number; color?: string; opacity?: number;
+  rMin?: number; rMax?: number; twinkle?: number; seed?: number;
+}
 
 __root.Motion = (function () {
   const { interpolate, spring, Easing } = __root.Remotion as RemotionStatic;
@@ -709,9 +714,56 @@ __root.Motion = (function () {
       esc + '</text></svg>';
   }
 
+  // Ambient particle layer: stars / dust / snow drifting behind (or
+  // over) a scene. Every particle's home, size, speed and phase come
+  // from hash(seed, i), so the field is a pure function of the frame
+  // and never needs state. Modes: 'float' (gentle wander — dust motes,
+  // stars), 'snow' (falls, sways, wraps), 'rise' (bubbles / embers
+  // climbing, wraps). `twinkle` modulates opacity per particle.
+  function particleField(frame: number, o?: ParticleFieldOpts): string {
+    o = o || {};
+    const n = o.n || 40, w = o.w || 1280, h = o.h || 720;
+    const mode = o.mode || 'float';
+    const seed = o.seed || 0;
+    const rMin = o.rMin == null ? 1.5 : o.rMin, rMax = o.rMax == null ? 3.5 : o.rMax;
+    const baseOp = o.opacity == null ? 0.7 : o.opacity;
+    const tw = o.twinkle == null ? 0.35 : o.twinkle;
+    const swayBase = o.sway == null ? 14 : o.sway;
+    const span = h + 20;
+    let s = '';
+    for (let i = 0; i < n; i++) {
+      const hx = hash(i * 12.9 + seed * 7.1 + 11);
+      const hy = hash(i * 78.2 + seed * 3.7 + 5);
+      const hs = hash(i * 37.7 + seed * 1.9 + 23);
+      const hp = hash(i * 53.3 + seed * 0.7 + 41);
+      const r = rMin + hs * (rMax - rMin);
+      const swayAmp = swayBase * (0.4 + hx);
+      const ph = hp * Math.PI * 2;
+      const swaySp = 0.008 + hs * 0.012;
+      let x: number, y: number;
+      if (mode === 'snow') {
+        const fall = (o.speed == null ? 0.7 : o.speed) * (0.6 + hp * 0.9);
+        y = ((hy * span + frame * fall) % span) - 10;
+        x = hx * w + Math.sin(frame * swaySp + ph) * swayAmp;
+      } else if (mode === 'rise') {
+        const rise = (o.speed == null ? 0.55 : o.speed) * (0.6 + hp * 0.9);
+        y = (h + 10) - ((hy * span + frame * rise) % span);
+        x = hx * w + Math.sin(frame * swaySp + ph) * swayAmp;
+      } else {
+        x = hx * w + Math.sin(frame * swaySp + ph) * swayAmp;
+        y = hy * h + Math.cos(frame * swaySp * 0.8 + ph) * swayAmp * 0.6;
+      }
+      const op = baseOp * (1 - tw + tw * (0.5 + 0.5 * Math.sin(frame * (0.03 + hs * 0.05) + ph)));
+      s += '<div style="position:absolute;left:' + (x - r).toFixed(1) + 'px;top:' + (y - r).toFixed(1) +
+        'px;width:' + (r * 2).toFixed(1) + 'px;height:' + (r * 2).toFixed(1) + 'px;border-radius:50%;background:' +
+        (o.color || '#FFFFFF') + ';opacity:' + op.toFixed(3) + ';"></div>';
+    }
+    return s;
+  }
+
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll, drawText,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, flipIn, counterRoll, drawText, particleField,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, meshBg, drawOn, poly, bars,
     scramble, kenBurns, breathe, fx, hash,
