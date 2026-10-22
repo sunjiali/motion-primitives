@@ -117,4 +117,18 @@ window.PROMPT_GALLERY = [
 片尾：底部居中一行 17px 灰字「splitFlap · motion-primitives」。禁用：不要音效（翻牌声不许合成冒充）、不要渐变和投影、不要状态以外的第二种字体。`,
     notes: '回填条目：成片随 v0.56.0 发布（splitFlap 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。',
   },
+  {
+    id: 'portal-demo',
+    title: 'Portal Demo — The Disc That Eats the Scene',
+    blurb: 'A circular portal transition study: a white disc blooms from the left, swallows the navy title scene, holds one beat, then contracts to the right revealing the red scene — echo rings trail the rim.',
+    video: 'videos/portal-demo.mp4',
+    tags: ['transitions', 'portalWipe', '16:9', '6s'],
+    rounds: '复现 prompt · shipped in v0.57',
+    prompt:
+`用 motion-primitives 做一条 6 秒的圆形 portal 转场展示片，composition 名 portal-demo，核心只用一个新原语 M.portalWipe。
+
+规格：1280×720，30fps，180 帧，无声，硬切。两场：A 场深海军蓝 #101828（标题「PORTAL WIPE」800 96px 米白 + 等宽代码行 M.portalWipe(frame, { at, dur, x, y, x2, y2, echo })），B 场瑞士红 #E30613（标题「SCENE TWO」+ 小字「the portal is the transition」）。转场在第 60 帧、40 帧时长：白色圆盘从左侧 (220,360) 以 easeOutCubic 爆开吞掉 A 场，满覆盖停 6 帧，再以 cubicInOut 向右侧 (1060,360) 收缩，露出 B 场；盘后拖两圈 echo 回声环。关键：portal 颜色必须同时与 A、B 两场形成对比（白色），否则收缩阶段会隐形；把 A 场作为 html 传给原语——原语在展开期用 SVG mask 把 A 场裁到盘外、满覆盖后直接吞掉，B 场先画在底层。禁用：不许渐变转场、不许音效。
+`,
+    notes: '回填条目：成片随 v0.57.0 发布（portalWipe 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查抓出一处构图 bug：第一版转场盘用了红色——与 B 场同色导致收缩阶段隐形，改为白色后两阶段都可读。',
+  },
 ];

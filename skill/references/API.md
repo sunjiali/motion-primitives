@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (88 functions)
+# motion-primitives API — the full catalog (89 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -627,6 +627,14 @@ M.slitScan(frame: number, o: { html: string; h?: number; bands?: number; amp?: n
 ```
 
 Smooth slit-scan streak warp over wrapped HTML: band-clipped copies shifted by a travelling sine field. Returns an HTML string.
+
+### `portalWipe`
+
+```ts
+M.portalWipe(frame: number, o: { at?: number; dur?: number; x?: number; y?: number; x2?: number; y2?: number; w?: number; h?: number; color?: string; echo?: number; hold?: number; fn?: string }): string
+```
+
+Circular portal transition: a flat disc blooms from (x, y), swallows the scene, holds, then contracts toward (x2, y2) revealing the incoming scene beneath. Returns an overlay div ('' outside the window).
 
 ### `liquidMetal`
 

@@ -407,6 +407,18 @@
       },
     },
     {
+      name: 'portalWipe', desc: 'A flat disc blooms from a point, swallows the scene, then contracts to reveal the next.',
+      code: 'M.portalWipe(frame, { html, at, dur, x, y, x2, y2, echo })', cycle: 170,
+      draw(f) {
+        const lf = f % 170;
+        const a = '<div style="position:absolute;inset:0;background:#1D2733;"></div>' +
+          '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 44px system-ui;color:#8E99AD;">SCENE 1</div>';
+        const b = '<div style="position:absolute;inset:0;background:#E30613;"></div>' +
+          '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 44px system-ui;color:#F5F4F0;">SCENE 2</div>';
+        return b + M.portalWipe(lf, { html: a, at: 55, dur: 55, w: 560, h: 315, color: '#F5F4F0', x: 120, y: 160, x2: 440, y2: 150, echo: 2 });
+      },
+    },
+    {
       name: 'matchCut', desc: 'Ball becomes box mid-flight — pose and velocity matched, one motion reads through.',
       code: 'const { phase, p } = M.matchCut(frame, { out })', cycle: 130,
       draw(f) {

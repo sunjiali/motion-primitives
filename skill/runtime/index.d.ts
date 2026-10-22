@@ -140,6 +140,8 @@ export function textOnPath(frame: number, o: { text: string; pts: number[][]; si
 export function patternField(frame: number, o: { w?: number; h?: number; tile?: number; motif?: string; motion?: string; color?: string; bg?: string; speed?: number; x?: number; y?: number }): string;
 /** Smooth slit-scan streak warp over wrapped HTML: band-clipped copies shifted by a travelling sine field. Returns an HTML string. */
 export function slitScan(frame: number, o: { html: string; h?: number; bands?: number; amp?: number; waves?: number; speed?: number; at?: number; dur?: number }): string;
+/** Circular portal transition: a flat disc blooms from (x, y), swallows the outgoing scene, holds, then contracts toward (x2, y2) revealing the incoming scene beneath. Pass the outgoing scene as `html` (draw the incoming scene first). Returns an overlay div ('' after the window). */
+export function portalWipe(frame: number, o: { at?: number; dur?: number; html?: string; x?: number; y?: number; x2?: number; y2?: number; w?: number; h?: number; color?: string; echo?: number; hold?: number; fn?: string }): string;
 /** Raymarched SDF liquid-chrome blob cluster (WebGL). Returns a canvas tag; the players paint it via liquidMetalDraw after each render. */
 export function liquidMetal(frame: number, o: { w?: number; h?: number; x?: number; y?: number; size?: number; palette?: string; speed?: number; seed?: number; fps?: number; blobs?: number; spin?: number }): string;
 /** Paints every liquidMetal canvas under a root element. Called automatically by the players; no-op without a DOM. */
@@ -241,6 +243,7 @@ declare const Motion: {
   textOnPath: typeof textOnPath;
   patternField: typeof patternField;
   slitScan: typeof slitScan;
+  portalWipe: typeof portalWipe;
   liquidMetal: typeof liquidMetal;
   liquidMetalDraw: typeof liquidMetalDraw;
   wipeReveal: typeof wipeReveal;

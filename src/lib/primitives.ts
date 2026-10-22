@@ -108,6 +108,10 @@ interface SlitScanOpts {
   html: string; h?: number; bands?: number; amp?: number;
   waves?: number; speed?: number; at?: number; dur?: number;
 }
+interface PortalWipeOpts extends EaseOpts {
+  html?: string; x?: number; y?: number; x2?: number; y2?: number;
+  w?: number; h?: number; color?: string; echo?: number; hold?: number;
+}
 interface LiquidMetalOpts {
   w?: number; h?: number; x?: number; y?: number; size?: number;
   palette?: string; speed?: number; seed?: number; fps?: number; blobs?: number; spin?: number;
@@ -1072,6 +1076,84 @@ __root.Motion = (function () {
         'px 0);transform:translateX(' + dx.toFixed(1) + 'px);">' + html + '</div>';
     }
     return '<div style="position:absolute;inset:0;overflow:hidden;">' + out + '</div>';
+  }
+
+  // portalWipe(): a circular portal transition — a flat disc blooms
+  // from (x, y) with an easeOutCubic pop, swallows the outgoing
+  // scene, holds, then contracts (cubicInOut) toward (x2, y2),
+  // revealing the incoming scene already drawn underneath. Draw the
+  // incoming scene FIRST, then pass the OUTGOING scene as `html`:
+  // before `at` it renders unclipped (hiding the incoming scene);
+  // during the bloom it is clipped to outside the disc (SVG mask);
+  // once the disc reaches full coverage the outgoing scene is
+  // swallowed and only the disc remains, contracting to reveal the
+  // scene beneath. After at + dur it returns ''. Omit `html` and it
+  // degrades to a disc-only overlay (advanced manual layering).
+  // `echo` trails thin rings behind the rim (motionin's signature
+  // framing); `hold` is the full-coverage beat in frames. The portal
+  // color must contrast with BOTH scenes, or one phase reads as
+  // nothing. From the 2026-10-22 eve sweep via @neropursue's
+  // resource list (motionin.design's card transitions).
+  function portalWipe(frame: number, o: PortalWipeOpts): string {
+    o = o || ({} as PortalWipeOpts);
+    const at = o.at || 0, dur = o.dur || 36;
+    const hold = o.hold == null ? 4 : Math.max(0, Math.min(o.hold, dur - 2));
+    const w = o.w || 1280, h = o.h || 720;
+    const x0 = o.x == null ? w / 2 : o.x, y0 = o.y == null ? h / 2 : o.y;
+    const x1 = o.x2 == null ? x0 : o.x2, y1 = o.y2 == null ? y0 : o.y2;
+    const color = o.color || '#101014';
+    const echoes = Math.max(0, Math.round(o.echo || 0));
+    const html = o.html || '';
+    const t = frame - at;
+    if (t < 0) return html; // outgoing scene, full-bleed, hides the scene drawn beneath
+    if (frame >= at + dur) return '';
+    const motion = dur - hold;
+    const expDur = Math.max(1, Math.round(motion * 0.55));
+    const conDur = Math.max(1, motion - expDur);
+    // Full coverage from EITHER center — the portal must swallow the
+    // stage whichever side it starts or ends on.
+    const maxR = Math.hypot(
+      Math.max(x0, x1, w - x0, w - x1),
+      Math.max(y0, y1, h - y0, h - y1)
+    ) * 1.06;
+    let r: number, cx: number, cy: number;
+    if (t < expDur) {
+      const p = clamp01(t / expDur);
+      r = maxR * (1 - Math.pow(1 - p, 3)); // easeOutCubic: blooms fast, lands soft
+      cx = x0; cy = y0;
+    } else if (t < expDur + hold) {
+      r = maxR; cx = x0; cy = y0;
+    } else {
+      const q = clamp01((t - expDur - hold) / conDur);
+      const e = q < 0.5 ? 4 * q * q * q : 1 - Math.pow(-2 * q + 2, 3) / 2; // cubicInOut
+      r = maxR * (1 - e);
+      cx = x0 + (x1 - x0) * e; cy = y0 + (y1 - y0) * e;
+    }
+    const fx = cx.toFixed(1), fy = cy.toFixed(1);
+    let rings = '';
+    for (let i = 1; i <= echoes; i++) {
+      rings += '<circle cx="' + fx + '" cy="' + fy +
+        '" r="' + (r + i * 26).toFixed(1) + '" fill="none" stroke="' + color +
+        '" stroke-width="3" opacity="' + (0.45 / i).toFixed(3) + '"/>';
+    }
+    const disc = r <= 0.5 ? '' :
+      '<div style="position:absolute;inset:0;pointer-events:none;"><svg width="' + w +
+      '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '"><circle cx="' + fx +
+      '" cy="' + fy + '" r="' + r.toFixed(1) + '" fill="' + color + '"/>' +
+      rings + '</svg></div>';
+    if (!html) return disc;
+    if (t >= expDur) return disc; // swallowed: the outgoing scene is gone
+    // Bloom phase: the outgoing scene survives outside the disc
+    // (SVG mask: white stage, black disc hole), the disc on top.
+    const id = 'pw' + at + 'x' + Math.round(x0) + 'y' + Math.round(y0);
+    const clipped = '<div style="position:absolute;inset:0;pointer-events:none;">' +
+      '<svg width="0" height="0"><defs><mask id="' + id + '">' +
+      '<rect width="' + w + '" height="' + h + '" fill="#fff"/>' +
+      '<circle cx="' + fx + '" cy="' + fy + '" r="' + r.toFixed(1) + '" fill="#000"/>' +
+      '</mask></defs></svg>' +
+      '<div style="position:absolute;inset:0;-webkit-mask:url(#' + id + ');mask:url(#' + id + ');">' +
+      html + '</div></div>';
+    return clipped + disc;
   }
 
   // liquidMetal(): the library's first WebGL primitive — a
@@ -2344,7 +2426,7 @@ __root.Motion = (function () {
 
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, portalWipe, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch,
     beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

@@ -1,6 +1,6 @@
 ---
 name: motion
-description: Create motion-graphics videos from code — explainers, teaching clips, animated titles, data stories, product teasers — with the motion-primitives library (88 frame-pure animation functions, a headless-Chrome renderer, and a code-synthesized SFX engine; no video assets, no After Effects). Use when the user asks to make, animate, or render a video, motion graphic, animated explainer, or animated text/diagram.
+description: Create motion-graphics videos from code — explainers, teaching clips, animated titles, data stories, product teasers — with the motion-primitives library (89 frame-pure animation functions, a headless-Chrome renderer, and a code-synthesized SFX engine; no video assets, no After Effects). Use when the user asks to make, animate, or render a video, motion graphic, animated explainer, or animated text/diagram.
 ---
 
 # motion — code-video production kit

@@ -6,6 +6,20 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Transitions (v0.57)
+- `portalWipe` — circular portal transition (motionin.design's
+  signature move): a flat disc blooms from (x, y) with an
+  easeOutCubic pop, swallows the outgoing scene, holds, then
+  contracts (cubicInOut) toward (x2, y2), revealing the incoming
+  scene drawn underneath. The outgoing scene rides inside the
+  primitive as `html` — unclipped before `at`, SVG-mask-clipped to
+  outside the disc during the bloom, swallowed at full coverage —
+  so the composition's layering is correct by construction; echo
+  rings trail the rim. The portal must contrast with both scenes
+  (a red disc over a red scene made the contraction phase
+  invisible — caught on the verification still, shipped white).
+  Demo card + `portal-demo` composition + Prompt Gallery entry.
+
 ### Shear (v0.52)
 - `velocitySkew` — velocity-proportional shear. `trail` mode skews
   by the instantaneous velocity of an eased move (top lags the
@@ -366,3 +380,33 @@ demo card, a docs row, a CHANGELOG entry, and a still-frame check.
   React Bits remainder not taken: pointer/scroll-driven items
   (Warp/Pressure/Proximity/Cursor) violate frame-purity; Echo/Fold
   overlap trail/flipIn. Chapter formula still the only backlog item.
+
+## Backlog — 2026-10-22 eve (via @neropursue resource list, Robin: "学习这些持续升级")
+Source: Nero's "10 resources" post (9 links actually listed) + its embedded
+motionin.design walkthrough video. Full note:
+~/workspace/research_notes/neropursue-motion-resources.md
+- ~~`portalWipe`~~ — shipped in v0.57: flat disc blooms from
+  (x, y), swallows the outgoing scene (passed as `html`, SVG-mask
+  clipped during the bloom, swallowed at full cover), holds, then
+  contracts toward (x2, y2) revealing the incoming scene beneath;
+  echo rings trail the rim.
+- `rings` — concentric ring overlay decoration (expanding/rotating
+  thin rings around a focal point, seen across motionin cards);
+  frame-pure, subtle. Candidate, may fold into portalWipe demo.
+- Site page optimization (same source): demo gallery cards get a
+  hover-feel pass inspired by motionin.design / landing.gallery —
+  editorial hero line, card hover lift + preview motion, tighter grid.
+  Site-only change, no lib API impact; ship with a before/after
+  screenshot check.
+- `springSheet` (2026-10-22 eve sweep, low priority) — spring-damped
+  dock→sheet expand: a bottom dock bar expands vertically with a
+  spring bounce (damping 18 / stiffness 300 territory), icons pop in
+  staggered as the sheet opens, then collapses back. Source:
+  @jo_exist "Bouncy Sheet + Dock" reel
+  (https://www.instagram.com/reel/Dc9kdvUzeOH/). Overlaps `pop` for
+  the bounce math, but the sheet geometry (anchored scaleY + slot
+  stagger) is not a primitive yet. UI-motion candidate.
+- Not taken: 21st.dev / kokonutui / v0 / base44 / uxpilot are React/web
+  component ecosystems — reference only for the site, never the lib
+  (frame-pure, no DOM state). skill-issue.in noted for the skill
+  package's design-skill shelf, separate track.

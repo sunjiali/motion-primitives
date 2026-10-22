@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay'];
+  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -701,4 +701,41 @@ test('splitFlap: ordered charset cycling that clacks into place', () => {
   assert.equal(M.splitFlap(0, { text: 'Aé', stagger: 5 }), '  ');
   // frame-pure
   assert.equal(M.splitFlap(33, { text: 'BOARDING' }), M.splitFlap(33, { text: 'BOARDING' }));
+});
+
+test('portalWipe: disc blooms, swallows the outgoing scene, contracts to reveal', () => {
+  const o = { at: 20, dur: 36, w: 560, h: 315, color: '#F5F4F0', x: 100, y: 150, x2: 460, y2: 160 };
+  assert.equal(M.portalWipe(19, o), '', 'disc-only mode: nothing before at');
+  assert.equal(M.portalWipe(56, o), '', 'after at + dur: nothing');
+  // frame-pure
+  assert.equal(M.portalWipe(30, o), M.portalWipe(30, o));
+  const rOf = (s) => parseFloat(/ r="([\d.]+)"/.exec(s)[1]);
+  const cxOf = (s) => parseFloat(/ cx="([\d.]+)"/.exec(s)[1]);
+  // expand phase: radius grows (easeOutCubic, 55% of 32 motion frames = 18 frames)
+  const rEarly = rOf(M.portalWipe(22, o));
+  const rLate = rOf(M.portalWipe(30, o));
+  assert.ok(rLate > rEarly, `expected growth, ${rEarly} -> ${rLate}`);
+  // hold phase (frames 38..41 with hold=4): radius pinned at max
+  assert.equal(rOf(M.portalWipe(39, o)), rOf(M.portalWipe(40, o)));
+  // contract phase: radius shrinks and the center travels toward (x2, y2)
+  const rCon1 = rOf(M.portalWipe(44, o));
+  const rCon2 = rOf(M.portalWipe(50, o));
+  assert.ok(rCon2 < rCon1, `expected shrink, ${rCon1} -> ${rCon2}`);
+  assert.ok(cxOf(M.portalWipe(50, o)) > cxOf(M.portalWipe(30, o)), 'center travels during contraction');
+  // the disc must swallow the stage: at full bloom radius covers the farthest corner
+  const maxR = Math.hypot(Math.max(100, 460, 560 - 100, 560 - 460), Math.max(150, 160, 315 - 150, 315 - 160)) * 1.06;
+  assert.ok(Math.abs(rOf(M.portalWipe(39, o)) - maxR) < 0.1, 'hold radius covers the stage');
+  // echo rings trail the rim only when asked
+  assert.ok(!M.portalWipe(30, o).includes('stroke='), 'no rings by default');
+  const echoOut = M.portalWipe(30, { ...o, echo: 2 });
+  assert.equal((echoOut.match(/stroke="/g) || []).length, 2, 'two echo rings');
+  // html contract: the outgoing scene is carried, clipped, then swallowed
+  const scene = '<div>SCENE-ONE-MARKER</div>';
+  assert.equal(M.portalWipe(19, { ...o, html: scene }), scene, 'before at: outgoing scene renders whole');
+  const bloom = M.portalWipe(22, { ...o, html: scene });
+  assert.ok(bloom.includes('SCENE-ONE-MARKER'), 'bloom: outgoing scene still present');
+  assert.ok(bloom.includes('mask:url(#pw'), 'bloom: scene clipped by the disc mask');
+  assert.ok(bloom.includes('fill="#F5F4F0"'), 'disc keeps the portal color');
+  assert.ok(!M.portalWipe(44, { ...o, html: scene }).includes('SCENE-ONE-MARKER'),
+    'contract: outgoing scene is swallowed');
 });

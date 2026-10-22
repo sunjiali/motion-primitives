@@ -2,6 +2,34 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.57.0] — 2026-10-22
+
+### Added — `portalWipe` primitive + `portal-demo` composition
+
+- **`portalWipe(frame, { html, at?, dur?, x?, y?, x2?, y2?, w?, h?, color?, echo?, hold? })`** —
+  a circular portal transition (the motionin.design signature move).
+  A flat disc blooms from `(x, y)` with an easeOutCubic pop, swallows
+  the outgoing scene, holds for `hold` frames, then contracts
+  (cubicInOut) toward `(x2, y2)`, revealing the incoming scene drawn
+  underneath. Pass the outgoing scene as `html`: before `at` it
+  renders unclipped (hiding the incoming scene), during the bloom it
+  is clipped to outside the disc via an SVG mask, and once the disc
+  reaches full coverage the outgoing scene is swallowed — so the
+  composition's layering is correct by construction. `echo` trails
+  thin rings behind the rim; the portal color must contrast with both
+  scenes or one phase reads as nothing (caught on the verification
+  still: a red disc over a red scene made the contraction invisible).
+  Frame-pure, no `hash`.
+- **Composition `portal-demo`** (180 f, silent): navy title scene →
+  white portal blooming from the left with echo rings → red "SCENE
+  TWO" revealed as the portal contracts right. Verified: stills at
+  all four phases, 180/180 frames, headless-Chrome demo card.
+- Site: new `portalWipe` demo card (57 cards) and Docs row; Prompt
+  Gallery gains the `portal-demo` entry (+1, per the gallery duty).
+- Source study: motionin.design's card transitions via @neropursue's
+  2026-10-22 resource list (note:
+  ~/workspace/research_notes/neropursue-motion-resources.md).
+
 ## [0.56.0] — 2026-10-22
 
 ### Added — `splitFlap` primitive + `flap-board` composition
