@@ -353,3 +353,16 @@ storyboard, palette, type params, Remotion source, Python-synthesized
 Frame-pure (a function of `frame` only), deterministic (randomness only
 via `hash`), no DOM state, no assets. Every effect ships with: a site
 demo card, a docs row, a CHANGELOG entry, and a still-frame check.
+
+## Shipped 2026-10-22 (manual round, Robin: "别等 现在就开始")
+
+- `splitFlap` — shipped in v0.56.0. Source study: React Bits' text
+  shelf (via @yanliudreamer's design-resources Article, T-14). Their
+  Split Flap was the frame-pure gap in our text kit: `scramble`
+  resolves random glyphs; splitFlap cycles an *ordered* charset
+  (blank → A → B → … → target), flipEvery/stagger knobs, foreign
+  chars appear whole at their turn. Demo card + `flap-board`
+  composition (statuses re-flap mid-film) + Prompt Gallery entry.
+  React Bits remainder not taken: pointer/scroll-driven items
+  (Warp/Pressure/Proximity/Cursor) violate frame-purity; Echo/Fold
+  overlap trail/flipIn. Chapter formula still the only backlog item.
