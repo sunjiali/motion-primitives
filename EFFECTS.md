@@ -320,6 +320,34 @@ what the posts showed at sweep time):
   of JS-computed blob positions), players auto-paint the canvas
   after each render; 2-D chrome fallback when WebGL is missing.
 
+## Backlog — 2026-10-22 sweep (@guanmo_ai "每天一个设计风格" 02 Swiss Style)
+
+Source: https://x.com/guanmo_ai/status/2113059005555700049 — fully
+open-sourced at github.com/guanmo-ai/design-style (styles/002-swiss-style:
+storyboard, palette, type params, Remotion source, Python-synthesized
+120 BPM score). Studied 2026-10-22 at Robin's request.
+
+- ~~`relayMorph`~~ — shipped in v0.54 as `relay` (name shortened to
+  match the library's one-word primitives): keyframed geometry —
+  { at, x, y, w, h, r?, opacity? } poses interpolated with one easing,
+  so one hero element persists across scene cuts, sliding and
+  morphing pose to pose instead of vanishing at the cut.
+- ~~Beat-locked cuts convention~~ — shipped in v0.54 inside the
+  `swiss-relay` composition: a TUNE block (BPM 120 · fps 30 ·
+  framesPerBeat 15 · beats [0, 60, 120, 180, 240]) puts every scene
+  boundary and every relay key exactly on a beat.
+- ~~Swiss skin / composition study~~ — shipped in v0.54 as the
+  `swiss-relay` composition: grid-first layout (12×6, hairlines
+  shown), one accent color only (Swiss red #E30613 on paper #F5F4F0 /
+  black #111111), a single sans family with hierarchy by size/weight
+  only, flush-left ragged-right, all square corners. A "style skin"
+  counterpoint to the default STYLE.md look (round hero, capsule
+  code bar, rotating scene colors) — candidate for a design-style
+  series of our own.
+- Chapter formula (already close to STYLE.md, worth codifying): hook
+  0–2s, then chapters of 1–1.5s each = one hero + one action + one
+  label, recap, outro card with source line.
+
 ## Rules for new effects
 
 Frame-pure (a function of `frame` only), deterministic (randomness only

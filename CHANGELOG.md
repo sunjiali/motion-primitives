@@ -2,6 +2,39 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.54.0] — 2026-10-22
+
+### Added — `relay`
+
+Keyframed geometry relay, frame-pure and deterministic:
+
+- One hero element persists across scene cuts: give it poses
+  `{ at, x, y, w, h, r?, opacity? }` and every field is interpolated
+  between keys with a single easing (`fn`, default `cubicInOut`) —
+  the element slides, stretches and morphs from pose to pose
+  instead of vanishing at the cut and being replaced.
+- Before the first key and after the last, the pose holds; keys
+  need not be sorted. Returns `{ x, y, w, h, r, opacity, seg, p,
+  done }` — feed the box straight into a div's geometry and `r`
+  into its border-radius.
+- The "red relay" (红色接力) from @guanmo_ai's Swiss Style film
+  (「每天一个设计风格」02, 2026-10-22 sweep): in his cut, each
+  scene's single red hero morphs directly into the next scene's.
+
+### Added — composition `swiss-relay`
+
+A Swiss International Style study built on `relay`: paper
+#F5F4F0, black #111111, grey #7A7A78, one accent (Swiss red
+#E30613), a 12×6 grid with hairlines shown, flush-left type,
+square corners, hierarchy by size and weight only. The red hero
+relays through four scenes — square → wide bar → big square →
+tall column → home. Cuts are beat-locked via a TUNE block
+(BPM 120 · fps 30 · 15 frames per beat · scene boundaries at
+beats 0 / 60 / 120 / 180 / 240). Silent, 16:9, 240 frames.
+
+Ships with a live demo card (55 total) and behaviour tests
+(59 total).
+
 ## [0.53.0] — 2026-10-22
 
 ### Added — `noiseGlow`

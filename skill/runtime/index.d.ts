@@ -118,6 +118,10 @@ export function highlightBox(frame: number, o: { x?: number; y?: number; w: numb
 export function waveLine(frame: number, o: { x?: number; y?: number; w?: number; amp?: number; wl?: number; speed?: number; color?: string; width?: number; taper?: number }): string;
 /** Dimmed-stage spotlight overlay with one lit hole; the hole is static (x, y) or travels between keyframes. Returns an overlay div. */
 export function spotlight(frame: number, o: { x?: number; y?: number; keys?: { f: number; x: number; y: number }[]; r?: number; feather?: number; alpha?: number }): string;
+export interface RelayKey { at: number; x: number; y: number; w: number; h: number; r?: number; opacity?: number }
+export interface RelayResult { x: number; y: number; w: number; h: number; r: number; opacity: number; seg: number; p: number; done: boolean }
+/** Keyframed geometry relay: one hero element's pose (x, y, w, h, corner radius, opacity) interpolated across keyframes with a single easing, so the element persists across scene cuts — sliding, stretching and morphing from pose to pose instead of vanishing. Before the first key and after the last, the pose holds. Returns the interpolated state. */
+export function relay(frame: number, o: { keys: RelayKey[]; fn?: string }): RelayResult;
 /** Scene-change cover in the outgoing scene's colour with an organic blob hole growing through it. Returns an overlay div ('' once fully revealed). */
 export function maskReveal(frame: number, o: { at?: number; dur?: number; x?: number; y?: number; w?: number; h?: number; color?: string; seed?: number }): string;
 /** Matched-cut travel driver: outgoing element reaches p = 0.8 at the cut; the incoming continues at matched pose and velocity to p = 1. */
@@ -222,7 +226,7 @@ declare const Motion: {
   meshBg: typeof meshBg; drawOn: typeof drawOn; poly: typeof poly; bars: typeof bars;
   scramble: typeof scramble; kenBurns: typeof kenBurns; fx: typeof fx;
   paperEl: typeof paperEl; pivot: typeof pivot; stepped: typeof stepped; onTwos: typeof onTwos;
-  whip: typeof whip; pathFly: typeof pathFly; orbit: typeof orbit; swing: typeof swing; marquee: typeof marquee; marchingAnts: typeof marchingAnts; highlightBox: typeof highlightBox; waveLine: typeof waveLine; spotlight: typeof spotlight; maskReveal: typeof maskReveal; matchCut: typeof matchCut; pixelDissolve: typeof pixelDissolve; charGrid: typeof charGrid; flipIn: typeof flipIn; counterRoll: typeof counterRoll;
+  whip: typeof whip; pathFly: typeof pathFly; orbit: typeof orbit; swing: typeof swing; marquee: typeof marquee; marchingAnts: typeof marchingAnts; highlightBox: typeof highlightBox; waveLine: typeof waveLine; spotlight: typeof spotlight; relay: typeof relay; maskReveal: typeof maskReveal; matchCut: typeof matchCut; pixelDissolve: typeof pixelDissolve; charGrid: typeof charGrid; flipIn: typeof flipIn; counterRoll: typeof counterRoll;
   drawText: typeof drawText;
   particleField: typeof particleField;
   noiseGlow: typeof noiseGlow;

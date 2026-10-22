@@ -377,6 +377,26 @@
       },
     },
     {
+      name: 'relay', desc: 'Swiss relay — one red hero persists across every cut, keyframed pose to pose on the beat.',
+      code: 'M.relay(frame, { keys: [{ at, x, y, w, h }] })', cycle: 240,
+      draw(f) {
+        const lf = f % 240;
+        const hero = M.relay(lf, { keys: [
+          { at: 0, x: 424, y: 24, w: 84, h: 84 },
+          { at: 60, x: 36, y: 224, w: 336, h: 40 },
+          { at: 120, x: 36, y: 52, w: 148, h: 148 },
+          { at: 180, x: 456, y: 40, w: 68, h: 204 },
+          { at: 240, x: 424, y: 24, w: 84, h: 84 },
+        ] });
+        const titles = ['Swiss Style', 'One red hero.', 'No rounded corners.', 'Every cut on a beat.'];
+        const scene = Math.min(3, Math.floor(lf / 60));
+        return '<div style="position:absolute;inset:0;background:#F5F4F0;"></div>' +
+          '<div style="position:absolute;left:36px;top:26px;font:600 12px system-ui;color:#7A7A78;letter-spacing:3px;">0' + (scene + 1) + ' · RELAY</div>' +
+          '<div style="position:absolute;left:36px;top:274px;font:800 26px/1.05 system-ui;color:#111111;letter-spacing:-1px;">' + titles[scene] + '</div>' +
+          '<div style="position:absolute;left:' + hero.x.toFixed(1) + 'px;top:' + hero.y.toFixed(1) + 'px;width:' + hero.w.toFixed(1) + 'px;height:' + hero.h.toFixed(1) + 'px;background:#E30613;"></div>';
+      },
+    },
+    {
       name: 'maskReveal', desc: 'The next scene shows through a growing organic hole in this one.',
       code: 'M.maskReveal(frame, { at, dur, color })', cycle: 170,
       draw(f) {

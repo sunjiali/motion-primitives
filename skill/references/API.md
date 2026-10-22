@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (86 functions)
+# motion-primitives API — the full catalog (87 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -571,6 +571,14 @@ M.spotlight(frame: number, o: { x?: number; y?: number; keys?: { f: number; x: n
 ```
 
 Dimmed-stage spotlight overlay with one lit hole; the hole is static (x, y) or travels between keyframes. Returns an overlay div.
+
+### `relay`
+
+```ts
+M.relay(frame: number, o: { keys: RelayKey[]; fn?: string }): RelayResult
+```
+
+Keyframed geometry relay: one hero element's pose (x, y, w, h, corner radius, opacity) interpolated across keyframes with a single easing, so the element persists across scene cuts — sliding, stretching and morphing from pose to pose instead of vanishing. Before the first key and after the last, the pose holds. Returns the interpolated state.
 
 ### `maskReveal`
 

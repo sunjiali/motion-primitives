@@ -39,6 +39,9 @@ interface DotOpts {
   candy?: boolean; glow?: boolean; glowSize?: number; glowAlpha?: string;
   opacity?: number; extra?: string;
 }
+interface RelayKey { at: number; x: number; y: number; w: number; h: number; r?: number; opacity?: number }
+interface RelayOpts { keys: RelayKey[]; fn?: EasingName }
+interface RelayResult { x: number; y: number; w: number; h: number; r: number; opacity: number; seg: number; p: number; done: boolean }
 interface RippleOpts { at?: number; dur?: number; r0?: number; speed?: number; width?: number; x: number; y: number; color: string }
 interface BurstOpts { at?: number; dur?: number; x: number; y: number; colors?: string[]; n?: number; dist?: number }
 interface BadgeOpts { at?: number; color: string; text: string; fg?: string; size?: number; top: number; left?: number; right?: number }
@@ -695,6 +698,44 @@ __root.Motion = (function () {
     return '<div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at ' +
       cx.toFixed(1) + 'px ' + cy.toFixed(1) + 'px, rgba(4,5,9,0) 0px, rgba(4,5,9,0) ' + r.toFixed(1) +
       'px, rgba(4,5,9,' + alpha + ') ' + (r + feather).toFixed(1) + 'px);"></div>';
+  }
+
+  // relay(): keyframed geometry for ONE hero element that persists
+  // across scene cuts — the "red relay" of @guanmo_ai's Swiss Style
+  // film (2026-10-22 sweep). Each key is a pose { at, x, y, w, h,
+  // r?, opacity? }; between keys every field is interpolated with
+  // one easing (default cubicInOut), so the same element slides,
+  // stretches and morphs through the cut instead of vanishing and
+  // being replaced. Before the first key and after the last, the
+  // pose holds. Returns { x, y, w, h, r, opacity, seg, p, done } —
+  // feed x/y/w/h into a div's box, r into border-radius. Keys need
+  // not be sorted; a copy is sorted by `at`.
+  function relay(frame: number, o: RelayOpts): RelayResult {
+    const keys = (o.keys || []).slice().sort((a, b) => a.at - b.at);
+    if (!keys.length) return { x: 0, y: 0, w: 0, h: 0, r: 0, opacity: 0, seg: -1, p: 0, done: true };
+    const pose = (k: RelayKey): { x: number; y: number; w: number; h: number; r: number; opacity: number } => ({
+      x: k.x + 0, y: k.y + 0, w: k.w + 0, h: k.h + 0,
+      r: (k.r == null ? 0 : k.r) + 0, opacity: (k.opacity == null ? 1 : k.opacity) + 0,
+    });
+    const first = keys[0], last = keys[keys.length - 1];
+    if (frame <= first.at) return { ...pose(first), seg: 0, p: 0, done: false };
+    if (frame >= last.at) return { ...pose(last), seg: keys.length - 1, p: 1, done: true };
+    const fn = Easing[o.fn || 'cubicInOut'] || Easing.cubicInOut;
+    for (let i = 0; i < keys.length - 1; i++) {
+      const a = keys[i], b = keys[i + 1];
+      if (frame >= a.at && frame <= b.at) {
+        const span = b.at - a.at;
+        const p = fn(span > 0 ? clamp01((frame - a.at) / span) : 1);
+        const pa = pose(a), pb = pose(b);
+        const mix = (u: number, v: number): number => u + (v - u) * p + 0;
+        return {
+          x: mix(pa.x, pb.x), y: mix(pa.y, pb.y), w: mix(pa.w, pb.w), h: mix(pa.h, pb.h),
+          r: mix(pa.r, pb.r), opacity: mix(pa.opacity, pb.opacity),
+          seg: i, p, done: false,
+        };
+      }
+    }
+    return { ...pose(last), seg: keys.length - 1, p: 1, done: true };
   }
 
   // maskReveal(): a scene-change cover — a flat overlay in the
@@ -2276,7 +2317,7 @@ __root.Motion = (function () {
 
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch,
     beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

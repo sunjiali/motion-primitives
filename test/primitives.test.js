@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -620,4 +620,47 @@ test('velocitySkew: skew follows velocity, clamps, and settles', () => {
   const c = M.velocitySkew(14, o);
   assert.equal(c.recenter, 0); // center anchor is self-centering
   assert.ok(/^translate\([-\d.]+px, 0px\) skewX\([-\d.]+deg\)$/.test(a.css), `css: ${a.css}`);
+});
+
+test('relay: keyframed geometry holds endpoints and interpolates between them', () => {
+  const keys = [
+    { at: 0, x: 100, y: 50, w: 80, h: 80 },
+    { at: 60, x: 300, y: 150, w: 240, h: 60, r: 12, opacity: 0.5 },
+    { at: 120, x: 300, y: 150, w: 240, h: 60, r: 12, opacity: 0.5 },
+  ];
+  // holds the first pose before/at the first key, defaults filled in
+  assert.deepEqual(M.relay(-5, { keys }), { x: 100, y: 50, w: 80, h: 80, r: 0, opacity: 1, seg: 0, p: 0, done: false });
+  assert.deepEqual(M.relay(0, { keys }), { x: 100, y: 50, w: 80, h: 80, r: 0, opacity: 1, seg: 0, p: 0, done: false });
+  // lands exactly on each key pose
+  const at60 = M.relay(60, { keys });
+  assert.equal(at60.x, 300); assert.equal(at60.y, 150);
+  assert.equal(at60.w, 240); assert.equal(at60.h, 60);
+  assert.equal(at60.r, 12); assert.equal(at60.opacity, 0.5);
+  // after the last key: pose holds, done
+  const late = M.relay(200, { keys });
+  assert.equal(late.done, true);
+  assert.equal(late.x, 300); assert.equal(late.opacity, 0.5);
+  // linear midpoint is the exact average of both poses
+  const mid = M.relay(30, { keys, fn: 'linear' });
+  assert.equal(mid.x, 200); assert.equal(mid.y, 100);
+  assert.equal(mid.w, 160); assert.equal(mid.h, 70);
+  assert.equal(mid.r, 6); assert.equal(mid.opacity, 0.75);
+  assert.equal(mid.seg, 0); assert.equal(mid.p, 0.5);
+  // default easing is cubicInOut: symmetric, so its midpoint agrees,
+  // but a quarter point lags the linear path (slow start)
+  const q = M.relay(15, { keys });
+  assert.ok(q.x < 150, `cubicInOut starts slow: x=${q.x}`);
+  assert.equal(M.relay(30, { keys }).x, 200);
+  // a still segment (identical poses) stays put
+  assert.equal(M.relay(90, { keys }).x, 300);
+  assert.equal(M.relay(90, { keys }).seg, 1);
+  // unsorted keys are accepted and never mutated
+  const shuffled = [keys[2], keys[0], keys[1]];
+  assert.equal(M.relay(30, { keys: shuffled, fn: 'linear' }).x, 200);
+  assert.equal(shuffled[0].at, 120);
+  // no negative zero leaks through a zero-crossing lerp
+  const cross = M.relay(30, { keys: [{ at: 0, x: -50, y: 0, w: 10, h: 10 }, { at: 60, x: 50, y: 0, w: 10, h: 10 }], fn: 'linear' });
+  assert.ok(Object.is(cross.x, 0), `expected +0, got ${cross.x}`);
+  // frame-pure
+  assert.deepEqual(M.relay(33, { keys }), M.relay(33, { keys }));
 });
