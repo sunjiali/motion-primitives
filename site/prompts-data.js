@@ -91,4 +91,30 @@ window.PROMPT_GALLERY = [
 数字红线：9 + 4 = 13，凑十拆分 4 = 1 + 3，全片不得出现其他算式或结果。`,
     notes: '回填条目：数学系列已交付成片（儿童皮肤版），本 prompt 按 mini-remotion 的 math-coushi-kids composition 逐场转写，标注「复现 prompt」。本站版本为无声版，配音版在数学系列发布渠道。',
   },
+  {
+    id: 'flap-board',
+    title: 'Flap Board — Departures, Clacking Into Place',
+    blurb: 'An airport departures board where every cell cycles through an ordered charset and clacks home — then, mid-film, two statuses re-flap to their new values.',
+    video: 'videos/flap-board.mp4',
+    tags: ['splitFlap', 'kinetic type', '16:9', '12s'],
+    rounds: '复现 prompt · shipped in v0.56',
+    prompt:
+`用 motion-primitives 做一条 12 秒的机场出发信息牌短片，composition 名 flap-board，全片只用一个新原语 M.splitFlap 驱动文字（每个字符从空白开始、沿有序字符集逐格翻页、从左到右依次咔哒到位；字符集外的字整字出现）。
+
+规格：1280×720，30fps，360 帧，无声，硬切。深色大厅：底 #0E0F12、行面板 #15171B、描边 #26292F、正文 #E8E4D8、次要 #8A8F98；状态色：琥珀 #FFD94D（登机中）、红 #FF7A6B（延误/最后呼叫）、绿 #9BD97A（准点/已出发）。全部等宽字体（ui-monospace），字距 2px。
+
+版式：顶部左「DEPARTURES」800 40px 字距 6px，中间灰色「出 发」（字距 10px，中文标题字直接排版不用 splitFlap），右上琥珀色「SHANGHAI · OCT 22」其中日期也用 splitFlap 翻入。表头一行 19px 灰字：TIME / FLIGHT / DESTINATION / STATUS，与列对齐。
+
+四行航班（行高 84px，圆角 10px 面板；每行四段各自独立 splitFlap，段间 at 依次错开 6 帧：时间灰、航班号正文、目的地正文、状态用状态色）：
+1. 0840 · MU5137 · BEIJING · ON TIME（绿，at 28）
+2. 0915 · CA1832 · SHENZHEN · BOARDING（琥珀，at 58）
+3. 0950 · HO1253 · CHENGDU · DELAYED（红，at 88）
+4. 1020 · FM9105 · XIAMEN · ON TIME（绿，at 118）
+各行整体 at 再错开 30 帧（10 / 40 / 70 / 100），让整块牌子像真实 Solari 牌一样逐行翻完。
+
+中段更新（这片子的戏眼）：第 215 帧，第 2 行状态从空白重新翻成「LAST CALL」（红）；第 255 帧，第 1 行状态重新翻成「DEPARTED」（绿）。做法：状态段按帧切换 text 与 at——更新帧之前用旧文案+旧 at（已定格），之后用新文案+at=更新帧（从空白重翻）。其余段落不许跟着重翻。
+
+片尾：底部居中一行 17px 灰字「splitFlap · motion-primitives」。禁用：不要音效（翻牌声不许合成冒充）、不要渐变和投影、不要状态以外的第二种字体。`,
+    notes: '回填条目：成片随 v0.56.0 发布（splitFlap 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。',
+  },
 ];

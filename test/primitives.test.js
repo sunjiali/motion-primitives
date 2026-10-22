@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay'];
+  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -23,6 +23,7 @@ test('determinism: identical frame -> identical output', () => {
     () => M.fly(80, { at: 60, dur: 90, from: { x: 0, y: 0 }, to: { x: 100, y: 50 }, arc: 40 }),
     () => M.meshBg(123, {}),
     () => M.scramble(50, { at: 10, dur: 60, text: 'HELLO' }),
+    () => M.splitFlap(33, { text: 'BOARDING' }),
     () => M.bars(90, { at: 0, data: [3, 7, 5] }),
     () => M.fx(99, {}),
   ];
@@ -663,4 +664,41 @@ test('relay: keyframed geometry holds endpoints and interpolates between them', 
   assert.ok(Object.is(cross.x, 0), `expected +0, got ${cross.x}`);
   // frame-pure
   assert.deepEqual(M.relay(33, { keys }), M.relay(33, { keys }));
+});
+
+test('splitFlap: ordered charset cycling that clacks into place', () => {
+  const CS = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  // before `at`: every position blank, length preserved
+  assert.equal(M.splitFlap(5, { text: 'AB 2', at: 10 }), '    ');
+  // fully settled text equals the target exactly
+  assert.equal(M.splitFlap(1000, { text: 'BOARDING 7' }), 'BOARDING 7');
+  // intermediate glyphs always come from the ordered charset (never random)
+  const mid = M.splitFlap(30, { text: 'ZULU' });
+  assert.equal(mid.length, 4);
+  for (const ch of mid) assert.ok(CS.includes(ch), `glyph ${ch} not in charset`);
+  // cycling is ordered: position 0 passes A before B before C...
+  assert.equal(M.splitFlap(0, { text: 'C', flipEvery: 1, stagger: 0 }), ' ');
+  assert.equal(M.splitFlap(1, { text: 'C', flipEvery: 1, stagger: 0 }), 'A');
+  assert.equal(M.splitFlap(2, { text: 'C', flipEvery: 1, stagger: 0 }), 'B');
+  assert.equal(M.splitFlap(3, { text: 'C', flipEvery: 1, stagger: 0 }), 'C');
+  // once a position locks it never moves again (monotone lock-in)
+  const t = 'GATE 9';
+  let locked = '';
+  for (let f = 0; f <= 400; f++) {
+    const s = M.splitFlap(f, { text: t });
+    for (let i = 0; i < t.length; i++) {
+      if (locked[i] && locked[i] !== ' ') assert.equal(s[i], locked[i], `pos ${i} unlocked at frame ${f}`);
+      if (s[i] === t[i]) locked = locked.slice(0, i) + s[i] + locked.slice(i + 1);
+    }
+  }
+  assert.equal(locked, t);
+  // stagger: later positions start later (left-to-right clack)
+  const s5 = M.splitFlap(5, { text: 'AAAA', flipEvery: 1, stagger: 4 });
+  assert.equal(s5[0], 'A');           // pos 0 needs 1 step: locked at frame 1
+  assert.equal(s5[3], ' ');           // pos 3 starts at frame 12: still blank
+  // characters outside the charset appear whole at their turn
+  assert.equal(M.splitFlap(100, { text: 'Aé' }), 'Aé');
+  assert.equal(M.splitFlap(0, { text: 'Aé', stagger: 5 }), '  ');
+  // frame-pure
+  assert.equal(M.splitFlap(33, { text: 'BOARDING' }), M.splitFlap(33, { text: 'BOARDING' }));
 });

@@ -84,6 +84,8 @@ export function poly(points: Array<[number, number]>): PolyResult;
 export function bars(frame: number, o: AtOpts & { data: number[]; labels?: string[]; color?: string; max?: number }): string;
 /** Text that decodes out of a glyph pool. */
 export function scramble(frame: number, o: AtOpts & { text: string; pool?: string }): string;
+/** Airport split-flap board: characters cycle through an ordered charset and clack into place. */
+export function splitFlap(frame: number, o: AtOpts & { text: string; charset?: string; flipEvery?: number; stagger?: number }): string;
 /** Slow zoom for still images. Returns a CSS transform. */
 export function kenBurns(frame: number, o?: { dur?: number; from?: number; to?: number }): string;
 /** Idle micro-motion breathing scale. Returns a scale factor. */
@@ -224,7 +226,7 @@ declare const Motion: {
   beat: typeof beat; drop: typeof drop; travel: typeof travel; shake: typeof shake;
   punch: typeof punch; flash: typeof flash; camera: typeof camera; parallax: typeof parallax;
   meshBg: typeof meshBg; drawOn: typeof drawOn; poly: typeof poly; bars: typeof bars;
-  scramble: typeof scramble; kenBurns: typeof kenBurns; fx: typeof fx;
+  scramble: typeof scramble; splitFlap: typeof splitFlap; kenBurns: typeof kenBurns; fx: typeof fx;
   paperEl: typeof paperEl; pivot: typeof pivot; stepped: typeof stepped; onTwos: typeof onTwos;
   whip: typeof whip; pathFly: typeof pathFly; orbit: typeof orbit; swing: typeof swing; marquee: typeof marquee; marchingAnts: typeof marchingAnts; highlightBox: typeof highlightBox; waveLine: typeof waveLine; spotlight: typeof spotlight; relay: typeof relay; maskReveal: typeof maskReveal; matchCut: typeof matchCut; pixelDissolve: typeof pixelDissolve; charGrid: typeof charGrid; flipIn: typeof flipIn; counterRoll: typeof counterRoll;
   drawText: typeof drawText;

@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (87 functions)
+# motion-primitives API — the full catalog (88 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -295,6 +295,14 @@ M.scramble(frame: number, o: AtOpts & { text: string; pool?: string }): string
 ```
 
 Text that decodes out of a glyph pool.
+
+### `splitFlap`
+
+```ts
+M.splitFlap(frame: number, o: AtOpts & { text: string; charset?: string; flipEvery?: number; stagger?: number }): string
+```
+
+Airport split-flap board: characters cycle through an ordered charset and clack into place.
 
 ### `splitText`
 

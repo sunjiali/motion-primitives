@@ -682,6 +682,27 @@
       },
     },
     {
+      name: 'splitFlap', desc: 'Airport split-flap board — characters cycle through an ordered charset and clack into place.', code: "M.splitFlap(frame, { text: 'BOARDING' })", cycle: 300,
+      dark: true,
+      draw(f) {
+        function cells(s, size, color) {
+          let out = '';
+          for (const ch of s) {
+            out += '<span style="display:inline-block;min-width:' + (size * 0.72) + 'px;margin-right:3px;padding:2px 0;text-align:center;' +
+              'background:linear-gradient(#2C2F36,#22252B);border-bottom:3px solid #0B0C0E;border-radius:4px;' +
+              'font:800 ' + size + 'px ui-monospace,Menlo,monospace;color:' + color + ';">' + (ch === ' ' ? '&nbsp;' : ch) + '</span>';
+          }
+          return out;
+        }
+        const l1 = M.splitFlap(f, { at: 8, text: 'BOARDING' });
+        const l2 = M.splitFlap(f, { at: 42, text: 'GATE 07 ON TIME' });
+        return '<div style="position:absolute;inset:0;background:#101215;">' +
+          '<div style="position:absolute;left:0;top:26px;width:' + W + 'px;text-align:center;font:700 15px ui-monospace,Menlo,monospace;color:#8A8F98;letter-spacing:5px;">DEPARTURES · SHANGHAI</div>' +
+          '<div style="position:absolute;left:0;top:64px;width:' + W + 'px;text-align:center;">' + cells(l1, 40, '#FFD94D') + '</div>' +
+          '<div style="position:absolute;left:0;top:138px;width:' + W + 'px;text-align:center;">' + cells(l2, 19, '#E8E4D8') + '</div></div>';
+      },
+    },
+    {
       name: 'camera', desc: 'A virtual camera: keyframed focus and zoom over a still world.',
       code: 'M.camera(frame, [{f, x, y, z}, …], stage)', cycle: 180,
       draw(f) {

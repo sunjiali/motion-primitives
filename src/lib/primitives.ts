@@ -152,6 +152,7 @@ interface BarsOpts {
   h: number; x: number; y: number; bw: number; gap: number; color?: string; label?: string;
 }
 interface ScrambleOpts { at?: number; cpf?: number; text: string; chars?: string }
+interface SplitFlapOpts { at?: number; charset?: string; flipEvery?: number; stagger?: number; text: string }
 interface KenBurnsOpts { at?: number; dur?: number; from?: number; to?: number; panX?: number; panY?: number }
 interface BreatheOpts { amp?: number; speed?: number; phase?: number }
 interface FxOpts { grain?: number; vignette?: number }
@@ -1378,6 +1379,32 @@ __root.Motion = (function () {
     return out;
   }
 
+  // splitFlap(): airport split-flap board. Each character cycles through
+  // an ordered charset starting from blank, one step per flipEvery frames,
+  // and clacks into place left to right (stagger frames apart). Unlike
+  // scramble() (random glyphs), the intermediate glyphs are the ordered
+  // steps a mechanical board would pass through. Characters outside the
+  // charset (lowercase, CJK, symbols) appear whole at their turn.
+  // Before `at`, every position is blank.
+  function splitFlap(frame: number, o: SplitFlapOpts): string {
+    o = o || {};
+    const charset = o.charset || ' ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const flipEvery = Math.max(1, o.flipEvery || 2);
+    const stagger = o.stagger == null ? 3 : o.stagger;
+    const lf = frame - (o.at || 0);
+    if (lf < 0) return o.text.replace(/./g, ' ');
+    let out = '';
+    for (let i = 0; i < o.text.length; i++) {
+      const target = o.text[i];
+      if (target === ' ') { out += ' '; continue; }
+      const ti = charset.indexOf(target);
+      if (ti < 0) { out += lf >= i * stagger ? target : ' '; continue; }
+      const steps = Math.floor(Math.max(lf - i * stagger, 0) / flipEvery);
+      out += steps >= ti ? target : charset[steps];
+    }
+    return out;
+  }
+
   // kenBurns(): the slow zoom + pan every still asset deserves.
   function kenBurns(frame: number, o?: KenBurnsOpts): string {
     o = o || {};
@@ -2321,7 +2348,7 @@ __root.Motion = (function () {
     beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
-    scramble, kenBurns, breathe, fx, hash,
+    scramble, splitFlap, kenBurns, breathe, fx, hash,
     clamp01, Easing,
   };
 })();

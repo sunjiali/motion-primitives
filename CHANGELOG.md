@@ -2,6 +2,29 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.56.0] — 2026-10-22
+
+### Added — `splitFlap` primitive + `flap-board` composition
+
+- **`splitFlap(frame, { text, at?, charset?, flipEvery?, stagger? })`** —
+  the airport split-flap board. Each character cycles through an
+  *ordered* charset starting from blank, one step per `flipEvery`
+  frames (default 2), and clacks into place left to right (`stagger`
+  frames apart, default 3). Where `scramble` resolves out of *random*
+  glyphs, splitFlap's intermediate glyphs are the ordered steps a
+  mechanical board passes through — A before B before C. Characters
+  outside the charset (lowercase, CJK, symbols) appear whole at their
+  turn; before `at`, every position is blank. Frame-pure, no `hash`.
+- **Composition `flap-board`** (360 f, silent): a departures board —
+  four flights flap in row by row, then mid-film two statuses re-flap
+  from blank to their new values (`BOARDING → LAST CALL`,
+  `ON TIME → DEPARTED`), the way real Solari boards update.
+- Site: new `splitFlap` demo card (56 cards) and Docs row; Prompt
+  Gallery gains the `flap-board` entry (+1, per the gallery duty).
+- Source study: React Bits' text-animation shelf (via @yanliudreamer's
+  design-resources post) — Split Flap was the frame-pure gap in our
+  text kit.
+
 ## [0.55.0] — 2026-10-22
 
 ### Added — Prompt Gallery (site)
