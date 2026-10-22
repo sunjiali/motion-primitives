@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (85 functions)
+# motion-primitives API — the full catalog (86 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -531,6 +531,14 @@ M.particleField(frame: number, o?: { n?: number; w?: number; h?: number; mode?: 
 ```
 
 Ambient particle layer (stars / dust / snow). Returns an HTML string.
+
+### `noiseGlow`
+
+```ts
+M.noiseGlow(frame: number, o?: { x?: number; y?: number; r?: number; color?: string; intensity?: number; boil?: number; sparkles?: number; blend?: string; seed?: number }): string
+```
+
+Boiling-light glow overlay: seeded value noise drives the core's radius and brightness, six satellite blobs pulse on their own noise channels, and sparkles burst on seeded cycles. Composites via mix-blend-mode ('screen' default, 'color-dodge' for blow-out). Returns an overlay div — draw it after the light source.
 
 ### `glitch`
 

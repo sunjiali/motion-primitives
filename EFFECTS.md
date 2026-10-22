@@ -250,10 +250,13 @@ round-1 backlog is shipped) — take from the top, one per round:
   shear with `trail` (skew follows the instantaneous velocity of an
   eased move) and `impact` (decaying ±skew oscillation) modes, plus
   the anchor recenter trick (`anchor:'start'`).
-- `noiseGlow` — animated-noise luminance mask + color-dodge glow
-  composite + seeded sparkle bursts where the light hits; lower
-  priority, visual-craft heavy. (Manon Louart Procreate Dreams glow
-  tutorial.)
+- ~~`noiseGlow`~~ — shipped in v0.53.0: boiling-light glow overlay —
+  seeded value noise breathes the core's radius/brightness, six
+  satellite blobs pulse on their own noise channels, sparkles burst
+  on seeded cycles; `blend` picks the composite ('screen' default,
+  'color-dodge' for the Procreate-Dreams blow-out). (Manon Louart
+  Procreate Dreams glow tutorial.) The round-2 sweep backlog is now
+  fully shipped.
 
 Researched 2026-10-21 (gap analysis against the shipped 55, after
 splitText / wipeReveal / confetti / cursor landed) — take from the

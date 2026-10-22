@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew'];
+  'bars', 'scramble', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -561,6 +561,23 @@ test('hash is deterministic and stays in [0, 1)', () => {
     assert.equal(h, M.hash(n));
   }
   assert.notEqual(M.hash(1), M.hash(2));
+});
+
+test('noiseGlow: boiling glow is frame-pure, animated, and honours its knobs', () => {
+  const o = { x: 320, y: 180, r: 140 };
+  assert.equal(M.noiseGlow(40, o), M.noiseGlow(40, o)); // frame-pure
+  assert.notEqual(M.noiseGlow(0, o), M.noiseGlow(30, o)); // the boil moves
+  const dflt = M.noiseGlow(40, o);
+  assert.ok(dflt.includes('mix-blend-mode:screen'), 'default blend is screen');
+  assert.ok(dflt.includes('rgba(255,196,107,'), 'default colour is warm amber #FFC46B');
+  assert.ok(M.noiseGlow(40, { ...o, blend: 'color-dodge' }).includes('mix-blend-mode:color-dodge'), 'blend passes through');
+  assert.ok(!M.noiseGlow(40, { ...o, sparkles: 0 }).includes('<svg'), 'sparkles: 0 draws no sparkles');
+  let sawSparkle = false;
+  for (let f = 0; f < 240 && !sawSparkle; f++) if (M.noiseGlow(f, o).includes('<svg')) sawSparkle = true;
+  assert.ok(sawSparkle, 'sparkles ignite somewhere in a 240-frame window');
+  const off = M.noiseGlow(40, { ...o, intensity: 0 });
+  assert.ok(!/rgba\(255,196,107,0\.[1-9]/.test(off), 'intensity 0 kills the glow');
+  assert.notEqual(M.noiseGlow(40, { ...o, seed: 3 }), dflt, 'seed changes the boil');
 });
 
 test('velocitySkew: skew follows velocity, clamps, and settles', () => {

@@ -74,6 +74,11 @@ interface SpotlightOpts {
   x?: number; y?: number; keys?: SpotlightKey[];
   r?: number; feather?: number; alpha?: number;
 }
+interface NoiseGlowOpts {
+  x?: number; y?: number; r?: number; color?: string;
+  intensity?: number; boil?: number; sparkles?: number;
+  blend?: string; seed?: number;
+}
 interface MaskRevealOpts {
   at?: number; dur?: number; x?: number; y?: number;
   w?: number; h?: number; color?: string; seed?: number;
@@ -1585,6 +1590,77 @@ __root.Motion = (function () {
     return s;
   }
 
+  // noiseGlow(): boiling light — a glow that never sits still.
+  // Seeded value noise drives the core's radius and brightness
+  // (the flame breathes), six satellite blobs pulse on their own
+  // noise channels around it, and sparkles ignite on seeded cycles
+  // where the light is hottest — pop in fast, decay slow. The
+  // layer composites with mix-blend-mode ('screen' by default;
+  // pass 'color-dodge' for the full blow-out). Frame-pure: same
+  // frame, same string. Draw it AFTER the light source.
+  function noiseGlow(frame: number, o?: NoiseGlowOpts): string {
+    o = o || {};
+    const x = o.x == null ? 640 : o.x, y = o.y == null ? 360 : o.y;
+    const r = o.r || 260;
+    const color = o.color || '#FFC46B';
+    const inten = o.intensity == null ? 0.85 : o.intensity;
+    const boil = o.boil == null ? 1 : o.boil;
+    const seed = o.seed || 0;
+    const blend = o.blend || 'screen';
+    const nSpark = o.sparkles == null ? 14 : o.sparkles;
+    const hn = color.replace('#', '');
+    const hf = hn.length === 3 ? hn.split('').map((c) => c + c).join('') : hn;
+    const hnum = parseInt(hf, 16);
+    const cr = (hnum >> 16) & 255, cg = (hnum >> 8) & 255, cb = hnum & 255;
+    const rgba = (a: number): string => 'rgba(' + cr + ',' + cg + ',' + cb + ',' +
+      Math.max(0, Math.min(1, a)).toFixed(3) + ')';
+    // seeded value noise: hash knots, smoothstep interpolation
+    const vn = (t: number, s: number): number => {
+      const i = Math.floor(t), f = t - i;
+      const u = f * f * (3 - 2 * f);
+      return hash(i * 17.3 + s * 13.7 + 7) * (1 - u) + hash((i + 1) * 17.3 + s * 13.7 + 7) * u;
+    };
+    const t = frame * boil;
+    const nR = vn(t * 0.045, seed + 1);     // radius breathing
+    const nI = vn(t * 0.06 + 31, seed + 2); // brightness boil
+    const coreR = r * (0.9 + 0.22 * nR);
+    const coreA = inten * (0.5 + 0.3 * nI);
+    let s = '<div style="position:absolute;left:0;top:0;width:0;height:0;pointer-events:none;mix-blend-mode:' + blend + ';">';
+    for (let i = 0; i < 6; i++) {
+      const ha = hash(i * 29.7 + seed * 3.1 + 3);
+      const hd = hash(i * 47.3 + seed * 1.7 + 19);
+      const ang = ha * Math.PI * 2;
+      const dist = r * (0.18 + 0.42 * hd);
+      const bx = x + Math.cos(ang) * dist, by = y + Math.sin(ang) * dist * 0.82;
+      const br = r * (0.22 + 0.3 * hash(i * 13.9 + seed * 5.3 + 27));
+      const ba = inten * 0.34 * (0.35 + 0.65 * vn(t * 0.05 + i * 13.7, seed + 10 + i));
+      s += '<div style="position:absolute;left:' + (bx - br).toFixed(1) + 'px;top:' + (by - br).toFixed(1) +
+        'px;width:' + (br * 2).toFixed(1) + 'px;height:' + (br * 2).toFixed(1) + 'px;border-radius:50%;background:radial-gradient(circle,' +
+        rgba(ba) + ' 0%,' + rgba(0) + ' 70%);"></div>';
+    }
+    s += '<div style="position:absolute;left:' + (x - coreR).toFixed(1) + 'px;top:' + (y - coreR).toFixed(1) +
+      'px;width:' + (coreR * 2).toFixed(1) + 'px;height:' + (coreR * 2).toFixed(1) + 'px;border-radius:50%;background:radial-gradient(circle,' +
+      rgba(coreA) + ' 0%,' + rgba(coreA * 0.45) + ' 42%,' + rgba(0) + ' 72%);"></div>';
+    for (let i = 0; i < nSpark; i++) {
+      const ha = hash(i * 61.7 + seed * 2.3 + 43);
+      const hd = hash(i * 83.1 + seed * 4.9 + 59);
+      const ang = ha * Math.PI * 2;
+      const dist = r * (0.15 + 0.8 * hd);
+      const sx = x + Math.cos(ang) * dist, sy = y + Math.sin(ang) * dist * 0.85;
+      const L = 80 + Math.floor(hash(i * 7.9 + seed * 6.1 + 71) * 90);
+      const ph = hash(i * 19.3 + seed * 8.7 + 83) * L;
+      const lt = ((frame + ph) % L) / L;
+      const env = lt < 0.14 ? lt / 0.14 : Math.exp(-(lt - 0.14) * 7);
+      if (env < 0.03) continue;
+      const sz = (5 + hash(i * 3.7 + seed * 9.3 + 97) * 9) * (0.5 + 0.5 * env);
+      const op = env * (0.45 + 0.55 * nI);
+      s += '<svg style="position:absolute;left:' + (sx - sz).toFixed(1) + 'px;top:' + (sy - sz).toFixed(1) +
+        'px;opacity:' + op.toFixed(3) + ';" width="' + (sz * 2).toFixed(1) + '" height="' + (sz * 2).toFixed(1) +
+        '" viewBox="0 0 20 20"><path d="M10 0 L12.2 7.8 L20 10 L12.2 12.2 L10 20 L7.8 12.2 L0 10 L7.8 7.8 Z" fill="' + color + '"/></svg>';
+    }
+    return s + '</div>';
+  }
+
   // ---- shape morphing ------------------------------------------------
   // Every shape is a closed polygon. Both shapes are sampled at the
   // same K angles around the center (ray-cast onto the polygon, so the
@@ -2200,7 +2276,7 @@ __root.Motion = (function () {
 
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, morphShape, glitch,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch,
     beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

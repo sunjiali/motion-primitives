@@ -367,6 +367,16 @@
       },
     },
     {
+      name: 'noiseGlow', desc: 'Boiling light — value-noise breathes the glow while sparkles burst where it is hottest.',
+      code: 'M.noiseGlow(frame, { x, y, r, color })', cycle: 240,
+      draw(f) {
+        const orb = '<div style="position:absolute;left:252px;top:78px;width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 42% 38%,#FFF3D6,#FFC46B 55%,#E08E2B);"></div>' +
+          '<div style="position:absolute;left:266px;top:134px;width:28px;height:8px;border-radius:4px;background:#3A3F52;"></div>' +
+          '<div style="position:absolute;left:0;right:0;top:158px;text-align:center;font:600 12px system-ui;color:#C9CFDA;">LANTERN — the flame never sits still</div>';
+        return orb + M.noiseGlow(f % 240, { x: 280, y: 106, r: 118, seed: 2 });
+      },
+    },
+    {
       name: 'maskReveal', desc: 'The next scene shows through a growing organic hole in this one.',
       code: 'M.maskReveal(frame, { at, dur, color })', cycle: 170,
       draw(f) {

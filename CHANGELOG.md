@@ -2,6 +2,31 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.53.0] — 2026-10-22
+
+### Added — `noiseGlow`
+
+Boiling-light glow overlay, frame-pure and deterministic:
+
+- The glow core never sits still: seeded value noise (hash knots,
+  smoothstepped) drives its radius (0.90–1.12× `r`) and brightness
+  frame by frame, like a flame breathing.
+- Six satellite blobs orbit the core at seeded angles, each pulsing
+  on its own noise channel — the luminance "mask" boils instead of
+  fading uniformly.
+- Sparkles (4-point stars) ignite on seeded cycles around the core:
+  fast pop-in, exponential decay — bursts where the light is
+  hottest. `sparkles: 0` turns them off.
+- The layer composites via `mix-blend-mode`: `screen` by default,
+  `color-dodge` for the full blow-out look.
+- Knobs: `x / y / r / color / intensity / boil / sparkles / blend /
+  seed`. Returns an overlay string; draw it after the light source.
+
+Researched from the 2026-10-21 round-2 sweep (Manon Louart's
+Procreate Dreams glow workflow). Ships with a live demo card
+(54 total) and behaviour tests (58 total). This clears the round-2
+sweep backlog.
+
 ## [0.52.0] — 2026-10-21
 
 ### Added — `velocitySkew`

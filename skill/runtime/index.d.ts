@@ -146,6 +146,8 @@ export function counterRoll(frame: number, o?: AtOpts & { from?: number; to?: nu
 export function drawText(frame: number, o: AtOpts & { fn?: string; text: string; x?: number; y?: number; size?: number; color?: string; stroke?: string; strokeWidth?: number; fillFrom?: number; fontFamily?: string; weight?: number; anchor?: 'start' | 'middle' | 'end'; letterSpacing?: number }): string;
 /** Ambient particle layer (stars / dust / snow). Returns an HTML string. */
 export function particleField(frame: number, o?: { n?: number; w?: number; h?: number; mode?: 'float' | 'snow' | 'rise'; speed?: number; sway?: number; color?: string; opacity?: number; rMin?: number; rMax?: number; twinkle?: number; seed?: number }): string;
+/** Boiling-light glow overlay: seeded value noise drives the core's radius and brightness, six satellite blobs pulse on their own noise channels, and sparkles burst on seeded cycles. Composites via mix-blend-mode ('screen' default, 'color-dodge' for blow-out). Returns an overlay div — draw it after the light source. */
+export function noiseGlow(frame: number, o?: { x?: number; y?: number; r?: number; color?: string; intensity?: number; boil?: number; sparkles?: number; blend?: string; seed?: number }): string;
 /** Shape-to-shape morph (circle / square / triangle / diamond / hexagon / star / heart). Returns an SVG string. */
 export function morphShape(frame: number, o?: AtOpts & { fn?: string; from?: 'circle' | 'square' | 'triangle' | 'diamond' | 'hexagon' | 'star' | 'heart'; to?: 'circle' | 'square' | 'triangle' | 'diamond' | 'hexagon' | 'star' | 'heart'; x?: number; y?: number; size?: number; color?: string; stroke?: string; strokeWidth?: number; rot?: number }): string;
 /** RGB-split glitch transition over wrapped HTML. Returns an HTML string. */
@@ -223,6 +225,7 @@ declare const Motion: {
   whip: typeof whip; pathFly: typeof pathFly; orbit: typeof orbit; swing: typeof swing; marquee: typeof marquee; marchingAnts: typeof marchingAnts; highlightBox: typeof highlightBox; waveLine: typeof waveLine; spotlight: typeof spotlight; maskReveal: typeof maskReveal; matchCut: typeof matchCut; pixelDissolve: typeof pixelDissolve; charGrid: typeof charGrid; flipIn: typeof flipIn; counterRoll: typeof counterRoll;
   drawText: typeof drawText;
   particleField: typeof particleField;
+  noiseGlow: typeof noiseGlow;
   morphShape: typeof morphShape;
   glitch: typeof glitch;
   beatGrid: typeof beatGrid; beatFrames: typeof beatFrames; inertia: typeof inertia; anticipate: typeof anticipate; followThrough: typeof followThrough; velocitySkew: typeof velocitySkew;
