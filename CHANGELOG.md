@@ -2,6 +2,53 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.55.0] — 2026-10-22
+
+### Added — Prompt Gallery (site)
+
+A new site page, `prompts.html` (nav: **Prompts**), built on one idea:
+every published video ships with the exact prompt that produced it.
+
+- Each entry is a card: the rendered MP4 (`<video controls>`), a
+  one-line brief, tags, the iteration-round count, the full prompt in
+  a code block, and a one-click **Copy** button (clipboard + feedback).
+- The prompts are *production instructions for an AI* — canvas,
+  timing, scenes, palette, type, and which primitives to compose —
+  meant to be pasted to a user's own AI together with the motion
+  skill to rebuild the same video. The page says so up front; these
+  are not text-to-video model prompts.
+- Data-driven like the demos: entries live in `site/prompts-data.js`
+  (`window.PROMPT_GALLERY`), videos in `site/videos/`. Vertical
+  (9:16) entries get a tall-card layout.
+
+### Added — first four entries
+
+- **prompt-sting** (new composition `src/compositions/prompt-sting.js`)
+  — an 8 s kinetic-type opener for the gallery itself, produced by
+  actually iterating its prompt: v1 failed the still-frame review on
+  three counts (default four-color burst confetti broke the Morry
+  five-color discipline; the closing capsule was pushed off-center by
+  its own entrance transform; a mistyped typewriter speed option left
+  the typed line half-finished at the cut). All three fixes were
+  written into the prompt itself for v2 — single-color burst, a
+  full-width centering wrapper, `cpf = 1` — and v2 is the published
+  prompt. 2 rounds, notes on the card.
+- **liquid-showcase** — the v0.50 WebGL showcase, rendered to MP4 for
+  the gallery; prompt transcribed scene-by-scene from the shipped
+  composition and labeled a reproduction prompt （复现 prompt).
+- **swiss-relay** — the v0.54 Swiss study, same treatment.
+- **math-make-ten-kids** — the math series' 40 s vertical kids-skin
+  explainer (9 + 4 make-ten), rendered from the mini-remotion
+  composition; silent cut (the voiced cut ships on the math channels).
+
+### Process
+
+The daily motion iteration now also carries a Prompt Gallery duty:
+each round adds one prompt + video entry (or revises an existing
+entry and updates its iteration notes), published with that round's
+release. A prompt is only published in the version that actually
+rendered the shipped video.
+
 ## [0.54.0] — 2026-10-22
 
 ### Added — `relay`
