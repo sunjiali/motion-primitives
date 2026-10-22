@@ -6,7 +6,7 @@ agent (Claude Code, Codex, or any agent that reads `SKILL.md`) can
 write a composition, render stills, synthesize sound, and deliver a
 verified MP4 — powered by the bundled
 [motion-primitives](https://github.com/sunjiali/motion-primitives)
-runtime (51 frame-pure animation primitives + a headless-Chrome
+runtime (88 frame-pure animation functions + a headless-Chrome
 renderer + a code-synthesized SFX engine). No npm package, no video
 assets, no After Effects.
 

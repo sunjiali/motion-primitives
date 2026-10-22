@@ -23,6 +23,9 @@ changes ride minor bumps and must be called out in the changelog).
    git tag -a vX.Y.Z -m "vX.Y.Z"
    git push origin vX.Y.Z
    gh release create vX.Y.Z --title "vX.Y.Z" --notes-file <notes>
+   # Attach the agent-skill zip (the main user install path until npm):
+   zip -qr /tmp/motion-skill-vX.Y.Z.zip skill -x "skill/node_modules/*"
+   gh release upload vX.Y.Z /tmp/motion-skill-vX.Y.Z.zip
    ```
    Release notes are the changelog section for that version, lightly
    edited — never auto-generated filler.
