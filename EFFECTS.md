@@ -6,6 +6,16 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Transitions (v0.59)
+- `mosaic` — pixel-grid scene transition (the orderly counterpart to
+  glitch): every tile shows a cropped window of scene A, then flips to
+  the same window of scene B at its hash-staggered moment, swelling
+  1.28× around the flip so the cut reads as a tile "turn". Before `at`
+  the layer returns full-bleed A, after `at + dur` `''` — draw the
+  incoming scene beneath. Clears the last unshipped item from the
+  2026-10-21 X sweep backlog. Demo card + `mosaic-demo` composition +
+  Prompt Gallery entry.
+
 ### Ambience (v0.58)
 - `rings` — concentric thin rings around a focal point: one
   geometry (count rings spaced `gap` apart from `r0`), three
@@ -318,9 +328,12 @@ what the posts showed at sweep time):
 - ~~`inertia`~~ — shipped in v0.41.
 - ~~`pixelDissolve`~~ — shipped in v0.42 (cells in the outgoing
   colour flip at hash delays, swelling just before they flip).
-- (original note) mosaic transition: grid cells flip A→B at
-  hash delays while cell size swells mid-transition; the orderly
-  counterpart to glitch. (@webflow pixelated transition demo.)
+- ~~(original note) mosaic transition~~ — shipped in v0.59.0 as
+  `mosaic`: each tile crops a window of scene A (`htmlA`), flips to
+  the same window of scene B (`htmlB`) at its hash-staggered moment,
+  swelling 1.28× around the flip; before `at` the grid returns
+  full-bleed A, after `at + dur` `''`. Demo card + `mosaic-demo`
+  composition + Prompt Gallery entry.
 - ~~`charGrid`~~ — shipped in v0.43.
 - ~~`assembleText`~~ — shipped in v0.44.
 - ~~`textOnPath`~~ — shipped in v0.45 (smoothed-polyline input,
@@ -423,3 +436,24 @@ motionin.design walkthrough video. Full note:
   component ecosystems — reference only for the site, never the lib
   (frame-pure, no DOM state). skill-issue.in noted for the skill
   package's design-skill shelf, separate track.
+
+## Backlog — 2026-10-23 sweep (motion-graphics techniques, rotated queries)
+- `sliceWave` (low priority) — horizontal-slice wave displacement of
+  arbitrary HTML: content split into N horizontal strips, each strip
+  shifted horizontally by a travelling sine field (phase-lagged per
+  strip, like wings/bodies split into rotating slices). The
+  technique behind @sebv_tv's hand-drawn frame-by-frame wave feel
+  (Sébastien Vincent, OneHealth Summit film breakdown — splitting
+  precomps into slices and animating each slice's rotation for 3D
+  wave motion, comments answered the technique patiently). Source:
+  https://www.instagram.com/p/DaQL-XvAvrD/. Distinct from `waveLine`
+  (a drawn wavy stroke) — this displaces content, not geometry.
+- Not taken this round: ~25 social results were all CapCut/AE
+  text-reveal tutorials (text-in-footage masks, glow wipes, track
+  mattes) — everything dedupes against the existing text kit
+  (typewriter, drawText, maskReveal, wipeReveal, splitText,
+  textOnPath, scramble, splitFlap). LAIKA's smear-frame promo
+  dedupes against `smear`; @my_english_is_perfect_'s trippy loop
+  pattern-combining dedupes against `patternField`. Web sweep
+  returned workflow articles (HyperFrames vs Remotion, Opus 5.5
+  director prompts) — no new transferable techniques.

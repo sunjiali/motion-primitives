@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings'];
+  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -498,6 +498,20 @@ test('pixelDissolve: full grid, partial mid-way, gone after', () => {
   const mid = cells(M.pixelDissolve(30, o));
   assert.ok(mid > 0 && mid < 12, 'mid-dissolve keeps some cells: ' + mid);
   assert.equal(M.pixelDissolve(55, o), '');
+});
+
+test('mosaic: full A grid before, A/B mix mid-way, gone after', () => {
+  const o = { at: 10, dur: 40, w: 400, h: 300, cols: 4, rows: 3, htmlA: '<b>A</b>', htmlB: '<i>B</i>' };
+  const before = M.mosaic(5, o);
+  assert.equal(before, '<b>A</b>'); // before `at`: full-bleed A, no grid
+  const mid = M.mosaic(30, o);
+  const aCount = (mid.match(/<b>A<\/b>/g) || []).length;
+  const bCount = (mid.match(/<i>B<\/i>/g) || []).length;
+  assert.ok(aCount > 0 && bCount > 0, `mid-transition mixes both scenes: A=${aCount} B=${bCount}`);
+  assert.equal(aCount + bCount, 12); // every tile shows exactly one window
+  assert.equal(M.mosaic(30, o), mid); // frame-pure
+  assert.ok(mid.includes('transform:scale(1.'), 'some tile is mid-swell'); // swell above 1.000
+  assert.equal(M.mosaic(60, o), ''); // after the window: nothing
 });
 
 test('charGrid: full glyph wall that reshuffles over time', () => {

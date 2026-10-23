@@ -501,6 +501,18 @@
       },
     },
     {
+      name: 'mosaic', desc: 'The orderly counterpart to glitch — tiles flip A→B at hash-staggered frames, swelling as they turn.',
+      code: 'M.mosaic(frame, { htmlA, htmlB, at, dur, cols, rows })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        const sceneA = '<div style="position:absolute;inset:0;background:#26221F;"></div>' +
+          '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 44px system-ui;color:#FBF6EC;">MOSAIC</div>';
+        const sceneB = '<div style="position:absolute;inset:0;background:linear-gradient(120deg,#2F6DB3,#57C7D4);"></div>' +
+          '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 44px system-ui;color:#FBF6EC;">SCENE TWO</div>';
+        return sceneB + M.mosaic(lf, { at: 35, dur: 70, w: 560, h: 260, cols: 14, rows: 8, htmlA: sceneA, htmlB: sceneB, gap: 2, seed: 7 });
+      },
+    },
+    {
       name: 'pixelDissolve', desc: 'The scene dissolves cell by cell, each swelling a beat before it flips.',
       code: 'M.pixelDissolve(frame, { at, dur, cols, rows })', cycle: 170,
       draw(f) {

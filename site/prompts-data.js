@@ -151,4 +151,22 @@ window.PROMPT_GALLERY = [
 `,
     notes: '回填条目：成片随 v0.58.0 发布（rings 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（30 帧 pulse / 150 帧 spin）确认：环的透明度由内向外递减、spin 断弧缺口可读、三场构图与 STYLE.md 一致，一次过线。',
   },
+  {
+    id: 'mosaic-demo',
+    title: 'Mosaic Demo — The Orderly Flip',
+    blurb: 'A pixel-grid transition study: two flat scenes joined by a tile-by-tile flip — every tile shows scene A, turns at its hash-staggered moment, and lands on scene B, swelling briefly as it turns.',
+    video: 'videos/mosaic-demo.mp4',
+    tags: ['transition', 'mosaic', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.59',
+    prompt:
+`用 motion-primitives 做一条 5 秒的像素网格转场展示片，composition 名 mosaic-demo，核心只用一个新原语 M.mosaic。
+
+规格：1280×720，30fps，150 帧，无声，两场硬切。A 场：墨底 #26221F，中央大字「MOSAIC」（96px，800 字重，奶油字 #FBF6EC，fadeUp 入场 10–28 帧），下方等宽代码条「M.mosaic(frame, { htmlA, htmlB, at, dur, cols, rows })」（26px，奶油字 0.7 透明度，fadeUp 22–40 帧）。B 场：蓝→青渐变底（120deg，#2F6DB3 → #57C7D4），中央大字「SCENE TWO」（96px，800，奶油），下方小字「every tile turned, the whole scene crossed over」（26px 等宽，奶油 0.8 透明度）。
+
+转场在第 50 帧起、55 帧内完成：M.mosaic(frame, { htmlA: A场, htmlB: B场, at: 50, dur: 55, cols: 16, rows: 9, gap: 3, seed: 7 })，B 场先画在底层。16×9=144 块瓷砖，每块在自己的哈希时刻从 A 翻到 B、翻转瞬间膨胀 1.28 倍再回落——转场要读成「一格格翻过去」，不是整面糊过去。
+
+纪律：瓷砖边距 gap=3 让网格可读，但不许加描边；两场文字排版完全同构（大字+小字居中），转场前后构图可比。禁用：音效、相机运动、渐变/叠化转场。
+`,
+    notes: '回填条目：成片随 v0.59.0 发布（mosaic 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（20 帧整场 A / 70 帧翻转中网格 / 110 帧整场 B）+ 成片 mp4 抽帧（55 / 70 / 85 / 100 帧）双保险确认：网格在翻转窗内逐格翻转、膨胀只出现在翻转瞬间、无残留 A 瓷砖，一次过线。',
+  },
 ];

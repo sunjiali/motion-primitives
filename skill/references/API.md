@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (90 functions)
+# motion-primitives API — the full catalog (91 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -643,6 +643,14 @@ M.rings(frame: number, o: { x?: number; y?: number; count?: number; r0?: number;
 ```
 
 Concentric thin rings around a focal point: an expanding pulse train (default), a slow breathing set, or counter-rotating dashed arcs ('spin'). Returns a positioned overlay div ('' before `at`).
+
+### `mosaic`
+
+```ts
+M.mosaic(frame: number, o: { at?: number; dur?: number; w?: number; h?: number; cols?: number; rows?: number; htmlA?: string; htmlB?: string; swell?: number; gap?: number; seed?: number }): string
+```
+
+Pixel-grid scene transition: every tile shows a cropped window of scene A, then flips to the same window of scene B at its hash-staggered moment, swelling briefly around the flip. Draw the incoming scene (B) first, pass the outgoing scene as `htmlA`. Returns full-bleed `htmlA` before `at`, '' after the window.
 
 ### `liquidMetal`
 

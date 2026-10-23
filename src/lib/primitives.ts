@@ -96,6 +96,12 @@ interface PixelDissolveOpts {
   at?: number; dur?: number; w?: number; h?: number;
   cols?: number; rows?: number; color?: string; seed?: number;
 }
+interface MosaicOpts {
+  at?: number; dur?: number; w?: number; h?: number;
+  cols?: number; rows?: number;
+  htmlA?: string; htmlB?: string;
+  swell?: number; gap?: number; seed?: number;
+}
 interface CharGridOpts {
   cols?: number; rows?: number; size?: number; x?: number; y?: number;
   chars?: string; color?: string; accent?: string; seed?: number; interval?: number;
@@ -899,6 +905,45 @@ __root.Motion = (function () {
         cells += '<div style="position:absolute;left:' + (c * cw).toFixed(1) + 'px;top:' + (r * ch).toFixed(1) +
           'px;width:' + cw.toFixed(1) + 'px;height:' + ch.toFixed(1) + 'px;background:' + color +
           ';transform:scale(' + swell.toFixed(3) + ');"></div>';
+      }
+    }
+    return '<div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">' + cells + '</div>';
+  }
+
+  // mosaic(): the orderly counterpart to glitch — a pixel-grid
+  // scene transition where every tile shows a cropped window of
+  // scene A, then at its hash-staggered flip moment swaps to the
+  // same window of scene B, swelling briefly around the flip so
+  // the cut reads as a tile "turn". Draw the incoming scene (B)
+  // first, then this layer: before `at` the whole grid shows A,
+  // after `at + dur` it returns ''. From the 2026-10-21 sweep
+  // backlog (@webflow's pixelated transition demo).
+  function mosaic(frame: number, o: MosaicOpts): string {
+    o = o || ({} as MosaicOpts);
+    const at = o.at || 0, dur = o.dur || 40, seed = o.seed || 1;
+    const w = o.w || 1280, h = o.h || 720;
+    const cols = Math.max(1, o.cols || 14), rows = Math.max(1, o.rows || 8);
+    const htmlA = o.htmlA || '', htmlB = o.htmlB || '';
+    const swellAmt = o.swell == null ? 0.28 : o.swell;
+    const gap = Math.max(0, o.gap == null ? 0 : o.gap);
+    if (frame < at) return htmlA; // outgoing scene, full-bleed, hides B beneath
+    if (frame >= at + dur) return '';
+    const cw = w / cols, ch = h / rows;
+    let cells = '';
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const i = r * cols + c;
+        const flip = at + hash(seed * 57 + i * 3.7) * dur;
+        const showingB = frame >= flip;
+        const swell = 1 + swellAmt * Math.max(0, 1 - Math.abs(flip - frame) / 6);
+        const x = c * cw, y = r * ch;
+        const scene = showingB ? htmlB : htmlA;
+        cells += '<div style="position:absolute;left:' + (x + gap / 2).toFixed(1) +
+          'px;top:' + (y + gap / 2).toFixed(1) + 'px;width:' + (cw - gap).toFixed(1) +
+          'px;height:' + (ch - gap).toFixed(1) + 'px;overflow:hidden;transform:scale(' +
+          swell.toFixed(3) + ');">' +
+          '<div style="position:absolute;width:' + w + 'px;height:' + h + 'px;left:' +
+          (-x).toFixed(1) + 'px;top:' + (-y).toFixed(1) + 'px;">' + scene + '</div></div>';
       }
     }
     return '<div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">' + cells + '</div>';
@@ -2502,7 +2547,7 @@ __root.Motion = (function () {
 
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, portalWipe, rings, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, portalWipe, rings, mosaic, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch,
     beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

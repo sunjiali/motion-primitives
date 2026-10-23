@@ -2,6 +2,37 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.59.0] — 2026-10-23
+
+### Added — `mosaic` primitive + `mosaic-demo` composition
+
+- **`mosaic(frame, { htmlA, htmlB, at?, dur?, w?, h?, cols?, rows?, swell?, gap?, seed? })`** —
+  the orderly counterpart to `glitch`: a pixel-grid scene transition
+  where every tile shows a cropped window of scene A, then at its
+  hash-staggered flip moment swaps to the same window of scene B,
+  swelling briefly (default 1.28×, decaying over ±6 frames) around
+  the flip so the cut reads as a tile "turn" rather than a wipe.
+  Draw the incoming scene (B) first, then this layer: before `at`
+  the grid returns full-bleed `htmlA` (hiding B beneath), after
+  `at + dur` it returns `''`. Frame-pure, deterministic, zero
+  assets — clears the backlog item from the 2026-10-21 X sweep
+  (@webflow's pixelated transition demo).
+- **Composition `mosaic-demo`** (150 f, silent, house style): ink
+  "MOSAIC" title field flips tile-by-tile into a blue→teal "SCENE
+  TWO" field (16×9 tiles, gap 3, seed 7, flip window frames
+  50–105). Verified on stills at frames 20 (full A) / 70 (mixed
+  grid mid-flip) / 110 (full B), plus 4 frames extracted from the
+  rendered MP4 itself (55 / 70 / 85 / 100) — the double-gate: swell
+  only at tile flips, no leftover A tiles past frame 105;
+  ffprobe counted 150 frames = `durationInFrames`.
+- Site: new `mosaic` demo card (59 cards) and Docs row; Prompt
+  Gallery gains the `mosaic-demo` entry (+1, per the gallery duty).
+- X sweep 2026-10-23 (social + web, rotated queries): no new
+  primitive candidates beyond the backlog top item; 1 technique
+  filed to the backlog as low priority — `sliceWave` (horizontal-
+  slice wave displacement, @sebv_tv's precomp slice-splitting
+  technique for frame-by-frame wave feel).
+
 ## [0.58.0] — 2026-10-23
 
 ### Added — `rings` primitive + `rings-demo` composition
