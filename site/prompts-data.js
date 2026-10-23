@@ -131,4 +131,24 @@ window.PROMPT_GALLERY = [
 `,
     notes: '回填条目：成片随 v0.57.0 发布（portalWipe 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查抓出一处构图 bug：第一版转场盘用了红色——与 B 场同色导致收缩阶段隐形，改为白色后两阶段都可读。',
   },
+  {
+    id: 'rings-demo',
+    title: 'Rings Demo — One Geometry, Three Tempers',
+    blurb: 'A concentric-rings study: the same thin-ring geometry around one round-faced ball in three modes — an expanding pulse train on cream, a slow breathing set on blue, counter-rotating dashed arcs on ink.',
+    video: 'videos/rings-demo.mp4',
+    tags: ['ambience', 'rings', '16:9', '6s'],
+    rounds: '复现 prompt · shipped in v0.58',
+    prompt:
+`用 motion-primitives 做一条 6 秒的同心圆环展示片，composition 名 rings-demo，核心只用一个新原语 M.rings。
+
+规格：1280×720，30fps，180 帧，无声，三场硬切（不许渐变/叠化），按 STYLE.md 章节公式：一场一个概念，顶部居中大标题（英文 800 64px + 句号）+ 中文小字副题，底部居中深色胶囊代码条写本场确切调用。主角是同一颗圆脸球（半径 54，圆身 + 两眼 + 微笑弧，眼睛每 90 帧眨 4 帧），居中在 (640, 384)；圆环都从 r0=76 起（在球身外）、4 圈、gap=38、线宽 2。
+
+第 1 场 Pulse.（0–59 帧，奶油底 #FBF6EC）：蓝球 #2F6DB3，圆环用同蓝、opacity 0.55、mode pulse、dur 84——一圈圈从球边往外推、边扩边淡，无限循环；副题「脉冲 · 一圈圈往外推」；代码条 M.rings(frame, { mode: 'pulse', dur: 84 })。
+第 2 场 Breathe.（60–119 帧，蓝底 #2F6DB3）：奶油球，圆环奶油色、opacity 0.6、mode breathe——定住的四圈在原地慢胀慢缩，相位逐圈滞后，胀缩波从里往外走；副题「呼吸 · 原地慢慢胀缩」；代码条 M.rings(frame, { mode: 'breathe' })。
+第 3 场 Spin.（120–179 帧，墨底 #26221F）：黄球 #FFD93D，圆环同黄、opacity 0.75、mode spin、dash 0.7——四圈断弧原地旋转，相邻圈反向、转速逐圈微增；副题「旋转 · 断弧反向转」；代码条 M.rings(frame, { mode: 'spin', dash: 0.7 })。
+
+纪律：细线、低饱和、透明度做纵深，壳面保持素净（motionin.design 的安静框法）；每场只许一种环色，不许给环加发光/投影。禁用：音效、渐变背景、相机运动。
+`,
+    notes: '回填条目：成片随 v0.58.0 发布（rings 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（30 帧 pulse / 150 帧 spin）确认：环的透明度由内向外递减、spin 断弧缺口可读、三场构图与 STYLE.md 一致，一次过线。',
+  },
 ];

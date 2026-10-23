@@ -112,6 +112,11 @@ interface PortalWipeOpts extends EaseOpts {
   html?: string; x?: number; y?: number; x2?: number; y2?: number;
   w?: number; h?: number; color?: string; echo?: number; hold?: number;
 }
+interface RingsOpts {
+  x?: number; y?: number; count?: number; r0?: number; gap?: number;
+  color?: string; width?: number; at?: number; dur?: number;
+  mode?: string; speed?: number; dash?: number; opacity?: number; seed?: number;
+}
 interface LiquidMetalOpts {
   w?: number; h?: number; x?: number; y?: number; size?: number;
   palette?: string; speed?: number; seed?: number; fps?: number; blobs?: number; spin?: number;
@@ -1154,6 +1159,77 @@ __root.Motion = (function () {
       '<div style="position:absolute;inset:0;-webkit-mask:url(#' + id + ');mask:url(#' + id + ');">' +
       html + '</div></div>';
     return clipped + disc;
+  }
+
+  // rings(): concentric thin rings around a focal point — the
+  // quiet decoration layer across motionin.design's cards. One
+  // geometry (count rings spaced `gap` apart from base radius
+  // `r0`), three modes:
+  //  - 'pulse' (default): an expanding train — ring i rides phase
+  //    ((frame - at) / dur + i / count), growing from r0 out to
+  //    r0 + count*gap while its opacity fades; the train loops
+  //    forever, so a focal point keeps breathing outward.
+  //  - 'breathe': a settled set whose radii swell on a slow sine,
+  //    phase-lagged per ring so the swell travels outward.
+  //  - 'spin': dashed arcs rotating in place, neighbouring rings
+  //    counter-rotating at slightly different rates.
+  // Thin lines, one muted colour, alpha doing the depth work —
+  // the shell stays plain and the rings carry the calm (the
+  // teardown's "shell plain, colour = information" rule). A seeded
+  // phase jitter keeps stacked calls from marching in lockstep.
+  // Frame-pure: phases are trig/hash of `frame` only; '' before `at`.
+  function rings(frame: number, o: RingsOpts): string {
+    o = o || ({} as RingsOpts);
+    const at = o.at || 0;
+    if (frame < at) return '';
+    const lf = frame - at;
+    const count = Math.max(1, Math.round(o.count || 4));
+    const r0 = o.r0 == null ? 26 : o.r0;
+    const gap = o.gap == null ? 34 : o.gap;
+    const color = o.color || '#8E99AD';
+    const width = o.width || 2;
+    const mode = o.mode || 'pulse';
+    const baseOp = o.opacity == null ? 0.85 : o.opacity;
+    const seed = o.seed || 1;
+    const cx = o.x == null ? 640 : o.x, cy = o.y == null ? 360 : o.y;
+    let maxR = r0 + count * gap;
+    if (mode === 'breathe') maxR += 6; // swell headroom
+    else if (mode === 'spin') maxR = r0 + (count - 1) * gap;
+    const R = Math.ceil(maxR) + width + 1;
+    let circles = '';
+    for (let i = 0; i < count; i++) {
+      const jitter = (hash(seed * 31 + i * 7 + 3) - 0.5) * 0.12; // ±0.06 of a cycle
+      let r: number, op: number, extra = '';
+      if (mode === 'breathe') {
+        const speed = o.speed || 0.045;
+        const swell = Math.sin(lf * speed - i * 0.55 + jitter * 4);
+        r = r0 + i * gap + swell * 5;
+        op = baseOp * (0.62 + 0.28 * (0.5 + 0.5 * swell)) * (1 - i / (count + 2));
+      } else if (mode === 'spin') {
+        const speed = o.speed == null ? 0.7 : o.speed; // degrees per frame
+        r = r0 + i * gap;
+        const circ = 2 * Math.PI * r;
+        const frac = o.dash == null ? 0.7 : o.dash;
+        const dirn = i % 2 === 0 ? 1 : -1;
+        const ang = dirn * lf * speed * (1 + i * 0.18) + jitter * 360;
+        op = baseOp * (1 - i / (count + 2));
+        extra = ' stroke-dasharray="' + (circ * frac).toFixed(1) + ' ' +
+          (circ * (1 - frac)).toFixed(1) + '" transform="rotate(' +
+          ang.toFixed(1) + ' ' + R + ' ' + R + ')"';
+      } else { // pulse
+        const dur = o.dur || 90;
+        const p = (((lf / dur + i / count + jitter) % 1) + 1) % 1;
+        r = r0 + p * count * gap;
+        op = baseOp * clamp01(p / 0.12) * (1 - p) * (1 - p * 0.4);
+      }
+      circles += '<circle cx="' + R + '" cy="' + R + '" r="' + r.toFixed(1) +
+        '" fill="none" stroke="' + color + '" stroke-width="' + width +
+        '" opacity="' + Math.max(0, op).toFixed(3) + '"' + extra + '/>';
+    }
+    return '<div style="position:absolute;left:' + (cx - R) + 'px;top:' + (cy - R) +
+      'px;width:' + (R * 2) + 'px;height:' + (R * 2) +
+      'px;pointer-events:none;"><svg width="' + (R * 2) + '" height="' + (R * 2) +
+      '" viewBox="0 0 ' + (R * 2) + ' ' + (R * 2) + '">' + circles + '</svg></div>';
   }
 
   // liquidMetal(): the library's first WebGL primitive — a
@@ -2426,7 +2502,7 @@ __root.Motion = (function () {
 
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, portalWipe, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, portalWipe, rings, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch,
     beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

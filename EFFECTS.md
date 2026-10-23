@@ -6,6 +6,19 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Ambience (v0.58)
+- `rings` — concentric thin rings around a focal point: one
+  geometry (count rings spaced `gap` apart from `r0`), three
+  modes — `pulse` (expanding train, phase (frame−at)/dur + i/count,
+  opacity fading as rings grow, loops forever), `breathe` (settled
+  set swelling on a slow phase-lagged sine), `spin` (dashed arcs,
+  neighbours counter-rotating). Thin lines, one muted colour,
+  alpha does the depth work; seeded phase jitter keeps stacked
+  calls out of lockstep. The ambient half of motionin.design's
+  signature framing (portalWipe shipped the transition half in
+  v0.57). Demo card + `rings-demo` composition (Pulse./Breathe./
+  Spin. three-scene study) + Prompt Gallery entry.
+
 ### Transitions (v0.57)
 - `portalWipe` — circular portal transition (motionin.design's
   signature move): a flat disc blooms from (x, y) with an
@@ -390,9 +403,9 @@ motionin.design walkthrough video. Full note:
   clipped during the bloom, swallowed at full cover), holds, then
   contracts toward (x2, y2) revealing the incoming scene beneath;
   echo rings trail the rim.
-- `rings` — concentric ring overlay decoration (expanding/rotating
-  thin rings around a focal point, seen across motionin cards);
-  frame-pure, subtle. Candidate, may fold into portalWipe demo.
+- ~~`rings`~~ — shipped in v0.58: concentric thin rings around a
+  focal point in three modes (pulse train / breathe / spin arcs),
+  demo card + `rings-demo` composition + Prompt Gallery entry.
 - Site page optimization (same source): demo gallery cards get a
   hover-feel pass inspired by motionin.design / landing.gallery —
   editorial hero line, card hover lift + preview motion, tighter grid.

@@ -142,6 +142,8 @@ export function patternField(frame: number, o: { w?: number; h?: number; tile?: 
 export function slitScan(frame: number, o: { html: string; h?: number; bands?: number; amp?: number; waves?: number; speed?: number; at?: number; dur?: number }): string;
 /** Circular portal transition: a flat disc blooms from (x, y), swallows the outgoing scene, holds, then contracts toward (x2, y2) revealing the incoming scene beneath. Pass the outgoing scene as `html` (draw the incoming scene first). Returns an overlay div ('' after the window). */
 export function portalWipe(frame: number, o: { at?: number; dur?: number; html?: string; x?: number; y?: number; x2?: number; y2?: number; w?: number; h?: number; color?: string; echo?: number; hold?: number; fn?: string }): string;
+/** Concentric thin rings around a focal point: an expanding pulse train (default), a slow breathing set, or counter-rotating dashed arcs ('spin'). Returns a positioned overlay div ('' before `at`). */
+export function rings(frame: number, o: { x?: number; y?: number; count?: number; r0?: number; gap?: number; color?: string; width?: number; at?: number; dur?: number; mode?: string; speed?: number; dash?: number; opacity?: number; seed?: number }): string;
 /** Raymarched SDF liquid-chrome blob cluster (WebGL). Returns a canvas tag; the players paint it via liquidMetalDraw after each render. */
 export function liquidMetal(frame: number, o: { w?: number; h?: number; x?: number; y?: number; size?: number; palette?: string; speed?: number; seed?: number; fps?: number; blobs?: number; spin?: number }): string;
 /** Paints every liquidMetal canvas under a root element. Called automatically by the players; no-op without a DOM. */
@@ -244,6 +246,7 @@ declare const Motion: {
   patternField: typeof patternField;
   slitScan: typeof slitScan;
   portalWipe: typeof portalWipe;
+  rings: typeof rings;
   liquidMetal: typeof liquidMetal;
   liquidMetalDraw: typeof liquidMetalDraw;
   wipeReveal: typeof wipeReveal;

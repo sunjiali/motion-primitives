@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (89 functions)
+# motion-primitives API — the full catalog (90 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -631,10 +631,18 @@ Smooth slit-scan streak warp over wrapped HTML: band-clipped copies shifted by a
 ### `portalWipe`
 
 ```ts
-M.portalWipe(frame: number, o: { at?: number; dur?: number; x?: number; y?: number; x2?: number; y2?: number; w?: number; h?: number; color?: string; echo?: number; hold?: number; fn?: string }): string
+M.portalWipe(frame: number, o: { at?: number; dur?: number; html?: string; x?: number; y?: number; x2?: number; y2?: number; w?: number; h?: number; color?: string; echo?: number; hold?: number; fn?: string }): string
 ```
 
-Circular portal transition: a flat disc blooms from (x, y), swallows the scene, holds, then contracts toward (x2, y2) revealing the incoming scene beneath. Returns an overlay div ('' outside the window).
+Circular portal transition: a flat disc blooms from (x, y), swallows the outgoing scene, holds, then contracts toward (x2, y2) revealing the incoming scene beneath. Pass the outgoing scene as `html` (draw the incoming scene first). Returns an overlay div ('' after the window).
+
+### `rings`
+
+```ts
+M.rings(frame: number, o: { x?: number; y?: number; count?: number; r0?: number; gap?: number; color?: string; width?: number; at?: number; dur?: number; mode?: string; speed?: number; dash?: number; opacity?: number; seed?: number }): string
+```
+
+Concentric thin rings around a focal point: an expanding pulse train (default), a slow breathing set, or counter-rotating dashed arcs ('spin'). Returns a positioned overlay div ('' before `at`).
 
 ### `liquidMetal`
 

@@ -2,6 +2,37 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.58.0] — 2026-10-23
+
+### Added — `rings` primitive + `rings-demo` composition
+
+- **`rings(frame, { x?, y?, count?, r0?, gap?, color?, width?, at?, dur?, mode?, speed?, dash?, opacity?, seed? })`** —
+  concentric thin rings around a focal point, the quiet decoration
+  layer across motionin.design's cards. One geometry (`count` rings
+  spaced `gap` apart from base radius `r0`), three modes: `pulse`
+  (default — an expanding train, each ring riding phase
+  `(frame − at)/dur + i/count`, growing from `r0` to `r0 + count·gap`
+  while its opacity fades, looping forever); `breathe` (a settled set
+  swelling on a slow sine, phase-lagged per ring so the swell travels
+  outward); `spin` (dashed arcs rotating in place, neighbouring rings
+  counter-rotating at slightly different rates). Thin lines, one muted
+  colour, alpha doing the depth work — the shell stays plain and the
+  rings carry the calm. A seeded phase jitter (`hash(seed·31 + i·7)`)
+  keeps stacked calls from marching in lockstep; frame-pure, returns
+  `''` before `at`.
+- **Composition `rings-demo`** (180 f, silent, house style): one
+  round-faced ball in three hard-cut scenes — Pulse. on cream,
+  Breathe. on blue, Spin. on ink — each with its title, Chinese
+  subtitle and the exact code pill. Verified on stills at frames 30
+  (pulse train mid-expansion, opacity falling outward) and 150
+  (spin arcs counter-rotated, gaps readable).
+- Site: new `rings` demo card (58 cards) and Docs row; Prompt
+  Gallery gains the `rings-demo` entry (+1, per the gallery duty).
+- Source study: the 2026-10-23 frame-by-frame teardown of
+  motionin.design's walkthrough (research_notes/video-teardowns) —
+  concentric rings are its signature framing device; portalWipe
+  shipped the transition in v0.57, this round ships the ambient half.
+
 ## [0.57.0] — 2026-10-22
 
 ### Added — `portalWipe` primitive + `portal-demo` composition

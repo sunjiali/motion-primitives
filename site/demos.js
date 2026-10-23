@@ -419,6 +419,18 @@
       },
     },
     {
+      name: 'rings', desc: 'Concentric thin rings around a focal point — one geometry, three tempers: pulse, breathe, spin.',
+      code: 'M.rings(frame, { x, y, mode, count, gap })', cycle: 180,
+      draw(f) {
+        const lf = f % 180;
+        const mode = lf < 62 ? 'pulse' : lf < 122 ? 'breathe' : 'spin';
+        return '<div style="position:absolute;inset:0;background:#F5F4F0;"></div>' +
+          M.rings(lf, { x: 280, y: 148, count: 4, r0: 24, gap: 30, color: '#7C8DA6', mode, dur: 78 }) +
+          '<div style="position:absolute;left:268px;top:136px;width:24px;height:24px;border-radius:50%;background:#26221F;"></div>' +
+          '<div style="position:absolute;left:0;right:0;top:266px;text-align:center;font:700 20px system-ui;color:#26221F;">' + mode + '</div>';
+      },
+    },
+    {
       name: 'matchCut', desc: 'Ball becomes box mid-flight — pose and velocity matched, one motion reads through.',
       code: 'const { phase, p } = M.matchCut(frame, { out })', cycle: 130,
       draw(f) {

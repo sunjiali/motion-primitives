@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe'];
+  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -738,4 +738,52 @@ test('portalWipe: disc blooms, swallows the outgoing scene, contracts to reveal'
   assert.ok(bloom.includes('fill="#F5F4F0"'), 'disc keeps the portal color');
   assert.ok(!M.portalWipe(44, { ...o, html: scene }).includes('SCENE-ONE-MARKER'),
     'contract: outgoing scene is swallowed');
+});
+
+test('rings: pulse train expands and fades, breathe swells, spin rotates arcs', () => {
+  const o = { at: 10, x: 200, y: 150, count: 4, r0: 20, gap: 30, dur: 80 };
+  const circles = (s) => [...s.matchAll(/<circle [^/]*\/>/g)].map((m) => m[0]);
+  const rOf = (c) => parseFloat(/ r="([\d.]+)"/.exec(c)[1]);
+  const opOf = (c) => parseFloat(/ opacity="([\d.]+)"/.exec(c)[1]);
+  // window + purity
+  assert.equal(M.rings(9, o), '', 'nothing before at');
+  assert.equal(M.rings(30, o), M.rings(30, o), 'frame-pure');
+  const cs = circles(M.rings(30, o));
+  assert.equal(cs.length, 4, 'one circle per ring');
+  // pulse: every radius inside [r0, r0 + count*gap], fainter as it grows
+  for (const c of cs) {
+    const r = rOf(c);
+    assert.ok(r >= 20 && r <= 20 + 4 * 30, `radius in train span, got ${r}`);
+  }
+  const byR = cs.slice().sort((a, b) => rOf(a) - rOf(b));
+  assert.ok(opOf(byR[0]) > opOf(byR[byR.length - 1]), 'outer rings fade');
+  // pulse: the whole train advances — mean radius at frame 50 beats frame 30's
+  // (measured within one loop period, phases never wrap backward together)
+  const mean = (s) => circles(s).reduce((a, c) => a + rOf(c), 0) / 4;
+  const train = (f) => circles(M.rings(f, { ...o, seed: 0 })).map(rOf).sort((a, b) => a - b).join(',');
+  assert.notEqual(train(30), train(50), 'train moves between frames');
+  // (mean radius is invariant under shifts of exactly k/count — the
+  // train permutes — so compare at a non-multiple shift, 14 frames)
+  assert.ok(mean(M.rings(44, o)) !== mean(M.rings(30, o)), 'train state changes');
+  // pulse loops: state at lf and lf + dur is identical for the same seed
+  assert.equal(M.rings(10 + 40, o), M.rings(10 + 40 + 80, o), 'pulse period = dur');
+  // breathe: settled set, radii near r0 + i*gap, periodic on the sine
+  const b = { mode: 'breathe', count: 3, r0: 30, gap: 40, speed: (Math.PI * 2) / 60 };
+  const bc = circles(M.rings(100, b));
+  assert.equal(bc.length, 3);
+  bc.forEach((c, i) => {
+    const r = rOf(c);
+    assert.ok(Math.abs(r - (30 + i * 40)) <= 5.01, `breathe ring ${i} swells around its rest radius, got ${r}`);
+  });
+  assert.equal(M.rings(100, b), M.rings(160, b), 'breathe period matches speed');
+  // spin: dashed arcs, rotation advances with the frame, counter-rotation signs differ
+  const s1 = M.rings(100, { mode: 'spin', count: 3 });
+  const s2 = M.rings(110, { mode: 'spin', count: 3 });
+  assert.ok(s1.includes('stroke-dasharray='), 'spin rings are dashed arcs');
+  assert.notEqual(s1, s2, 'spin rotates');
+  const angs = (s) => [...s.matchAll(/rotate\((-?[\d.]+) /g)].map((m) => parseFloat(m[1]));
+  const a1 = angs(s1), a2 = angs(s2);
+  assert.ok(Math.sign(a2[0] - a1[0]) !== Math.sign(a2[1] - a1[1]), 'neighbouring rings counter-rotate');
+  // defaults: no options bag beyond position still draws the default 4 rings
+  assert.equal(circles(M.rings(0, {})).length, 4, 'defaults draw 4 rings');
 });
