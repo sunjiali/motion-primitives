@@ -1,4 +1,6 @@
 node_modules/
+# 商单线 composition 不入仓（客户素材）：已归档至 ~/workspace/shangdan-sample/compositions/，勿拷回提交
+src/compositions/shangdan-*
 out/
 .player-*.html
 .DS_Store

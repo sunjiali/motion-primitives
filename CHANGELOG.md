@@ -2,6 +2,38 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.60.1] — 2026-10-23
+
+### Fixed — npm tarball no longer swallows client-line compositions
+
+- **Packaging leak closed (2026-10-23 professional audit, gap 2).**
+  `package.json`'s `files` whitelist contained the whole
+  `src/compositions/` directory, and two untracked Doubao
+  commercial-sample compositions (`shangdan-doubao.js`,
+  `shangdan-doubao-v2-design.js`) were sitting in it: `npm pack
+  --dry-run` listed 32 files including both (≈60 kB of client
+  material). The moment npm publishing is enabled they would have
+  shipped publicly. Three-layer fix:
+  - the two files were moved out of the repo tree to
+    `~/workspace/shangdan-sample/compositions/`, byte-identical
+    (sha256 verified before/after), with an archive note there;
+  - `files` gained the negation `"!src/compositions/shangdan-*"`
+    so a client file dropped back into the directory still cannot
+    enter the tarball (probe-verified: a scratch `shangdan-*` file
+    placed in the directory is excluded from the pack list);
+  - `.gitignore` now ignores `src/compositions/shangdan-*`, so the
+    files cannot be committed to the public repo either.
+- **No shipped content changed.** Pack list diffed item-by-item:
+  32 → 30 files, removed exactly the two `shangdan-*` files, added
+  none; all 13 tracked demo compositions (incl. `showcase`, which
+  the installed-CLI smoke render uses) remain in the tarball.
+  `npm run check` 63/63 green; `package:smoke` passed (tarball
+  installs, API + SFX ok, installed CLI rendered a still,
+  20148 bytes).
+- **Prompt Gallery: no new entry this round.** This is a fix-only
+  release with no new film; the Gallery obligation is explicitly
+  waived here rather than padded with a filler entry.
+
 ## [0.60.0] — 2026-10-23
 
 ### Added — `chapter-formula` composition (the house formula, codified)
