@@ -169,4 +169,21 @@ window.PROMPT_GALLERY = [
 `,
     notes: '回填条目：成片随 v0.59.0 发布（mosaic 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（20 帧整场 A / 70 帧翻转中网格 / 110 帧整场 B）+ 成片 mp4 抽帧（55 / 70 / 85 / 100 帧）双保险确认：网格在翻转窗内逐格翻转、膨胀只出现在翻转瞬间、无残留 A 瓷砖，一次过线。',
   },
+  {
+    id: 'chapter-formula',
+    title: 'Chapter Formula — The Explainer Skeleton, Codified',
+    blurb: 'The house chapter formula as a film that labels itself while it runs: a 2-second hook, three 1.5-second chapters (one hero, one action, one label), a one-glance recap, and an outro card with a source line.',
+    video: 'videos/chapter-formula.mp4',
+    tags: ['formula', 'composition', '16:9', '9.5s'],
+    rounds: '复现 prompt · shipped in v0.60',
+    prompt:
+`用 motion-primitives 做一条 9.5 秒的「章节公式」示范片，composition 名 chapter-formula。片子本身就是公式，边放边标注：钩子 0–2 秒只说一件事；随后三章、每章恰好 1.5 秒且只含一个主角 + 一个动作 + 一个标签；然后一屏回顾三章；最后片尾卡带出处行。
+
+规格：1280×720，30fps，285 帧，无声，全程硬切。奶油底 #FBF6EC、墨字 #26221F、蓝 #2F6DB3、黄 #FFD93D；主角是同一颗圆脸球（半径 54，圆身 + 两眼 + 微笑弧，每 90 帧眨眼 4 帧）。每章左上角 44px 章题（英文 + 中文小字），底部居中深色胶囊条写本章的公式角色。
+
+分段：第 0–59 帧钩子——大标题「One idea per chapter.」+ 蓝球居中 pop 入场并 ripple 一圈，胶囊「hook 0–2s → chapters 1.5s → recap → outro」。第 60–104 帧第一章「01 · One hero」：黄球沿弧线从 (330,430) 飞到 (950,430)（arc 170，36 帧），同色黄色拖影跟随。第 105–149 帧第二章「02 · One action」：四根蓝柱（35/62/48/90）依次升起后定住。第 150–194 帧第三章「03 · One label」：大数字 countUp 到 90，下方一行小字「days in a row · 连续天数」。第 195–239 帧回顾：三张白卡片并排，分别装小黄球、静态小柱状图、大数字 90，卡下各标 01 hero / 02 action / 03 label。第 240–284 帧片尾：墨底卡，「Chapter Formula.」大字 + 公式一行 + 等宽出处行「codified from @guanmo_ai's Swiss-style chapter study · sweep 2026-10-22」。
+
+纪律：一章只许一件事，多一个元素就是违规；拖影必须与主角同色；不许渐变/叠化、相机运动、音效。`,
+    notes: '回填条目：成片随 v0.60.0 发布（Chapter formula 定式化，源自 2026-10-22 瑞士风 sweep 的 backlog 条目），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查 6 张（30/90/135/172/215/262）抓出一处穿帮——第一章拖影初版用蓝色、与黄球主角不同色，改为同色黄后复验通过；成片 mp4 抽帧（30/172/262）与静帧一致，ffprobe 285 帧 = durationInFrames。',
+  },
 ];

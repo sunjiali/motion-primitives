@@ -6,6 +6,18 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Formula (v0.60)
+- `chapter-formula` (composition, not a primitive) — the house
+  chapter formula codified as a film that labels itself while it
+  runs: hook 0–2s (one claim, one hero), three chapters of 1.5s
+  each holding exactly one hero + one action + one label (arc
+  flight / bars rising once / a countUp number), a one-glance
+  recap (three cards side by side), and an ink outro card with a
+  source line. Clears the last item from the 2026-10-22
+  Swiss-style sweep backlog. Prompt Gallery entry ships with it
+  (formula items get a gallery entry, no demo card / docs row —
+  there is no new API surface).
+
 ### Transitions (v0.59)
 - `mosaic` — pixel-grid scene transition (the orderly counterpart to
   glitch): every tile shows a cropped window of scene A, then flips to
@@ -384,9 +396,11 @@ storyboard, palette, type params, Remotion source, Python-synthesized
   counterpoint to the default STYLE.md look (round hero, capsule
   code bar, rotating scene colors) — candidate for a design-style
   series of our own.
-- Chapter formula (already close to STYLE.md, worth codifying): hook
-  0–2s, then chapters of 1–1.5s each = one hero + one action + one
-  label, recap, outro card with source line.
+- ~~Chapter formula~~ — shipped in v0.60.0 as the `chapter-formula`
+  composition: hook 0–2s, chapters of 1.5s each = one hero + one
+  action + one label, recap, outro card with source line — the film
+  labels each segment's formula role as it runs. With this, the
+  2026-10-22 Swiss sweep backlog is fully shipped.
 
 ## Rules for new effects
 

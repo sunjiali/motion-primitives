@@ -2,6 +2,33 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.60.0] — 2026-10-23
+
+### Added — `chapter-formula` composition (the house formula, codified)
+
+- **Composition `chapter-formula`** (285 f, 9.5 s, silent, house
+  style): the chapter formula from the 2026-10-22 Swiss-style sweep
+  backlog, codified as a film that labels itself while it runs —
+  hook 0–2 s (one claim, the round-faced ball popping in inside a
+  ripple), three chapters of exactly 1.5 s each holding one hero +
+  one action + one label (01: the ball's arc flight with same-colour
+  trail ghosts; 02: four bars rising once, then holding; 03: a
+  countUp number whose label is the message), a recap holding all
+  three chapters side by side in cards, and an ink outro card with
+  the formula and its source line (@guanmo_ai's Swiss-style chapter
+  study). No new library API this round — the formula is the
+  deliverable, so it ships with a Prompt Gallery entry and no demo
+  card / Docs row.
+- Verified on stills at frames 30 (hook) / 90 (flight) / 135 (bars
+  mid-rise) / 172 (number mid-count) / 215 (recap) / 262 (outro);
+  the first chapter-1 still caught the trail ghosts rendered in
+  blue against the yellow hero — fixed to same-colour yellow and
+  re-verified. Frames 30 / 172 / 262 extracted from the rendered
+  MP4 match the stills; ffprobe counted 285 frames =
+  `durationInFrames`. With this, the 2026-10-22 Swiss sweep backlog
+  is fully shipped; the remaining backlog is site page optimization,
+  `springSheet`, and `sliceWave` (all low priority).
+
 ## [0.59.0] — 2026-10-23
 
 ### Added — `mosaic` primitive + `mosaic-demo` composition
