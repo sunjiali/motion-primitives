@@ -6,6 +6,18 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Site (v0.61)
+- Site demo-gallery pass (no lib API): editorial header line
+  over the demo wall ("Fifty-nine motions, one idea…") with
+  a true-count meta line, a tighter grid (3 columns / 14 px
+  gap on wide screens, was 2 / 18 px), and hover-feel —
+  hovering a card replays its animation from frame 0, the
+  lift deepens to −4 px, the title accent dot scales 1.7×.
+  Verified in headless Chrome (59 cards, 3 × 368 px columns,
+  0 console errors, hover-replay dot trajectory). Closes the
+  2026-10-22 eve backlog's site item; remaining backlog is
+  `springSheet` and `sliceWave`.
+
 ### Formula (v0.60)
 - `chapter-formula` (composition, not a primitive) — the house
   chapter formula codified as a film that labels itself while it
@@ -433,11 +445,10 @@ motionin.design walkthrough video. Full note:
 - ~~`rings`~~ — shipped in v0.58: concentric thin rings around a
   focal point in three modes (pulse train / breathe / spin arcs),
   demo card + `rings-demo` composition + Prompt Gallery entry.
-- Site page optimization (same source): demo gallery cards get a
-  hover-feel pass inspired by motionin.design / landing.gallery —
-  editorial hero line, card hover lift + preview motion, tighter grid.
-  Site-only change, no lib API impact; ship with a before/after
-  screenshot check.
+- ~~Site page optimization~~ — shipped in v0.61.0: editorial
+  header line, tighter 3-column grid, hover-replay + lift +
+  accent-dot scale; verified with before/after headless-Chrome
+  screenshots (59 cards, 0 console errors).
 - `springSheet` (2026-10-22 eve sweep, low priority) — spring-damped
   dock→sheet expand: a bottom dock bar expands vertically with a
   spring bounce (damping 18 / stiffness 300 territory), icons pop in

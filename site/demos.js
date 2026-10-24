@@ -9,12 +9,14 @@
   const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const runners = []; // {stage, cycle, draw(f) -> html}
+  let lastF = 0; // latest virtual frame, for hover-replay (v0.61)
   const visibility = new Map(); // inner stage -> on screen?
   function apply(r, f) { r.stage.innerHTML = r.draw(((f % r.cycle) + r.cycle) % r.cycle); if (window.Motion && window.Motion.liquidMetalDraw) window.Motion.liquidMetalDraw(r.stage); }
   function addRunner(stage, cycle, draw) {
-    const r = { stage, cycle, draw };
+    const r = { stage, cycle, draw, t0: 0 };
     runners.push(r);
     apply(r, reduced ? Math.floor(cycle * 0.45) : 0);
+    return r;
   }
   // Fixed-coordinate stage that scales to its container (mobile-safe) and
   // reports on-screen visibility so off-screen demos stop redrawing.
@@ -802,7 +804,9 @@
       el.innerHTML = '<div class="demo-stage" id="demo-' + i + '"></div>' +
         '<div class="demo-meta"><h3>' + d.name + '</h3><p>' + d.desc + '</p><code>' + d.code + '</code></div>';
       grid.appendChild(el);
-      addRunner(makeStage(el.querySelector('.demo-stage'), W, H), d.cycle, d.draw);
+      const r = addRunner(makeStage(el.querySelector('.demo-stage'), W, H), d.cycle, d.draw);
+      // Hover replays the card from frame 0 — the preview motion of the v0.61 hover pass.
+      if (!reduced) el.addEventListener('mouseenter', () => { r.t0 = lastF; });
     });
   }
 
@@ -926,9 +930,10 @@
     const t0 = performance.now();
     (function tick(now) {
       const f = Math.floor((now - t0) / (1000 / 30));
+      lastF = f;
       for (const r of runners) {
         if (visibility.get(r.stage) === false) continue; // off-screen: don't redraw
-        apply(r, f);
+        apply(r, f - (r.t0 || 0));
       }
       requestAnimationFrame(tick);
     })(t0);

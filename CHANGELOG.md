@@ -2,6 +2,58 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.61.0] — 2026-10-24
+
+### Changed — site demo gallery pass (backlog item, no library API change)
+
+- **Editorial line over the demo wall.** The Live demos section
+  now opens with a one-line editorial header ("Fifty-nine
+  motions, one idea: every move in this library is a single
+  named call.") plus a meta line stating the true card count
+  and the new hover behavior — the editorial-hero-line half of
+  the 2026-10-22 eve backlog item (motionin.design /
+  landing.gallery inspiration).
+- **Tighter grid.** The demo wall goes from 2 columns at an
+  18 px gap to 3 columns at a 14 px gap on wide screens
+  (2 columns below 1100 px, 1 below 900 px as before), and the
+  card meta padding tightens from 14/18/16 px to 12/14/14 px —
+  59 cards now scan as a wall instead of a long scroll.
+- **Hover-feel: replay on hover.** Hovering any demo card
+  restarts that card's animation from frame 0 (the card's
+  runner re-bases on the current virtual frame); the lift
+  deepens to −4 px and the accent dot in the card title
+  scales up 1.7× while hovered. Reduced-motion visitors keep
+  the static mid-cycle frame — no hover listeners attach.
+- **Verified, not asserted.** Headless Chrome on the local
+  site: 59 cards, grid computed as 3 × 368 px columns at a
+  14 px gap, 0 console errors; hover-replay proven on the pop
+  card's dot trajectory (settled 124 px → 0.1 px → 7.3 px →
+  95.6 px across the hover, i.e. a fresh entrance, not a
+  continuation); a full-wall screenshot shows every card
+  animating with the new header in place. `npm run check`
+  63/63 green; `npm run build` leaves no compiled-output drift
+  (no `.ts` changed this round).
+- **No library API change, so no demo card / Docs row /
+  `index.d.ts` change** — the site files themselves are the
+  deliverable, and the 2026-10-22 eve backlog's site item is
+  now closed. Remaining backlog: `springSheet` and `sliceWave`
+  (both low priority).
+- **Prompt Gallery: no new entry this round.** This is a
+  site-only release with no new film; the Gallery obligation is
+  explicitly waived here rather than padded with a filler
+  entry (same waiver as the 0.60.1 fix-only release).
+- **X sweep 2026-10-24** (rotated social.search queries:
+  spring-physics UI animation / isometric animation / kinetic
+  text animation / easing curves): 0 new backlog candidates —
+  spring explainers and physics demos dedupe against
+  pop/anticipate/swing, the elastic-toggle reel's
+  stretch-on-press overlaps pop/squash, and the LottieFiles
+  manual-easing-vs-spring A/B restates the pop-vs-ease
+  distinction the library already ships. Logged in
+  research/x-motion-sweep-log.md; coverage caveat unchanged
+  (social.search does not index X; nothing tonight came from
+  a genuine X post).
+
 ## [0.60.1] — 2026-10-23
 
 ### Fixed — npm tarball no longer swallows client-line compositions
