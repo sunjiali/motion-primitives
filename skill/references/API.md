@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (91 functions)
+# motion-primitives API — the full catalog (92 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -253,6 +253,14 @@ Animated mouse cursor: keyframed travel, click dip, expanding click rings. Retur
 ```ts
 M.velocitySkew(frame: number, o?: { at?: number; dur?: number; fn?: string; mode?: 'trail' | 'impact'; axis?: 'x' | 'y'; from?: number; to?: number; maxSkew?: number; gain?: number; freq?: number; h?: number; anchor?: 'center' | 'start' }): { pos: number
 ```
+
+### `springSheet`
+
+```ts
+M.springSheet(frame: number, o: { x?: number; bottom?: number; w?: number; h?: number; dockH?: number; at?: number; closeAt?: number; stiffness?: number; damping?: number; icons?: { glyph: string; color?: string }[]; stagger?: number; iconSize?: number; color?: string; dockColor?: string; radius?: number }): string
+```
+
+Spring-damped bottom sheet: a dock bar that springs upward to its open height (stiffness 300 / damping 18 by default, overshooting briefly), icons popping in staggered as it opens, collapsing back to the dock at `closeAt`. The sheet is anchored by its bottom edge (`bottom`); before `at` and after the collapse it is just the dock bar. Returns one positioned div.
 
 ## Text & numbers
 

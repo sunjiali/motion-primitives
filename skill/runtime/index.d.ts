@@ -146,6 +146,8 @@ export function portalWipe(frame: number, o: { at?: number; dur?: number; html?:
 export function rings(frame: number, o: { x?: number; y?: number; count?: number; r0?: number; gap?: number; color?: string; width?: number; at?: number; dur?: number; mode?: string; speed?: number; dash?: number; opacity?: number; seed?: number }): string;
 /** Pixel-grid scene transition: every tile shows a cropped window of scene A, then flips to the same window of scene B at its hash-staggered moment, swelling briefly around the flip. Draw the incoming scene (B) first, pass the outgoing scene as `htmlA`. Returns full-bleed `htmlA` before `at`, '' after the window. */
 export function mosaic(frame: number, o: { at?: number; dur?: number; w?: number; h?: number; cols?: number; rows?: number; htmlA?: string; htmlB?: string; swell?: number; gap?: number; seed?: number }): string;
+/** Spring-damped bottom sheet: a dock bar that springs upward to its open height (stiffness 300 / damping 18 by default, overshooting briefly), icons popping in staggered as it opens, collapsing back to the dock at `closeAt`. The sheet is anchored by its bottom edge (`bottom`); before `at` and after the collapse it is just the dock bar. Returns one positioned div. */
+export function springSheet(frame: number, o: { x?: number; bottom?: number; w?: number; h?: number; dockH?: number; at?: number; closeAt?: number; stiffness?: number; damping?: number; icons?: { glyph: string; color?: string }[]; stagger?: number; iconSize?: number; color?: string; dockColor?: string; radius?: number }): string;
 /** Raymarched SDF liquid-chrome blob cluster (WebGL). Returns a canvas tag; the players paint it via liquidMetalDraw after each render. */
 export function liquidMetal(frame: number, o: { w?: number; h?: number; x?: number; y?: number; size?: number; palette?: string; speed?: number; seed?: number; fps?: number; blobs?: number; spin?: number }): string;
 /** Paints every liquidMetal canvas under a root element. Called automatically by the players; no-op without a DOM. */
@@ -250,6 +252,7 @@ declare const Motion: {
   portalWipe: typeof portalWipe;
   rings: typeof rings;
   mosaic: typeof mosaic;
+  springSheet: typeof springSheet;
   liquidMetal: typeof liquidMetal;
   liquidMetalDraw: typeof liquidMetalDraw;
   wipeReveal: typeof wipeReveal;

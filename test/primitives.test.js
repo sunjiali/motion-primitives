@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic'];
+  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -800,4 +800,32 @@ test('rings: pulse train expands and fades, breathe swells, spin rotates arcs', 
   assert.ok(Math.sign(a2[0] - a1[0]) !== Math.sign(a2[1] - a1[1]), 'neighbouring rings counter-rotate');
   // defaults: no options bag beyond position still draws the default 4 rings
   assert.equal(circles(M.rings(0, {})).length, 4, 'defaults draw 4 rings');
+});
+
+test('springSheet: dock bar before at, spring overshoot past open height, staggered icons, dock again after close', () => {
+  const o = { x: 100, bottom: 720, w: 400, h: 420, dockH: 64, at: 20, closeAt: 120,
+    icons: [{ glyph: 'A', color: '#FFD93D' }, { glyph: 'B', color: '#57C7D4' }, { glyph: 'C', color: '#FF6B81' }] };
+  const heightOf = (s) => parseFloat(/height:([\d.]+)px/.exec(s)[1]);
+  const iconsOf = (s) => (s.match(/data-sheet-icon="/g) || []).length;
+  // before at: exactly the dock bar, no icons
+  assert.equal(heightOf(M.springSheet(10, o)), 64, 'dock only before at');
+  assert.equal(iconsOf(M.springSheet(10, o)), 0, 'no icons before at');
+  // frame-pure
+  assert.equal(M.springSheet(40, o), M.springSheet(40, o), 'frame-pure');
+  // open: spring overshoots the open height briefly, then settles on it
+  let peak = 0;
+  for (let f = 20; f <= 80; f++) peak = Math.max(peak, heightOf(M.springSheet(f, o)));
+  assert.ok(peak > 420, `spring overshoots open height, peak=${peak}`);
+  assert.ok(Math.abs(heightOf(M.springSheet(110, o)) - 420) < 1, 'settles at open height before close');
+  // icons stagger in: at frame 26 the third icon (at + 8) has not started yet, so fewer than all three show
+  assert.ok(iconsOf(M.springSheet(26, o)) < iconsOf(M.springSheet(70, o)), 'icons stagger in');
+  assert.equal(iconsOf(M.springSheet(70, o)), 3, 'all icons in once open');
+  // collapse: mid-collapse is between dock and open, settled collapse is exactly the dock again
+  const mid = heightOf(M.springSheet(135, o));
+  assert.ok(mid > 64 && mid < 420, `mid-collapse between dock and open, got ${mid}`);
+  assert.equal(heightOf(M.springSheet(200, o)), 64, 'dock again after collapse settles');
+  assert.equal(iconsOf(M.springSheet(200, o)), 0, 'icons gone after collapse');
+  // anchor: the sheet's bottom edge never moves
+  const topOf = (s) => parseFloat(/top:([\d.-]+)px/.exec(s)[1]);
+  assert.ok(Math.abs((topOf(M.springSheet(40, o)) + heightOf(M.springSheet(40, o))) - 720) < 1.01, 'bottom edge anchored at 720');
 });

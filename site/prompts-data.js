@@ -186,4 +186,22 @@ window.PROMPT_GALLERY = [
 纪律：一章只许一件事，多一个元素就是违规；拖影必须与主角同色；不许渐变/叠化、相机运动、音效。`,
     notes: '回填条目：成片随 v0.60.0 发布（Chapter formula 定式化，源自 2026-10-22 瑞士风 sweep 的 backlog 条目），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查 6 张（30/90/135/172/215/262）抓出一处穿帮——第一章拖影初版用蓝色、与黄球主角不同色，改为同色黄后复验通过；成片 mp4 抽帧（30/172/262）与静帧一致，ffprobe 285 帧 = durationInFrames。',
   },
+  {
+    id: 'spring-sheet',
+    title: 'Spring Sheet — The Dock That Springs Open',
+    blurb: 'A bottom-sheet UI study: a dock bar springs open with a damped bounce, four coloured icons pop in one by one as it opens, then the sheet collapses back to its dock — the whole film is one primitive call.',
+    video: 'videos/spring-sheet.mp4',
+    tags: ['interface', 'springSheet', '16:9', '6s'],
+    rounds: '复现 prompt · shipped in v0.62',
+    prompt:
+`用 motion-primitives 做一条 6 秒的底部弹层展示片，composition 名 spring-sheet，核心只用一个新原语 M.springSheet。
+
+规格：1280×720，30fps，180 帧，无声，全程硬切。奶油底 #FBF6EC、墨字 #26221F；顶部大标题「Spring Sheet.」（64px，800 字重）+ 副标题「dock → spring open → icons pop in → back to dock」（24px，灰字），标题下方居中深色胶囊代码条「M.springSheet(frame, { at, closeAt, icons, stagger })」（22px 等宽）——胶囊必须放在副标题下方、与片顶留出空隙，不许压住副标题。
+
+片子只讲一件事：第 30 帧起底部 dock 条（高 72px，米色 #EDE8DC，居中字母间隔 6px 的「SHEET」字）以弹簧弹开成高 460px 的白片（宽 600px 居中，顶角圆角 28px，顶部一条拖拽把手），弹簧参数 stiffness 300 / damping 18——弹开要带一次可见的超调回落，不是匀速长高；4 颗彩色图标（★ 黄 #FFD93D、♪ 青 #57C7D4、♥ 粉 #FF6B81、● 绿 #4ED06A，64px 圆角方块）在片子弹开过程中每 5 帧逐个 pop 入场；第 140 帧起片子回落，收尾回到只有 dock 条的状态（回落不许跌破 dock 高）。
+
+纪律：片子除标题、胶囊、片、dock 标签外不许加别的元素；图标入场必须错峰，不许齐刷刷出现；dock 标签全程钉在 dock 条内，不随片子伸缩移动。禁用：音效、相机运动、渐变背景。
+`,
+    notes: '回填条目：成片随 v0.62.0 发布（springSheet 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（10 帧仅 dock / 45 帧弹开中 3 图标 / 90 帧全开 4 图标）抓出一处穿帮——代码胶囊初版压住副标题，下移至 190px 后复验通过；成片 mp4 抽帧（90 帧）与静帧一致，ffprobe 180 帧 = durationInFrames。',
+  },
 ];

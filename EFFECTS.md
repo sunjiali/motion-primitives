@@ -6,6 +6,16 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Interface (v0.62)
+- `springSheet` — spring-damped bottom sheet: a dock bar springs
+  upward to its open height (stiffness 300 / damping 18, one
+  visible overshoot before settling), icons pop in staggered as
+  it opens, collapses back to the dock at `closeAt` (collapse
+  clamped at dockH, never below). Anchored by its bottom edge,
+  so the dock never moves. Demo card + `spring-sheet`
+  composition + Prompt Gallery entry. Closes the 2026-10-22
+  eve backlog; remaining backlog is `sliceWave` only.
+
 ### Site (v0.61)
 - Site demo-gallery pass (no lib API): editorial header line
   over the demo wall ("Fifty-nine motions, one idea…") with
@@ -449,14 +459,16 @@ motionin.design walkthrough video. Full note:
   header line, tighter 3-column grid, hover-replay + lift +
   accent-dot scale; verified with before/after headless-Chrome
   screenshots (59 cards, 0 console errors).
-- `springSheet` (2026-10-22 eve sweep, low priority) — spring-damped
-  dock→sheet expand: a bottom dock bar expands vertically with a
-  spring bounce (damping 18 / stiffness 300 territory), icons pop in
-  staggered as the sheet opens, then collapses back. Source:
+- ~~`springSheet`~~ — shipped in v0.62.0: bottom-anchored sheet
+  springs from its dock bar to its open height on a damped spring
+  (stiffness 300 / damping 18, overshooting briefly before it
+  settles), icons pop in staggered as it opens, collapses back to
+  the dock at `closeAt` (collapse clamped at dockH). Source:
   @jo_exist "Bouncy Sheet + Dock" reel
-  (https://www.instagram.com/reel/Dc9kdvUzeOH/). Overlaps `pop` for
-  the bounce math, but the sheet geometry (anchored scaleY + slot
-  stagger) is not a primitive yet. UI-motion candidate.
+  (https://www.instagram.com/reel/Dc9kdvUzeOH/). Demo card +
+  `spring-sheet` composition + Prompt Gallery entry. With this,
+  the 2026-10-22 eve backlog is fully shipped; remaining backlog
+  is `sliceWave` only.
 - Not taken: 21st.dev / kokonutui / v0 / base44 / uxpilot are React/web
   component ecosystems — reference only for the site, never the lib
   (frame-pure, no DOM state). skill-issue.in noted for the skill

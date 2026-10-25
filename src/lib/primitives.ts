@@ -123,6 +123,13 @@ interface RingsOpts {
   color?: string; width?: number; at?: number; dur?: number;
   mode?: string; speed?: number; dash?: number; opacity?: number; seed?: number;
 }
+interface SpringSheetIcon { glyph: string; color?: string }
+interface SpringSheetOpts {
+  x?: number; bottom?: number; w?: number; h?: number; dockH?: number;
+  at?: number; closeAt?: number; stiffness?: number; damping?: number;
+  icons?: SpringSheetIcon[]; stagger?: number; iconSize?: number;
+  color?: string; dockColor?: string; radius?: number;
+}
 interface LiquidMetalOpts {
   w?: number; h?: number; x?: number; y?: number; size?: number;
   palette?: string; speed?: number; seed?: number; fps?: number; blobs?: number; spin?: number;
@@ -1275,6 +1282,60 @@ __root.Motion = (function () {
       'px;width:' + (R * 2) + 'px;height:' + (R * 2) +
       'px;pointer-events:none;"><svg width="' + (R * 2) + '" height="' + (R * 2) +
       '" viewBox="0 0 ' + (R * 2) + ' ' + (R * 2) + '">' + circles + '</svg></div>';
+  }
+
+  // springSheet(): a bottom sheet that springs open from a dock bar.
+  // The sheet is anchored by its bottom edge: it grows upward from
+  // `bottom` as a damped spring (stiffness 300 / damping 18 by
+  // default — the @jo_exist "Bouncy Sheet + Dock" territory), so it
+  // overshoots its open height briefly before settling. `icons`
+  // pop in one by one, `stagger` frames apart, as the sheet opens,
+  // and shrink back with the sheet when `closeAt` starts the
+  // collapse (the collapse itself is clamped at the dock — no
+  // undershoot below dockH, or the dock bar would invert). Before
+  // `at` and after the collapse settles, the return is just the
+  // dock bar: a sheet that is always present, never absent.
+  function springSheet(frame: number, o: SpringSheetOpts): string {
+    o = o || ({} as SpringSheetOpts);
+    const at = o.at || 0;
+    const stiffness = o.stiffness || 300, damping = o.damping || 18;
+    const dockH = o.dockH == null ? 64 : o.dockH;
+    const openH = Math.max(dockH, o.h == null ? 420 : o.h);
+    let p: number;
+    if (frame < at) p = 0;
+    else if (o.closeAt != null && frame >= o.closeAt)
+      p = Math.max(0, 1 - spring({ frame: frame - o.closeAt, fps: FPS, from: 0, to: 1, stiffness, damping }));
+    else
+      p = spring({ frame: frame - at, fps: FPS, from: 0, to: 1, stiffness, damping });
+    const height = dockH + (openH - dockH) * p;
+    const x = o.x == null ? 0 : o.x, w = o.w == null ? 560 : o.w;
+    const bottom = o.bottom == null ? 720 : o.bottom;
+    const color = o.color || '#FFFFFF', dockColor = o.dockColor || '#EDE8DC';
+    const radius = o.radius == null ? 24 : o.radius;
+    const pc = clamp01(p);
+    const icons = o.icons || [];
+    const size = o.iconSize == null ? 56 : o.iconSize;
+    const gap = 14;
+    const rowW = icons.length ? icons.length * size + (icons.length - 1) * gap : 0;
+    const stagger = o.stagger == null ? 4 : o.stagger;
+    let tiles = '';
+    for (let i = 0; i < icons.length; i++) {
+      const s = pop(frame, { at: at + i * stagger, stiffness: 200, damping: 12 }) * pc;
+      if (s <= 0.02) continue;
+      const gx = (w - rowW) / 2 + i * (size + gap);
+      tiles += '<div data-sheet-icon="' + i + '" style="position:absolute;left:' + gx.toFixed(1) +
+        'px;top:34px;width:' + size + 'px;height:' + size + 'px;border-radius:14px;background:' +
+        (icons[i].color || '#FFD93D') + ';display:flex;align-items:center;justify-content:center;font:800 ' +
+        Math.round(size * 0.42) + 'px system-ui;color:#26221F;transform:scale(' + s.toFixed(3) +
+        ');opacity:' + clamp01(s).toFixed(3) + ';">' + icons[i].glyph + '</div>';
+    }
+    return '<div style="position:absolute;left:' + x + 'px;top:' + (bottom - height).toFixed(1) +
+      'px;width:' + w + 'px;height:' + height.toFixed(1) + 'px;background:' + color +
+      ';border-radius:' + radius + 'px ' + radius + 'px 0 0;overflow:hidden;">' +
+      '<div style="position:absolute;left:50%;top:12px;width:44px;height:5px;margin-left:-22px;' +
+      'border-radius:3px;background:rgba(38,34,31,0.25);"></div>' + tiles +
+      '<div style="position:absolute;left:0;right:0;bottom:0;height:' + dockH +
+      'px;background:' + dockColor + ';"></div></div>';
   }
 
   // liquidMetal(): the library's first WebGL primitive — a
@@ -2547,7 +2608,7 @@ __root.Motion = (function () {
 
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, portalWipe, rings, mosaic, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch,
     beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

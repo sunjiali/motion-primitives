@@ -2,6 +2,49 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.62.0] — 2026-10-25
+
+### Added — `springSheet` primitive + `spring-sheet` composition
+
+- **`springSheet(frame, { x?, bottom?, w?, h?, dockH?, at?, closeAt?, stiffness?, damping?, icons?, stagger?, iconSize?, color?, dockColor?, radius? })`** —
+  a spring-damped bottom sheet, the 2026-10-22 eve backlog item
+  (@jo_exist's "Bouncy Sheet + Dock" reel). The sheet is anchored
+  by its bottom edge (`bottom`): from the dock bar (`dockH`,
+  default 64) it springs upward to its open height (`h`, default
+  420) on a damped spring (stiffness 300 / damping 18 by default),
+  overshooting its open height briefly before settling — the
+  bounce is the point, not a side effect. `icons` (glyph + colour
+  tiles) pop in one by one, `stagger` frames apart (default 4),
+  as the sheet opens; at `closeAt` the sheet collapses back to
+  the dock, clamped so the collapse never dips below `dockH`.
+  Before `at` and after the collapse settles, the return is just
+  the dock bar — a sheet that is always present, never absent.
+  Frame-pure, deterministic, zero assets.
+- **Composition `spring-sheet`** (180 f, silent, house style):
+  cream stage, "Spring Sheet." title, a centred code pill, and
+  the sheet itself (600 wide, dock 72 → open 460, four icons
+  ★ ♪ ♥ ●). Verified on stills at frames 10 (dock only) / 45
+  (mid-open, 3 icons in) / 90 (fully open, 4 icons) / 179 (dock
+  again), plus 1 frame extracted from the rendered MP4 itself
+  (90) — the double-gate; ffprobe counted 180 frames =
+  `durationInFrames`. The first still round caught the code
+  pill overlapping the subtitle line — moved to 190 px and
+  re-verified.
+- Site: new `springSheet` demo card (60 cards; the editorial
+  header line now reads "Sixty motions") and Docs row; Prompt
+  Gallery gains the `spring-sheet` entry (+1, per the gallery
+  duty). Skill bundle synced (API catalog now 92 functions).
+- X sweep 2026-10-25 (rotated social.search queries: motion
+  graphics techniques / GSAP tips / Remotion / Lottie): 0 new
+  backlog candidates — AE shape-morph and orbit tutorials
+  dedupe against morphShape/orbit, scroll-triggered pinning is
+  out of scope (not frame-pure), and the Remotion-skill reels
+  are workflow, not transferable techniques. Logged in
+  research/x-motion-sweep-log.md; coverage caveat unchanged
+  (social.search does not index X; nothing tonight came from
+  a genuine X post). Remaining backlog: `sliceWave` (low
+  priority).
+
 ## [0.61.0] — 2026-10-24
 
 ### Changed — site demo gallery pass (backlog item, no library API change)

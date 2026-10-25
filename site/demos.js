@@ -515,6 +515,17 @@
       },
     },
     {
+      name: 'springSheet', desc: 'A dock bar springs open into a full sheet — overshoot bounce, icons popping in staggered — then collapses back to the dock.',
+      code: 'M.springSheet(frame, { at, closeAt, icons, stagger })', cycle: 180,
+      draw(f) {
+        const lf = f % 180;
+        return '<div style="position:absolute;inset:0;background:#FBF6EC;"></div>' +
+          M.springSheet(lf, { x: 130, bottom: 260, w: 300, h: 200, dockH: 36, at: 20, closeAt: 120,
+            icons: [{ glyph: '★', color: '#FFD93D' }, { glyph: '♪', color: '#57C7D4' }, { glyph: '♥', color: '#FF6B81' }],
+            stagger: 5, iconSize: 36, color: '#FFFFFF', dockColor: '#EDE8DC', radius: 18 });
+      },
+    },
+    {
       name: 'pixelDissolve', desc: 'The scene dissolves cell by cell, each swelling a beat before it flips.',
       code: 'M.pixelDissolve(frame, { at, dur, cols, rows })', cycle: 170,
       draw(f) {
