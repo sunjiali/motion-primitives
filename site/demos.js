@@ -515,6 +515,19 @@
       },
     },
     {
+      name: 'sliceWave', desc: 'A wave packet travels down the scene — strips near the front slide sideways on a sine field, the rest sit still, and the scene comes back whole.',
+      code: 'M.sliceWave(frame, { html, at, dur, slices, amp })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        const scene = '<div style="position:absolute;inset:0;background:#FBF6EC;"></div>' +
+          '<div style="position:absolute;left:0;right:0;top:70px;height:26px;background:#FFD93D;"></div>' +
+          '<div style="position:absolute;left:0;right:0;top:120px;height:26px;background:#57C7D4;"></div>' +
+          '<div style="position:absolute;left:0;right:0;top:196px;height:26px;background:#FF6B81;"></div>' +
+          '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 46px system-ui;color:#26221F;">WAVE</div>';
+        return M.sliceWave(lf, { html: scene, at: 35, dur: 70, slices: 14, amp: 26, waves: 2, width: 0.28 });
+      },
+    },
+    {
       name: 'springSheet', desc: 'A dock bar springs open into a full sheet — overshoot bounce, icons popping in staggered — then collapses back to the dock.',
       code: 'M.springSheet(frame, { at, closeAt, icons, stagger })', cycle: 180,
       draw(f) {

@@ -2,6 +2,51 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.63.0] — 2026-10-26
+
+### Added — `sliceWave` primitive + `slice-wave` composition
+
+- **`sliceWave(frame, { html?, at?, dur?, slices?, amp?, waves?, width?, dir? })`** —
+  a travelling wave packet over horizontal slices of arbitrary HTML,
+  the last item in the EFFECTS backlog (2026-10-23 sweep, @sebv_tv's
+  slice-split precomp technique). The content is cut into `slices`
+  horizontal strips (default 16); a wavefront travels top to bottom
+  (`dir:'up'` reverses it) over `dur` frames, and each strip shifts
+  horizontally by a sine field inside a gaussian packet around the
+  front (`width` default 0.28 of the scene height, `waves` default 2
+  cycles across the packet, `amp` default 36 px) — strips far from the
+  front sit still, so the wave visibly passes through and leaves the
+  scene undisturbed. Before `at` and after `at + dur` the return is
+  the input HTML untouched. Frame-pure, deterministic, zero assets.
+  Distinct from `slitScan` (a continuous sine warp that never rests)
+  and from `waveLine` (a drawn wavy stroke, not displaced content);
+  strip copies are overscanned horizontally so a shift never opens
+  an edge gap.
+- **Composition `slice-wave`** (150 f, silent, house style): cream
+  stage, three full-width colour bands, a "SLICE WAVE" wordmark, and
+  one wave (at 30, dur 80) passing through. Verified on stills at
+  frames 10 (undisturbed) / 70 (packet mid-title, bands above and
+  below still) / 149 (byte-identical to frame 10), plus 1 frame
+  extracted from the rendered MP4 itself (70) — the double-gate;
+  ffprobe counted 150 frames = `durationInFrames`. The first check
+  round caught a real bug: the generated `translateX(...)` was
+  missing its closing parenthesis, which would have made browsers
+  drop the displacement entirely — fixed, rebuilt, re-verified.
+- Site: new `sliceWave` demo card (61 cards; the editorial header
+  line now reads "Sixty-one motions" and the meta line "61 live
+  demos") and Docs row; Prompt Gallery gains the `slice-wave`
+  entry (+1, per the gallery duty). Skill bundle synced (API
+  catalog now 93 functions).
+- X sweep 2026-10-26 (rotated social.search queries: spring
+  physics UI animation / isometric animation / text animation /
+  easing): 0 new backlog candidates — spring-mass explainers and
+  elastic-toggle reels dedupe against pop/anticipate/swing/squash,
+  isometric scroll demos are interaction (not frame-pure) on top
+  of the shipped iso kit, easing explainers restate the shipped
+  pop/spring distinction. With sliceWave shipped, the EFFECTS
+  backlog is empty; the next round starts with a fresh research
+  sweep per the backlog-exhausted rule.
+
 ## [0.62.0] — 2026-10-25
 
 ### Added — `springSheet` primitive + `spring-sheet` composition

@@ -897,6 +897,47 @@ __root.Motion = (function () {
         }
         return '<div style="position:absolute;inset:0;overflow:hidden;">' + out + '</div>';
     }
+    // sliceWave(): a travelling wave packet across horizontal slices of
+    // arbitrary HTML — the frame-by-frame wave feel behind @sebv_tv's
+    // slice-split precomp technique (2026-10-23 sweep backlog, low
+    // priority, last item in the queue). The content is split into
+    // `slices` horizontal strips; a wavefront travels from the top
+    // (`dir:'down'`, default) or the bottom (`dir:'up'`) over `dur`
+    // frames, and each strip is shifted horizontally by a sine field
+    // wrapped in a gaussian packet around the front — strips far from
+    // the front sit still, so the wave visibly passes through the
+    // scene and leaves it undisturbed. Before `at` and after
+    // `at + dur` the return is the input HTML untouched. Distinct
+    // from slitScan (a continuous sine warp that never rests) and
+    // from waveLine (a drawn wavy stroke, not displaced content).
+    // Strip copies are overscanned horizontally like slitScan's, so a
+    // shift never opens an edge gap.
+    function sliceWave(frame, o) {
+        o = o || {};
+        const html = o.html || '';
+        const at = o.at || 0, dur = o.dur == null ? 60 : o.dur;
+        if (frame < at || dur <= 0 || frame >= at + dur)
+            return html;
+        const t = (frame - at) / dur;
+        const slices = Math.max(2, Math.floor(o.slices == null ? 16 : o.slices));
+        const amp = o.amp == null ? 36 : o.amp;
+        const waves = o.waves == null ? 2 : o.waves;
+        const width = o.width == null ? 0.28 : Math.max(0.05, o.width);
+        const front = o.dir === 'up' ? 1 - t : t;
+        const over = Math.ceil(Math.abs(amp)) + 1;
+        let out = '';
+        for (let b = 0; b < slices; b++) {
+            const cy = (b + 0.5) / slices;
+            const d = cy - front;
+            const env = Math.exp(-((d / width) * (d / width)));
+            const dx = amp * env * Math.sin(2 * Math.PI * waves * d / width);
+            out += '<div style="position:absolute;top:0;bottom:0;left:-' + over + 'px;right:-' + over +
+                'px;clip-path:inset(' + (b * 100 / slices).toFixed(2) + '% 0 ' +
+                ((slices - b - 1) * 100 / slices).toFixed(2) + '% 0);transform:translateX(' +
+                dx.toFixed(1) + 'px);">' + html + '</div>';
+        }
+        return '<div style="position:absolute;inset:0;overflow:hidden;">' + out + '</div>';
+    }
     // portalWipe(): a circular portal transition — a flat disc blooms
     // from (x, y) with an easeOutCubic pop, swallows the outgoing
     // scene, holds, then contracts (cubicInOut) toward (x2, y2),
@@ -2412,7 +2453,7 @@ __root.Motion = (function () {
     }
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch,
+        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch,
         beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

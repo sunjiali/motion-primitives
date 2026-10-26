@@ -6,6 +6,15 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Displacement (v0.63)
+- `sliceWave` — travelling wave packet over horizontal slices of
+  arbitrary HTML: a wavefront crosses the scene over `dur` frames
+  and each strip shifts horizontally by a sine field inside a
+  gaussian packet around the front, so the wave passes through and
+  leaves the scene undisturbed (input HTML returned untouched
+  outside the window). Closes the last backlog item in this file.
+  Demo card + `slice-wave` composition + Prompt Gallery entry.
+
 ### Interface (v0.62)
 - `springSheet` — spring-damped bottom sheet: a dock bar springs
   upward to its open height (stiffness 300 / damping 18, one
@@ -475,16 +484,22 @@ motionin.design walkthrough video. Full note:
   package's design-skill shelf, separate track.
 
 ## Backlog — 2026-10-23 sweep (motion-graphics techniques, rotated queries)
-- `sliceWave` (low priority) — horizontal-slice wave displacement of
-  arbitrary HTML: content split into N horizontal strips, each strip
-  shifted horizontally by a travelling sine field (phase-lagged per
-  strip, like wings/bodies split into rotating slices). The
-  technique behind @sebv_tv's hand-drawn frame-by-frame wave feel
+- ~~`sliceWave`~~ — shipped in v0.63.0: horizontal-slice wave
+  displacement of arbitrary HTML — content split into N horizontal
+  strips, each strip shifted horizontally by a sine field inside a
+  gaussian packet travelling with the wavefront (the packet form
+  is what distinguishes it from slitScan's continuous field).
+  Technique behind @sebv_tv's hand-drawn frame-by-frame wave feel
   (Sébastien Vincent, OneHealth Summit film breakdown — splitting
   precomps into slices and animating each slice's rotation for 3D
   wave motion, comments answered the technique patiently). Source:
   https://www.instagram.com/p/DaQL-XvAvrD/. Distinct from `waveLine`
   (a drawn wavy stroke) — this displaces content, not geometry.
+  Demo card + `slice-wave` composition + Prompt Gallery entry.
+  With this, every backlog in this file is shipped — the backlog
+  is empty; the next round starts with a fresh research sweep
+  (X + GitHub) before picking a build item, per the
+  backlog-exhausted rule.
 - Not taken this round: ~25 social results were all CapCut/AE
   text-reveal tutorials (text-in-footage masks, glow wipes, track
   mattes) — everything dedupes against the existing text kit

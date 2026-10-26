@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (92 functions)
+# motion-primitives API — the full catalog (93 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -635,6 +635,14 @@ M.slitScan(frame: number, o: { html: string; h?: number; bands?: number; amp?: n
 ```
 
 Smooth slit-scan streak warp over wrapped HTML: band-clipped copies shifted by a travelling sine field. Returns an HTML string.
+
+### `sliceWave`
+
+```ts
+M.sliceWave(frame: number, o: { html?: string; at?: number; dur?: number; slices?: number; amp?: number; waves?: number; width?: number; dir?: string }): string
+```
+
+Travelling wave packet over horizontal slices of wrapped HTML: a wavefront crosses the scene over `dur` frames and each strip shifts horizontally by a sine field inside a gaussian packet around the front, so the wave passes through and leaves the content undisturbed. Returns the input HTML untouched before `at` and after the window. Distinct from slitScan's continuous warp.
 
 ### `portalWipe`
 

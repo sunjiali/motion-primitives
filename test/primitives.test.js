@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet'];
+  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -558,6 +558,26 @@ test('slitScan: passthrough outside the window, banded warp inside', () => {
   const mid = M.slitScan(30, o);
   assert.equal((mid.match(/clip-path:inset/g) || []).length, 7); // one clipped copy per band
   assert.notEqual(M.slitScan(34, o), mid); // the field travels
+});
+
+test('sliceWave: passthrough outside the window, travelling packet inside, still strips at the edges', () => {
+  const html = '<div>SCENE</div>';
+  const o = { html, slices: 8, at: 10, dur: 80, amp: 36, waves: 2, width: 0.28 };
+  assert.equal(M.sliceWave(5, o), html);
+  assert.equal(M.sliceWave(100, o), html);
+  const mid = M.sliceWave(50, o);
+  assert.equal((mid.match(/clip-path:inset/g) || []).length, 8); // one clipped copy per slice
+  assert.equal(M.sliceWave(50, o), mid); // frame-pure
+  assert.notEqual(M.sliceWave(60, o), mid); // the front travels
+  // the packet moves: the most-displaced strip index shifts between early and late frames
+  const peakStrip = (s) => {
+    const dxs = [...s.matchAll(/translateX\((-?[\d.]+)px\)/g)].map((m) => Math.abs(parseFloat(m[1])));
+    return dxs.indexOf(Math.max(...dxs));
+  };
+  assert.ok(Math.max(...[...mid.matchAll(/translateX\((-?[\d.]+)px\)/g)].map((m) => Math.abs(parseFloat(m[1])))) > 5, 'some strip is actually displaced mid-wave');
+  assert.notEqual(peakStrip(M.sliceWave(25, o)), peakStrip(M.sliceWave(75, o)), 'peak displacement travels down the scene');
+  // dir:'up' mirrors the travel: early-frame peak sits low, late-frame peak sits high
+  assert.ok(peakStrip(M.sliceWave(25, { ...o, dir: 'up' })) > peakStrip(M.sliceWave(75, { ...o, dir: 'up' })), 'up wave travels upward');
 });
 
 test('liquidMetal: canvas tag carries its params; draw is a safe no-op without a DOM', () => {

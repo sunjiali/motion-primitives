@@ -204,4 +204,22 @@ window.PROMPT_GALLERY = [
 `,
     notes: '回填条目：成片随 v0.62.0 发布（springSheet 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（10 帧仅 dock / 45 帧弹开中 3 图标 / 90 帧全开 4 图标）抓出一处穿帮——代码胶囊初版压住副标题，下移至 190px 后复验通过；成片 mp4 抽帧（90 帧）与静帧一致，ffprobe 180 帧 = durationInFrames。',
   },
+  {
+    id: 'slice-wave',
+    title: 'Slice Wave — One Wave Passes Through',
+    blurb: 'A whole scene cut into horizontal strips, crossed by a single travelling wave packet: strips near the front slide sideways on a sine field, the rest sit still, and once the wave has passed the scene is exactly as it was.',
+    video: 'videos/slice-wave.mp4',
+    tags: ['transition', 'sliceWave', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.63',
+    prompt:
+`用 motion-primitives 做一条 5 秒的切片波展示片，composition 名 slice-wave，核心只用一个新原语 M.sliceWave。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。奶油底 #FBF6EC、墨字 #26221F；画面三条横贯色带（黄 #FFD93D 在 150px、青 #57C7D4 在 246px、粉 #FF6B81 在 420px，各高 54px）；中央大字「SLICE WAVE」（110px，800 字重，墨黑）+ 下方副标题「one wave passes through — the scene comes back whole」（26px 等宽，墨黑 65% 透明）；左下角一行等宽小字「M.sliceWave(frame, { at: 30, dur: 80, slices: 16 })」（22px，墨黑 55% 透明）全程静止、不参与波浪。
+
+波浪只走一次：第 30 帧起、80 帧内，一个波前自上而下穿过整幅画面（slices 16、amp 42、waves 2、width 0.28）；波前附近的条带按正弦场横向滑动，离波前远的条带保持不动；波浪通过后画面恢复原样——第 10 帧与第 149 帧必须逐字节一致。
+
+纪律：除色带、标题、副标题、左下角代码行外不许加别的元素；不许渐变背景、相机运动、音效；波浪参数不许改成常驻抖动——slitScan 的常驻正弦场是另一个原语。
+`,
+    notes: '回填条目：成片随 v0.63.0 发布（sliceWave 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（10 帧未扰动 / 70 帧波包穿过标题区、上下色带不动 / 149 帧与 10 帧逐字节一致）通过；成片 mp4 抽帧（70 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。实现中抓到一处真 bug：初版 transform 缺右括号、浏览器会丢弃位移，单测正则先拦住，修后重验通过。',
+  },
 ];
