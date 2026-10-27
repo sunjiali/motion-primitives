@@ -14,7 +14,7 @@ const dts = fs.readFileSync(path.join(root, 'index.d.ts'), 'utf8').split('\n');
 const GROUPS = [
   ['Timing & math', ['pop', 'ease', 'hash', 'stagger', 'pulse', 'breathe', 'beatGrid', 'beatFrames', 'inertia', 'anticipate', 'followThrough']],
   ['Entrances & motion', ['fadeUp', 'fly', 'travel', 'drop', 'beat', 'punch', 'shake', 'flash', 'wiggle', 'flipIn', 'whip', 'squash', 'trail', 'smear', 'pathFly', 'orbit', 'swing', 'marquee', 'cursor', 'velocitySkew', 'springSheet']],
-  ['Text & numbers', ['countUp', 'counterRoll', 'typewriter', 'drawText', 'scramble', 'splitFlap', 'splitText', 'assembleText', 'charGrid', 'textOnPath']],
+  ['Text & numbers', ['countUp', 'counterRoll', 'typewriter', 'drawText', 'scramble', 'splitFlap', 'splitText', 'assembleText', 'charGrid', 'textOnPath', 'letterTrack']],
   ['Shapes & drawing', ['dot', 'ripple', 'burst', 'badge', 'targetSlot', 'poly', 'drawOn', 'bars', 'morphShape', 'morphPoly', 'paperEl', 'pivot', 'stepped', 'onTwos', 'confetti', 'marchingAnts', 'highlightBox', 'waveLine']],
   ['Scene, camera & ambience', ['scene', 'transition', 'camera', 'parallax', 'meshBg', 'kenBurns', 'particleField', 'noiseGlow', 'glitch', 'fx', 'wipeReveal', 'spotlight', 'relay', 'maskReveal', 'matchCut', 'pixelDissolve', 'patternField', 'slitScan', 'sliceWave', 'portalWipe', 'rings', 'mosaic', 'liquidMetal', 'liquidMetalDraw']],
   ['Isometric kit', ['isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort']],

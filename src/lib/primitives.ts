@@ -118,6 +118,10 @@ interface SliceWaveOpts {
   html?: string; at?: number; dur?: number; slices?: number;
   amp?: number; waves?: number; width?: number; dir?: string;
 }
+interface LetterTrackOpts {
+  text?: string; at?: number; dur?: number; from?: number; to?: number;
+  size?: number; color?: string; fontFamily?: string; weight?: number;
+}
 interface PortalWipeOpts extends EaseOpts {
   html?: string; x?: number; y?: number; x2?: number; y2?: number;
   w?: number; h?: number; color?: string; echo?: number; hold?: number;
@@ -1178,6 +1182,35 @@ __root.Motion = (function () {
         dx.toFixed(1) + 'px);">' + html + '</div>';
     }
     return '<div style="position:absolute;inset:0;overflow:hidden;">' + out + '</div>';
+  }
+
+  // letterTrack(): animated letter-spacing (tracking) reveal — the
+  // whole word's letter-spacing animates from `from` to `to` as one
+  // unit on an easeOutCubic curve, with opacity riding the same ease
+  // (two attributes moving together, per the entrance rule). The
+  // kinetic-type move behind Jitter's letter-spacing animation
+  // (2026-10-27 sweep): wide `from` (default 28 px) settles into the
+  // resting spacing, or a tight negative `from` squeezes out to it.
+  // Distinct from splitText (per-character staggered entrances) and
+  // from drawText's static letterSpacing option (a set value, not an
+  // animation). Before `at` the word sits at `from` spacing, fully
+  // transparent; after `at + dur` it rests at `to`, fully opaque.
+  function letterTrack(frame: number, o: LetterTrackOpts): string {
+    o = o || ({} as LetterTrackOpts);
+    const text = o.text || '';
+    const at = o.at || 0, dur = o.dur == null ? 45 : o.dur;
+    const from = o.from == null ? 28 : o.from;
+    const to = o.to == null ? 0 : o.to;
+    const p = dur <= 0 ? (frame >= at ? 1 : 0) : clamp01((frame - at) / dur);
+    const e = 1 - Math.pow(1 - p, 3); // easeOutCubic: fast settle, soft land
+    const ls = from + (to - from) * e;
+    const size = o.size == null ? 64 : o.size;
+    const weight = o.weight == null ? 800 : o.weight;
+    const color = o.color || '#26221F';
+    const fontFamily = o.fontFamily || 'system-ui';
+    return '<span style="display:inline-block;font:' + weight + ' ' + size +
+      'px ' + fontFamily + ';color:' + color + ';letter-spacing:' +
+      ls.toFixed(1) + 'px;opacity:' + e.toFixed(3) + ';">' + text + '</span>';
   }
 
   // portalWipe(): a circular portal transition — a flat disc blooms
@@ -2653,7 +2686,7 @@ __root.Motion = (function () {
 
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch,
     beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

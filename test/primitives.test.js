@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet'];
+  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -578,6 +578,26 @@ test('sliceWave: passthrough outside the window, travelling packet inside, still
   assert.notEqual(peakStrip(M.sliceWave(25, o)), peakStrip(M.sliceWave(75, o)), 'peak displacement travels down the scene');
   // dir:'up' mirrors the travel: early-frame peak sits low, late-frame peak sits high
   assert.ok(peakStrip(M.sliceWave(25, { ...o, dir: 'up' })) > peakStrip(M.sliceWave(75, { ...o, dir: 'up' })), 'up wave travels upward');
+});
+
+test('letterTrack: hidden at from-spacing before at, settled at to-spacing after, monotonic in between', () => {
+  const o = { text: 'TRACK', at: 20, dur: 60, from: 30, to: 0 };
+  const ls = (s) => parseFloat(/letter-spacing:(-?[\d.]+)px/.exec(s)[1]);
+  const op = (s) => parseFloat(/opacity:([\d.]+)/.exec(s)[1]);
+  const before = M.letterTrack(10, o);
+  assert.equal(ls(before), 30); assert.equal(op(before), 0);
+  assert.ok(before.includes('TRACK'));
+  const after = M.letterTrack(90, o);
+  assert.equal(ls(after), 0); assert.equal(op(after), 1);
+  const m1 = M.letterTrack(35, o), m2 = M.letterTrack(55, o);
+  assert.ok(ls(m1) > ls(m2) && ls(m2) > 0, 'spacing eases down toward resting value');
+  assert.ok(op(m1) < op(m2) && op(m2) < 1, 'opacity rides the same ease');
+  assert.equal(M.letterTrack(35, o), m1); // frame-pure
+  // contract direction: tight negative spacing squeezes out to resting
+  const c = { text: 'TIGHT', at: 0, dur: 40, from: -6, to: 2 };
+  assert.equal(ls(M.letterTrack(0, c)), -6);
+  assert.equal(ls(M.letterTrack(50, c)), 2);
+  assert.ok(ls(M.letterTrack(20, c)) > -6 && ls(M.letterTrack(20, c)) < 2);
 });
 
 test('liquidMetal: canvas tag carries its params; draw is a safe no-op without a DOM', () => {

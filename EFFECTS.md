@@ -6,6 +6,18 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Text (v0.64)
+- `letterTrack` — animated letter-spacing (tracking) reveal: a
+  whole word's letter-spacing eases from `from` to `to` on an
+  easeOutCubic curve, opacity riding the same ease, so the word
+  arrives as one unit rather than letter by letter (wide `from`
+  settles in, tight negative `from` squeezes out). The
+  kinetic-type move behind Jitter's letter-spacing animation
+  (2026-10-27 sweep). Distinct from `splitText` (per-character
+  stagger) and from `drawText`'s static `letterSpacing` option.
+  Demo card + `letter-track` composition + Prompt Gallery entry.
+  With this, the backlog is empty again.
+
 ### Displacement (v0.63)
 - `sliceWave` — travelling wave packet over horizontal slices of
   arbitrary HTML: a wavefront crosses the scene over `dur` frames
@@ -509,3 +521,28 @@ motionin.design walkthrough video. Full note:
   pattern-combining dedupes against `patternField`. Web sweep
   returned workflow articles (HyperFrames vs Remotion, Opus 5.5
   director prompts) — no new transferable techniques.
+
+## Backlog — 2026-10-27 sweep (stagger/choreography + GitHub skills)
+
+Backlog was empty after sliceWave (v0.63.0); this round's fresh sweep
+(social.search rotated queries + X-targeted web + GitHub skills) filed
+one buildable primitive. Sources and dedup notes in
+research/x-motion-sweep-log.md.
+
+- ~~`letterTrack`~~ — shipped in v0.64.0: animated letter-spacing
+  (tracking) reveal — a whole word's letter-spacing animates from a
+  wide (or tight) value to its resting value as one unit, with
+  opacity riding the same ease — the kinetic-type move behind
+  Jitter's letter-spacing animation
+  (https://www.instagram.com/reel/Db-6RmFlPJv/). Distinct from
+  `splitText` (per-character staggered entrances) and from
+  `drawText`'s static `letterSpacing` option (a set value, not an
+  animation). With this, the backlog is empty again.
+- Not taken this round: stagger-timing tutorials (LottieFiles,
+  @webin20sec, @zozaqa_studio, @ginyboi) restate the shipped
+  `stagger` primitive and the house stagger rule; pixel-morph
+  carousel dedupes against `morphShape`/`pixelDissolve`.
+- Skill leads, not implemented: LottieFiles/motion-design-skill
+  (choreography patterns — future composition recipes),
+  ANVEAI/motion-pack, PHANTOMTONYT/motion-design-skills,
+  tecnomanu/motion-video-styles, bypshkn/emaki.

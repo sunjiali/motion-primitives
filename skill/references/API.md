@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (93 functions)
+# motion-primitives API — the full catalog (94 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -343,6 +343,12 @@ M.textOnPath(frame: number, o: { text: string; pts: number[][]; size?: number; c
 ```
 
 A string typeset along a smoothed polyline by arc length, tangent-rotated, flowing at `speed`. Returns a positioned div.
+
+### `letterTrack`
+
+```ts
+M.letterTrack(frame: number, o: { text?: string; at?: number; dur?: number; from?: number; to?: number; size?: number; color?: string; fontFamily?: string; weight?: number }): string
+```
 
 ## Shapes & drawing
 

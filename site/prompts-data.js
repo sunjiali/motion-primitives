@@ -222,4 +222,20 @@ window.PROMPT_GALLERY = [
 `,
     notes: '回填条目：成片随 v0.63.0 发布（sliceWave 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（10 帧未扰动 / 70 帧波包穿过标题区、上下色带不动 / 149 帧与 10 帧逐字节一致）通过；成片 mp4 抽帧（70 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。实现中抓到一处真 bug：初版 transform 缺右括号、浏览器会丢弃位移，单测正则先拦住，修后重验通过。',
   },
+  {
+    id: 'letter-track',
+    title: 'Letter Track — Spacing, Animated',
+    blurb: 'A word arrives with its letters spread wide and settles into its resting spacing, then a second line squeezes out from tight spacing to prove the reverse direction — tracking animated as one unit, not letter by letter.',
+    video: 'videos/letter-track.mp4',
+    tags: ['text', 'letterTrack', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.64',
+    prompt:
+`用 motion-primitives 做一条 5 秒的字距动画展示片，composition 名 letter-track，核心只用一个新原语 M.letterTrack。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。奶油底 #FBF6EC、墨字 #26221F；画面中央一行大字「TRACKING」（110px，800 字重），第 20 帧起、60 帧内字距从 32px 收束到 0；下方一行等宽小字「letter-spacing, animated」（28px，500 字重）第 90 帧起、40 帧内字距从 -4px 舒展到 2px，证明反方向；左下角一行等宽小字「M.letterTrack(frame, { at: 20, dur: 60, from: 32, to: 0 })」（22px，墨黑 55% 透明）全程静止；右上角一颗粉色圆点（#FF6B81，18px）点缀。
+
+纪律：字距动画必须整词一体收束，不许逐字错峰——逐字入场是 splitText 的活；透明度与字距走同一条 easeOutCubic 曲线；除标题、副标题、左下角代码行、右上角圆点外不许加别的元素；不许渐变背景、相机运动、音效。
+`,
+    notes: '回填条目：成片随 v0.64.0 发布（letterTrack 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（10 帧标题未出现 / 50 帧大字字距舒展中、副标题未出现 / 149 帧两行均落定）通过；成片 mp4 抽帧（50 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。',
+  },
 ];

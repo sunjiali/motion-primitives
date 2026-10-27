@@ -2,6 +2,48 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.64.0] — 2026-10-27
+
+### Added — `letterTrack` primitive + `letter-track` composition
+
+- **`letterTrack(frame, { text?, at?, dur?, from?, to?, size?, color?, fontFamily?, weight? })`** —
+  animated letter-spacing (tracking) reveal: a whole word's
+  letter-spacing eases from `from` (default 28 px) to `to` (default
+  0) on an easeOutCubic curve, with opacity riding the same ease —
+  two attributes moving together, per the entrance rule. A wide
+  `from` settles into the resting spacing; a tight negative `from`
+  squeezes out to it. The kinetic-type move behind Jitter's
+  letter-spacing animation (2026-10-27 sweep, the backlog's first
+  item after sliceWave emptied it). Distinct from `splitText`
+  (per-character staggered entrances) and from `drawText`'s static
+  `letterSpacing` option (a set value, not an animation).
+- **Composition `letter-track`** (150 f, silent, house style): cream
+  stage, "TRACKING" arriving from 32 px spacing over 60 frames from
+  frame 20, then "letter-spacing, animated" squeezing out from
+  −4 px to 2 px over 40 frames from frame 90. Verified on stills
+  at frames 10 (title absent) / 50 (mid-settle, letters still wide,
+  subtitle absent) / 149 (both lines settled), plus 1 frame
+  extracted from the rendered MP4 itself (50) — the double-gate;
+  ffprobe counted 150 frames = `durationInFrames`.
+- Site: new `letterTrack` demo card (62 cards; the editorial header
+  line now reads "Sixty-two motions" and the meta line "62 live
+  demos") and Docs row; Prompt Gallery gains the `letter-track`
+  entry (+1, per the gallery duty). Skill bundle synced (API
+  catalog now 94 functions).
+- X sweep 2026-10-27 (rotated social.search queries: stagger
+  choreography / parallax depth / morph transition / kinetic
+  typography, plus an X-targeted web sweep and a GitHub skills
+  sweep): 1 new backlog candidate, shipped this round as
+  `letterTrack` — the sweep corpus was otherwise dominated by
+  stagger-timing tutorials, which dedupe against the shipped
+  `stagger` primitive and the house stagger rule. GitHub skill
+  leads noted for later (LottieFiles/motion-design-skill,
+  ANVEAI/motion-pack, PHANTOMTONYT/motion-design-skills,
+  tecnomanu/motion-video-styles, bypshkn/emaki). With
+  letterTrack shipped, the EFFECTS backlog is empty again; the
+  next round starts with a fresh research sweep per the
+  backlog-exhausted rule.
+
 ## [0.63.0] — 2026-10-26
 
 ### Added — `sliceWave` primitive + `slice-wave` composition
