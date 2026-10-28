@@ -2,6 +2,51 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.65.0] — 2026-10-28
+
+### Added — `speedLines` primitive + `speed-lines` composition
+
+- **`speedLines(frame, { x?, y?, at?, dur?, n?, color?, width?, minLen?, maxLen?, gap?, angle?, spread?, seed? })`** —
+  anime-style speed lines: thin streaks radiating from (x, y)
+  during a fast window. Lines pop in hash-staggered over the
+  first frames, stretch outward, and fade over the last quarter
+  of `dur`; `angle` + `spread` aim the fan — spread 360 is a
+  full impact burst, a narrow cone (e.g. angle 180, spread 80)
+  re-centred on a moving element each frame reads as lines
+  trailing behind the motion. The "SPEED LINES" panel of
+  @ersharium's fast-motion tutorial (2026-10-28 sweep). Distinct
+  from `smear` (exposure ghosts of the element itself), `trail`
+  (ghost positions) and `burst` (radial particles) — these are
+  straight streaks, not copies of anything. Returns '' outside
+  the window.
+- **Composition `speed-lines`** (150 f, silent, house style):
+  cream stage, "SPEED LINES" title, a coral dot dashing from
+  (180, 360) to (1060, 360) over frames 20–100 trailing a narrow
+  cone behind it, then a full radial burst at the landing point
+  over frames 105–135. Verified on stills at frames 10 (no lines)
+  / 60 (trailing cone behind the dot) / 120 (radial burst at the
+  landing point) / 149 (clean rest), plus 1 frame extracted from
+  the rendered MP4 itself (120) — the double-gate; ffprobe
+  counted 150 frames = `durationInFrames`.
+- Site: new `speedLines` demo card (63 cards; the editorial header
+  line now reads "Sixty-three motions" and the meta line "63 live
+  demos") and Docs row; Prompt Gallery gains the `speed-lines`
+  entry (+1, per the gallery duty). Skill bundle synced (API
+  catalog now 95 functions).
+- X sweep 2026-10-28 (rotated social.search queries: motion
+  graphics techniques / GSAP tips / Remotion breakdowns /
+  isometric animation, plus an X-targeted web sweep; backlog was
+  empty): 1 new backlog candidate, shipped this round as
+  `speedLines` — the sweep corpus was otherwise dominated by
+  Remotion/AI-workflow reels and tooling, which carry no
+  transferable frame-pure technique; CC Ball Action dots dedupe
+  against pixelDissolve/mosaic, PS1 pixelation against
+  pixelDissolve, orbiting against orbit, text-on-curve against
+  textOnPath, 2.5D camera wipes against parallax + wipeReveal,
+  and whip-pans against whip. With speedLines shipped, the
+  EFFECTS backlog is empty again; the next round starts with a
+  fresh research sweep per the backlog-exhausted rule.
+
 ## [0.64.0] — 2026-10-27
 
 ### Added — `letterTrack` primitive + `letter-track` composition

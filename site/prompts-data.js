@@ -223,6 +223,24 @@ window.PROMPT_GALLERY = [
     notes: '回填条目：成片随 v0.63.0 发布（sliceWave 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（10 帧未扰动 / 70 帧波包穿过标题区、上下色带不动 / 149 帧与 10 帧逐字节一致）通过；成片 mp4 抽帧（70 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。实现中抓到一处真 bug：初版 transform 缺右括号、浏览器会丢弃位移，单测正则先拦住，修后重验通过。',
   },
   {
+    id: 'speed-lines',
+    title: 'Speed Lines — Fast, Then Impact',
+    blurb: 'A dot dashes across the stage trailing a narrow cone of streaks behind it, then lands with a full radial burst — the anime speed-line panel, as one frame-pure primitive with two aiming modes.',
+    video: 'videos/speed-lines.mp4',
+    tags: ['motion', 'speedLines', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.65',
+    prompt:
+`用 motion-primitives 做一条 5 秒的速度线展示片，composition 名 speed-lines，核心只用一个新原语 M.speedLines。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。奶油底 #FBF6EC、墨字 #26221F；画面上方一行大字「SPEED LINES」（64px，800 字重）全程静止；一颗粉色圆点（#FF6B81，半径 26）第 20 帧起、80 帧内从 (180,360) 直线飞到 (1060,360)；左下角一行等宽小字「M.speedLines(frame, { angle: 180, spread: 80 })」（22px，墨黑 55% 透明）全程静止；右上角一颗粉色圆点（#FF6B81，18px）点缀。
+
+速度线分两段：第 20 帧起、90 帧内，圆点身后拖一条窄锥速度线（每帧以圆点当前位置为原点，angle 180、spread 80、gap 34、n 10、长度 30–110）；第 105 帧起、30 帧内，落点 (1060,360) 爆一圈全向速度线（spread 360、gap 44、n 20、长度 40–150）。两段窗口外速度线必须为空——第 10 帧与第 149 帧画面除圆点位置外干净无残线。
+
+纪律：速度线必须是直条纹，不许用元素残影（那是 smear/trail 的活）或粒子点（那是 burst 的活）；除标题、圆点、两段速度线、左下角代码行、右上角圆点外不许加别的元素；不许渐变背景、相机运动、音效。
+`,
+    notes: '回填条目：成片随 v0.65.0 发布（speedLines 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（10 帧无速度线 / 60 帧拖尾锥在圆点身后 / 120 帧落点放射 / 149 帧干净落定）通过；成片 mp4 抽帧（120 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。',
+  },
+  {
     id: 'letter-track',
     title: 'Letter Track — Spacing, Animated',
     blurb: 'A word arrives with its letters spread wide and settles into its resting spacing, then a second line squeezes out from tight spacing to prove the reverse direction — tracking animated as one unit, not letter by letter.',

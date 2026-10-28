@@ -143,6 +143,8 @@ export function slitScan(frame: number, o: { html: string; h?: number; bands?: n
 /** Travelling wave packet over horizontal slices of wrapped HTML: a wavefront crosses the scene over `dur` frames and each strip shifts horizontally by a sine field inside a gaussian packet around the front, so the wave passes through and leaves the content undisturbed. Returns the input HTML untouched before `at` and after the window. Distinct from slitScan's continuous warp. */
 export function sliceWave(frame: number, o: { html?: string; at?: number; dur?: number; slices?: number; amp?: number; waves?: number; width?: number; dir?: string }): string;
 export function letterTrack(frame: number, o: { text?: string; at?: number; dur?: number; from?: number; to?: number; size?: number; color?: string; fontFamily?: string; weight?: number }): string;
+/** Anime-style speed lines: thin streaks radiating from (x, y) during a fast window — a full impact burst at spread 360, or a narrow trailing cone (angle + spread) centred on a moving element each frame. Returns an overlay div ('' outside the window). */
+export function speedLines(frame: number, o: { x?: number; y?: number; at?: number; dur?: number; n?: number; color?: string; width?: number; minLen?: number; maxLen?: number; gap?: number; angle?: number; spread?: number; seed?: number }): string;
 /** Circular portal transition: a flat disc blooms from (x, y), swallows the outgoing scene, holds, then contracts toward (x2, y2) revealing the incoming scene beneath. Pass the outgoing scene as `html` (draw the incoming scene first). Returns an overlay div ('' after the window). */
 export function portalWipe(frame: number, o: { at?: number; dur?: number; html?: string; x?: number; y?: number; x2?: number; y2?: number; w?: number; h?: number; color?: string; echo?: number; hold?: number; fn?: string }): string;
 /** Concentric thin rings around a focal point: an expanding pulse train (default), a slow breathing set, or counter-rotating dashed arcs ('spin'). Returns a positioned overlay div ('' before `at`). */
@@ -254,6 +256,7 @@ declare const Motion: {
   slitScan: typeof slitScan;
   sliceWave: typeof sliceWave;
   letterTrack: typeof letterTrack;
+  speedLines: typeof speedLines;
   portalWipe: typeof portalWipe;
   rings: typeof rings;
   mosaic: typeof mosaic;

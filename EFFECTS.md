@@ -6,6 +6,19 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Motion (v0.65)
+- `speedLines` — anime-style speed lines: thin streaks radiating
+  from (x, y) during a fast window — lines pop in hash-staggered,
+  stretch outward, fade over the last quarter of `dur`; `angle` +
+  `spread` aim the fan (spread 360 = full impact burst, a narrow
+  cone re-centred on a moving element each frame = trailing
+  lines). The "SPEED LINES" panel of @ersharium's fast-motion
+  tutorial (2026-10-28 sweep). Distinct from `smear` (exposure
+  ghosts), `trail` (ghost positions) and `burst` (particles):
+  straight streaks, not copies of anything. Demo card +
+  `speed-lines` composition + Prompt Gallery entry. With this,
+  the backlog is empty again.
+
 ### Text (v0.64)
 - `letterTrack` — animated letter-spacing (tracking) reveal: a
   whole word's letter-spacing eases from `from` to `to` on an
@@ -546,3 +559,27 @@ research/x-motion-sweep-log.md.
   (choreography patterns — future composition recipes),
   ANVEAI/motion-pack, PHANTOMTONYT/motion-design-skills,
   tecnomanu/motion-video-styles, bypshkn/emaki.
+
+## Backlog — 2026-10-28 sweep (motion graphics techniques / GSAP tips / Remotion / isometric)
+
+Backlog was empty after letterTrack (v0.64.0); this round's fresh
+sweep (social.search rotated queries + X-targeted web sweep)
+filed one buildable primitive. Sources and dedup notes in
+research/x-motion-sweep-log.md.
+
+- ~~`speedLines`~~ — shipped in v0.65.0: anime speed lines —
+  thin streaks radiating from a point during a fast window, full
+  burst at spread 360 or a narrow trailing cone via angle +
+  spread (the "SPEED LINES" panel of @ersharium's fast-motion
+  tutorial, https://www.instagram.com/reel/DdtyTzjIiTe/; distinct
+  from smear/trail/burst, which are ghosts or particles, not
+  streaks). With this, the backlog is empty again.
+- Not taken this round: Remotion/AI-workflow reels (Claude-prompted
+  motion graphics, terminal inserts, cinematic camera) are
+  workflow, not transferable techniques; CC Ball Action dots dedupe
+  against pixelDissolve/mosaic; PS1 pixelation dedupes against
+  pixelDissolve; orbiting animations dedupe against orbit;
+  text-on-curve dedupes against textOnPath; 2.5D camera wipes
+  dedupe against parallax + wipeReveal; whip-pans dedupe against
+  whip; liquid-blob merge (blur + choker) overlaps liquidMetal's
+  liquid territory and stays a recipe, not a primitive.

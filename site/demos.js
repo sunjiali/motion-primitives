@@ -528,6 +528,16 @@
       },
     },
     {
+      name: 'speedLines', desc: 'Anime speed lines — thin streaks radiating from a point during a fast window: a full impact burst, or a narrow cone trailing behind a moving dot.',
+      code: 'M.speedLines(frame, { angle, spread, gap })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        return '<div style="position:absolute;inset:0;background:#FBF6EC;"></div>' +
+          '<div style="position:absolute;left:280px;top:157px;width:14px;height:14px;margin:-7px;border-radius:50%;background:#FF6B81;"></div>' +
+          M.speedLines(lf, { x: 280, y: 157, at: 35, dur: 70, n: 16, gap: 24, minLen: 20, maxLen: 70, color: '#26221F', seed: 5 });
+      },
+    },
+    {
       name: 'letterTrack', desc: 'A word arrives with its letters spread wide and settles into its resting spacing — tracking, animated as one unit.',
       code: 'M.letterTrack(frame, { text, at, dur, from, to })', cycle: 150,
       draw(f) {

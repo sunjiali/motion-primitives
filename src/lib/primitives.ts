@@ -122,6 +122,11 @@ interface LetterTrackOpts {
   text?: string; at?: number; dur?: number; from?: number; to?: number;
   size?: number; color?: string; fontFamily?: string; weight?: number;
 }
+interface SpeedLinesOpts {
+  x?: number; y?: number; at?: number; dur?: number; n?: number;
+  color?: string; width?: number; minLen?: number; maxLen?: number;
+  gap?: number; angle?: number; spread?: number; seed?: number;
+}
 interface PortalWipeOpts extends EaseOpts {
   html?: string; x?: number; y?: number; x2?: number; y2?: number;
   w?: number; h?: number; color?: string; echo?: number; hold?: number;
@@ -1211,6 +1216,54 @@ __root.Motion = (function () {
     return '<span style="display:inline-block;font:' + weight + ' ' + size +
       'px ' + fontFamily + ';color:' + color + ';letter-spacing:' +
       ls.toFixed(1) + 'px;opacity:' + e.toFixed(3) + ';">' + text + '</span>';
+  }
+
+  // speedLines(): anime-style speed lines — thin streaks radiating
+  // from (x, y) during a fast window, the "SPEED LINES" panel of
+  // @ersharium's fast-motion tutorial (2026-10-28 sweep): lines pop
+  // in hash-staggered over the first frames, stretch outward, then
+  // fade over the last quarter of `dur`. `angle` + `spread` aim the
+  // fan: spread 360 (default) is a full impact burst; a narrow cone
+  // (e.g. angle 180, spread 80) centred on a moving element each
+  // frame reads as lines trailing behind the motion. Distinct from
+  // smear (exposure ghosts of the element itself), trail (ghost
+  // positions) and burst (radial particles) — these are straight
+  // streaks, not copies of anything. Before `at` and after
+  // `at + dur` it returns ''.
+  function speedLines(frame: number, o: SpeedLinesOpts): string {
+    o = o || ({} as SpeedLinesOpts);
+    const x = o.x == null ? 640 : o.x, y = o.y == null ? 360 : o.y;
+    const at = o.at || 0, dur = o.dur == null ? 36 : o.dur;
+    if (dur <= 0 || frame < at || frame >= at + dur) return '';
+    const n = Math.max(0, Math.round(o.n == null ? 14 : o.n));
+    if (n === 0) return '';
+    const color = o.color || '#26221F';
+    const width = o.width == null ? 4 : o.width;
+    const minLen = o.minLen == null ? 40 : o.minLen;
+    const maxLen = o.maxLen == null ? 140 : o.maxLen;
+    const gap = o.gap == null ? 36 : o.gap;
+    const angle = o.angle || 0, spread = o.spread == null ? 360 : o.spread;
+    const seed = o.seed == null ? 1 : o.seed;
+    const t = frame - at;
+    const fadeStart = dur * 0.75;
+    const fade = t >= fadeStart ? Math.max(0, 1 - (t - fadeStart) / Math.max(1, dur - fadeStart)) : 1;
+    let out = '';
+    for (let i = 0; i < n; i++) {
+      const a = angle + (hash(seed * 97 + i * 13 + 5) - 0.5) * spread;
+      const len = minLen + hash(seed * 131 + i * 29 + 7) * (maxLen - minLen);
+      const delay = hash(seed * 17 + i * 11 + 3) * 8;
+      const grow = clamp01((t - delay) / Math.max(1, dur * 0.25));
+      if (grow <= 0 || fade <= 0) continue;
+      const showLen = len * (0.25 + 0.75 * grow);
+      out += '<div style="position:absolute;left:' + x + 'px;top:' + y +
+        'px;width:' + showLen.toFixed(1) + 'px;height:' + width +
+        'px;margin-top:' + (-width / 2) + 'px;background:' + color +
+        ';border-radius:' + (width / 2) + 'px;opacity:' +
+        (grow * fade).toFixed(3) + ';transform:rotate(' + a.toFixed(1) +
+        'deg) translateX(' + gap + 'px);transform-origin:0 50%;"></div>';
+    }
+    if (!out) return '';
+    return '<div style="position:absolute;inset:0;pointer-events:none;">' + out + '</div>';
   }
 
   // portalWipe(): a circular portal transition — a flat disc blooms
@@ -2686,7 +2739,7 @@ __root.Motion = (function () {
 
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch,
     beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

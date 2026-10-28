@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (94 functions)
+# motion-primitives API — the full catalog (95 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -261,6 +261,14 @@ M.springSheet(frame: number, o: { x?: number; bottom?: number; w?: number; h?: n
 ```
 
 Spring-damped bottom sheet: a dock bar that springs upward to its open height (stiffness 300 / damping 18 by default, overshooting briefly), icons popping in staggered as it opens, collapsing back to the dock at `closeAt`. The sheet is anchored by its bottom edge (`bottom`); before `at` and after the collapse it is just the dock bar. Returns one positioned div.
+
+### `speedLines`
+
+```ts
+M.speedLines(frame: number, o: { x?: number; y?: number; at?: number; dur?: number; n?: number; color?: string; width?: number; minLen?: number; maxLen?: number; gap?: number; angle?: number; spread?: number; seed?: number }): string
+```
+
+Anime-style speed lines: thin streaks radiating from (x, y) during a fast window — a full impact burst at spread 360, or a narrow trailing cone (angle + spread) centred on a moving element each frame. Returns an overlay div ('' outside the window).
 
 ## Text & numbers
 

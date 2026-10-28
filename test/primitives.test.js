@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet'];
+  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -598,6 +598,28 @@ test('letterTrack: hidden at from-spacing before at, settled at to-spacing after
   assert.equal(ls(M.letterTrack(0, c)), -6);
   assert.equal(ls(M.letterTrack(50, c)), 2);
   assert.ok(ls(M.letterTrack(20, c)) > -6 && ls(M.letterTrack(20, c)) < 2);
+});
+
+test('speedLines: empty outside the window, n streaks inside, frame-pure, cone aims', () => {
+  const o = { x: 100, y: 80, at: 20, dur: 40, n: 12, seed: 3 };
+  assert.equal(M.speedLines(10, o), '');
+  assert.equal(M.speedLines(60, o), '');
+  const mid = M.speedLines(30, o);
+  const count = (mid.match(/border-radius/g) || []).length;
+  assert.equal(count, 12);
+  assert.equal(M.speedLines(30, o), mid); // frame-pure
+  assert.ok(mid.includes('left:100px') && mid.includes('top:80px'));
+  // narrow cone: every line angle stays within spread/2 of the base angle
+  const cone = M.speedLines(30, { x: 0, y: 0, at: 20, dur: 40, n: 10, angle: 180, spread: 80, seed: 3 });
+  const angs = [...cone.matchAll(/rotate\((-?[\d.]+)deg\)/g)].map((m) => parseFloat(m[1]));
+  assert.equal(angs.length, 10);
+  assert.ok(angs.every((a) => Math.abs(a - 180) <= 40), `cone angles out of range: ${angs}`);
+  // fade: last frame inside the window is dimmer than mid-window
+  const op = (s) => [...s.matchAll(/opacity:([\d.]+)/g)].map((m) => parseFloat(m[1]));
+  const midOps = op(M.speedLines(30, o)), lateOps = op(M.speedLines(59, o));
+  assert.ok(Math.max(...lateOps) < Math.max(...midOps), 'lines fade over the last quarter');
+  // n: 0 returns ''
+  assert.equal(M.speedLines(30, { ...o, n: 0 }), '');
 });
 
 test('liquidMetal: canvas tag carries its params; draw is a safe no-op without a DOM', () => {
