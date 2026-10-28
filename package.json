@@ -11,7 +11,7 @@
   },
   "description": "Frame-pure motion primitives for AI-generated videos: tiny building blocks (pop, fly, beat, camera, meshBg…) an AI composes instead of hand-writing animation math. Ships a headless-Chrome + ffmpeg renderer and a code-synthesized SFX engine.",
   "devDependencies": {
-    "@types/node": "^20.19.43",
+    "@types/node": "^26.6.5",
     "typescript": "^7.0.2"
   },
   "engines": {
