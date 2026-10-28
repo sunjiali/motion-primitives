@@ -7,7 +7,7 @@
     "url": "https://github.com/sunjiali/motion-primitives/issues"
   },
   "dependencies": {
-    "puppeteer-core": "^25.14.0"
+    "puppeteer-core": "^25.16.0"
   },
   "description": "Frame-pure motion primitives for AI-generated videos: tiny building blocks (pop, fly, beat, camera, meshBg…) an AI composes instead of hand-writing animation math. Ships a headless-Chrome + ffmpeg renderer and a code-synthesized SFX engine.",
   "devDependencies": {
