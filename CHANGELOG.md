@@ -74,11 +74,18 @@ All notable changes to motion-primitives are documented here.
   site/videos/wave-text.mp4. X sweep 2026-11-08: 0 new candidates
   (see research/x-motion-sweep-log.md). Push, CI + Deploy watch,
   site byte-check, tag v0.66.0 and GitHub Release follow in this
-  same round; their outcomes are recorded in the release notes
-  and the nightly report. Main is v0.66.0 once pushed; the backlog
-  is empty again. Unrelated working-tree items left untouched: the
-  .DRAFT render workflow, STYLE.md.bak-20261029, and the
-  untracked net-ep01/net-ep02 compositions from other lines.
+  same round; their outcomes: commit 4666cc1 pushed to main; CI
+  run 42488909648 success; Deploy Pages run 42488909623 success;
+  live byte-check — site/lib/primitives.js 143,954,
+  site/demos.js 61,796, site/index.html 20,208,
+  site/prompts-data.js 34,448, site/videos/wave-text.mp4 256,507,
+  all five identical to local, index 200; annotated tag v0.66.0
+  pushed; GitHub Release v0.66.0 created with the CHANGELOG
+  section as notes and motion-skill-v0.66.0.zip attached. Main is
+  v0.66.0; the backlog is empty again. Unrelated working-tree
+  items left untouched: the .DRAFT render workflow,
+  STYLE.md.bak-20261029, and the untracked net-ep01/net-ep02
+  compositions from other lines.
 - **Retry 2026-10-30 — still blocked, still NOT pushed (second
   consecutive blocked session, stopping per the two-failure rule).**
   Local Chromium still refuses to launch ("Hatch WebGL domain
