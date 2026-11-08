@@ -145,6 +145,8 @@ export function sliceWave(frame: number, o: { html?: string; at?: number; dur?: 
 export function letterTrack(frame: number, o: { text?: string; at?: number; dur?: number; from?: number; to?: number; size?: number; color?: string; fontFamily?: string; weight?: number }): string;
 /** Anime-style speed lines: thin streaks radiating from (x, y) during a fast window — a full impact burst at spread 360, or a narrow trailing cone (angle + spread) centred on a moving element each frame. Returns an overlay div ('' outside the window). */
 export function speedLines(frame: number, o: { x?: number; y?: number; at?: number; dur?: number; n?: number; color?: string; width?: number; minLen?: number; maxLen?: number; gap?: number; angle?: number; spread?: number; seed?: number }): string;
+/** Travelling sine wave over a typeset string: each glyph drifts on a sine field with a per-letter phase stagger (phase = 2π·i/wl − frame·speed), so the sentence itself ripples — sustained and looping, not an entrance. axis 'x' (default) drifts sideways, 'y' bobs vertically. Returns a centred div ('' for empty text). */
+export function waveText(frame: number, o: { text?: string; x?: number; y?: number; amp?: number; wl?: number; speed?: number; axis?: string; size?: number; color?: string; fontFamily?: string; weight?: number }): string;
 /** Circular portal transition: a flat disc blooms from (x, y), swallows the outgoing scene, holds, then contracts toward (x2, y2) revealing the incoming scene beneath. Pass the outgoing scene as `html` (draw the incoming scene first). Returns an overlay div ('' after the window). */
 export function portalWipe(frame: number, o: { at?: number; dur?: number; html?: string; x?: number; y?: number; x2?: number; y2?: number; w?: number; h?: number; color?: string; echo?: number; hold?: number; fn?: string }): string;
 /** Concentric thin rings around a focal point: an expanding pulse train (default), a slow breathing set, or counter-rotating dashed arcs ('spin'). Returns a positioned overlay div ('' before `at`). */
@@ -257,6 +259,7 @@ declare const Motion: {
   sliceWave: typeof sliceWave;
   letterTrack: typeof letterTrack;
   speedLines: typeof speedLines;
+  waveText: typeof waveText;
   portalWipe: typeof portalWipe;
   rings: typeof rings;
   mosaic: typeof mosaic;

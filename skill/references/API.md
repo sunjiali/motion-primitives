@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (95 functions)
+# motion-primitives API — the full catalog (96 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -357,6 +357,14 @@ A string typeset along a smoothed polyline by arc length, tangent-rotated, flowi
 ```ts
 M.letterTrack(frame: number, o: { text?: string; at?: number; dur?: number; from?: number; to?: number; size?: number; color?: string; fontFamily?: string; weight?: number }): string
 ```
+
+### `waveText`
+
+```ts
+M.waveText(frame: number, o: { text?: string; x?: number; y?: number; amp?: number; wl?: number; speed?: number; axis?: string; size?: number; color?: string; fontFamily?: string; weight?: number }): string
+```
+
+Travelling sine wave over a typeset string: each glyph drifts on a sine field with a per-letter phase stagger (phase = 2π·i/wl − frame·speed), so the sentence itself ripples — sustained and looping, not an entrance. axis 'x' (default) drifts sideways, 'y' bobs vertically. Returns a centred div ('' for empty text).
 
 ## Shapes & drawing
 

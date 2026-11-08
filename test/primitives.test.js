@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet'];
+  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet', 'waveText'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -620,6 +620,23 @@ test('speedLines: empty outside the window, n streaks inside, frame-pure, cone a
   assert.ok(Math.max(...lateOps) < Math.max(...midOps), 'lines fade over the last quarter');
   // n: 0 returns ''
   assert.equal(M.speedLines(30, { ...o, n: 0 }), '');
+});
+
+test('waveText: one span per character, sine phase staggers across letters, frame-pure, axis y bobs vertically', () => {
+  const o = { text: 'WAVE', x: 640, y: 360, amp: 14, wl: 4, speed: 0.15 };
+  const html = M.waveText(10, o);
+  const dx = (s) => [...s.matchAll(/translateX\((-?[\d.]+)px\)/g)].map((m) => parseFloat(m[1]));
+  const spans = (html.match(/display:inline-block/g) || []).length;
+  assert.equal(spans, 4);
+  const d0 = dx(M.waveText(10, o)), d1 = dx(M.waveText(11, o));
+  assert.ok(d0.some((v, i) => v !== d0[(i + 1) % 4]), 'letters sit at different wave phases');
+  assert.ok(d0.some((v, i) => v !== d1[i]), 'wave travels with the frame');
+  assert.ok(d0.every((v) => Math.abs(v) <= 14), 'drift never exceeds amp');
+  assert.equal(M.waveText(10, o), html); // frame-pure
+  const yHtml = M.waveText(10, { ...o, axis: 'y' });
+  assert.ok(/translateY\(/.test(yHtml) && !/translateX\(/.test(yHtml), 'axis y uses translateY only');
+  assert.equal(M.waveText(10, { text: '' }), '');
+  assert.ok(M.waveText(10, { text: 'A<B' }).includes('&lt;'), 'glyphs escaped');
 });
 
 test('liquidMetal: canvas tag carries its params; draw is a safe no-op without a DOM', () => {

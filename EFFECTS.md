@@ -6,6 +6,22 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Text (v0.66)
+- `waveText` — travelling sine wave over a typeset string: each
+  glyph drifts on one sine field with a per-letter phase stagger
+  (phase = 2π·i/wl − frame·speed), so the sentence itself ripples
+  instead of entering; `axis:'x'` drifts sideways, `axis:'y'`
+  bobs vertically. Sustained and looping, no entrance window.
+  The Cavalry kinetic-type move from the 2026-10-29 sweep
+  (https://www.instagram.com/reel/DX6Huhosym8/). Distinct from
+  `splitText` / `assembleText` (entrances), from `letterTrack`
+  (spacing animation), and from `waveLine` (a drawn wavy stroke,
+  not text). Demo card + `wave-text` composition (150 f, both
+  axes) + Prompt Gallery entry. Released 2026-11-08 after the
+  render gate was unblocked with a stock chrome-headless-shell
+  installed via the repo's own CI tooling (see CHANGELOG 0.66.0).
+  With this, the backlog is empty again.
+
 ### Motion (v0.65)
 - `speedLines` — anime-style speed lines: thin streaks radiating
   from (x, y) during a fast window — lines pop in hash-staggered,
@@ -583,3 +599,30 @@ research/x-motion-sweep-log.md.
   dedupe against parallax + wipeReveal; whip-pans dedupe against
   whip; liquid-blob merge (blur + choker) overlaps liquidMetal's
   liquid territory and stays a recipe, not a primitive.
+
+## Backlog — 2026-10-29 sweep (animation breakdown / Lottie / kinetic typography / UI micro-interaction)
+
+Backlog was empty after speedLines (v0.65.0); this round's fresh
+sweep (social.search rotated queries + X-targeted web sweep)
+filed one buildable primitive. Sources and dedup notes in
+research/x-motion-sweep-log.md.
+
+- ~~`waveText`~~ — shipped in v0.66.0 (released 2026-11-08):
+  per-letter travelling sine wave over a typeset string — each
+  glyph drifts on a sine field with a per-letter phase stagger,
+  so the sentence itself ripples (the Cavalry kinetic-type piece
+  where letters drift horizontally and coalesce into a sentence,
+  https://www.instagram.com/reel/DX6Huhosym8/; distinct from
+  splitText/assembleText which are entrances, from letterTrack's
+  spacing animation, and from waveLine's drawn stroke). Demo card
+  + `wave-text` composition + Prompt Gallery entry. With this,
+  the backlog is empty again.
+- Not taken this round: breakdown-pose / anticipation explainers
+  restate the shipped `anticipate` primitive; multiplane
+  compositing and train parallax dedupe against `parallax`;
+  wind-matched camera shake dedupes against `shake`; smear-frame
+  multiples and hatched blur lines dedupe against `smear` /
+  `speedLines`; Lottie Do's & Don'ts restate the house stagger
+  rule; loading-dot / nav-bar micro-interactions dedupe against
+  `pulse` / `pop`; Lottie Creator blur/shadow/tint slides are
+  tool effects, not a frame-pure primitive.

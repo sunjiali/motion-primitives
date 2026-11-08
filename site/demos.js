@@ -538,6 +538,17 @@
       },
     },
     {
+      name: 'waveText', desc: 'A sentence ripples on a travelling sine wave — each letter drifts sideways on its own phase, so the line itself waves instead of entering.',
+      code: 'M.waveText(frame, { text, amp, wl, speed, axis })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        return '<div style="position:absolute;inset:0;background:#FBF6EC;"></div>' +
+          '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">' +
+          M.waveText(lf, { text: 'WAVE', x: 280, y: 157, amp: 12, wl: 5, speed: 0.15, size: 46, color: '#26221F' }) +
+          '</div>';
+      },
+    },
+    {
       name: 'letterTrack', desc: 'A word arrives with its letters spread wide and settles into its resting spacing — tracking, animated as one unit.',
       code: 'M.letterTrack(frame, { text, at, dur, from, to })', cycle: 150,
       draw(f) {

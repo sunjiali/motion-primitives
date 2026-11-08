@@ -1017,6 +1017,40 @@ __root.Motion = (function () {
             return '';
         return '<div style="position:absolute;inset:0;pointer-events:none;">' + out + '</div>';
     }
+    // waveText(): a travelling sine wave over a typeset string — the
+    // kinetic-type move behind the Cavalry piece in the 2026-10-29
+    // sweep, where letters drift horizontally (Submesh X + staggered
+    // Time Offset) and coalesce into a sentence. Each glyph rides the
+    // same sine field with a per-letter phase stagger (phase =
+    // 2π·i/wl − frame·speed), so the sentence itself ripples instead
+    // of entering: `axis:'x'` (default) drifts letters sideways,
+    // `axis:'y'` bobs them vertically. Sustained, looping, no window
+    // — unlike splitText/assembleText (entrances) and letterTrack
+    // (spacing animation), and unlike waveLine (a drawn stroke, not
+    // text). Frame-pure, no hash; empty text returns ''.
+    function waveText(frame, o) {
+        o = o || {};
+        const text = String(o.text || '');
+        if (!text)
+            return '';
+        const amp = o.amp == null ? 14 : o.amp;
+        const wl = o.wl == null || o.wl === 0 ? 6 : Math.abs(o.wl);
+        const speed = o.speed == null ? 0.15 : o.speed;
+        const axis = o.axis === 'y' ? 'y' : 'x';
+        const size = o.size == null ? 64 : o.size;
+        const weight = o.weight == null ? 800 : o.weight;
+        const color = o.color || '#26221F';
+        const fontFamily = o.fontFamily || 'system-ui';
+        const esc = (ch) => (ch === '&' ? '&amp;' : ch === '<' ? '&lt;' : ch === '>' ? '&gt;' : ch);
+        const spans = text.split('').map((ch, i) => {
+            const d = (amp * Math.sin(2 * Math.PI * i / wl - frame * speed)).toFixed(1);
+            const transform = axis === 'y' ? 'translateY(' + d + 'px)' : 'translateX(' + d + 'px)';
+            return '<span style="display:inline-block;white-space:pre;transform:' + transform + ';">' + esc(ch) + '</span>';
+        }).join('');
+        return '<div style="position:absolute;left:' + (o.x == null ? 640 : o.x) + 'px;top:' + (o.y == null ? 360 : o.y) +
+            'px;transform:translate(-50%,-50%);font-family:' + fontFamily + ';font-size:' + size +
+            'px;font-weight:' + weight + ';color:' + color + ';white-space:nowrap;">' + spans + '</div>';
+    }
     // portalWipe(): a circular portal transition — a flat disc blooms
     // from (x, y) with an easeOutCubic pop, swallows the outgoing
     // scene, holds, then contracts (cubicInOut) toward (x2, y2),
@@ -2533,7 +2567,7 @@ __root.Motion = (function () {
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
         paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch,
-        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort,
+        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
         scramble, splitFlap, kenBurns, breathe, fx, hash,

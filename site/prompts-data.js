@@ -256,4 +256,20 @@ window.PROMPT_GALLERY = [
 `,
     notes: '回填条目：成片随 v0.64.0 发布（letterTrack 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（10 帧标题未出现 / 50 帧大字字距舒展中、副标题未出现 / 149 帧两行均落定）通过；成片 mp4 抽帧（50 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。',
   },
+  {
+    id: 'wave-text',
+    title: 'Wave Text — The Sentence Itself Ripples',
+    blurb: 'A sentence rides a travelling sine wave — each letter drifts on its own phase so the line itself ripples — while a second line bobs vertically, proving both axes of one primitive.',
+    video: 'videos/wave-text.mp4',
+    tags: ['text', 'waveText', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.66',
+    prompt:
+`用 motion-primitives 做一条 5 秒的波浪文字展示片，composition 名 wave-text，核心只用一个新原语 M.waveText。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。奶油底 #FBF6EC、墨字 #26221F；画面上方一行大字「WAVE TEXT」（64px，800 字重）全程静止；中央一行大字「letters ride the wave」（84px，800 字重，居中于 640,360），每个字母在横向正弦场上漂移（amp 18、wl 6、speed 0.15）；下方一行小字「and bob up and down」（36px，500 字重，居中于 640,500），每个字母在纵向正弦场上起伏（amp 12、wl 5、speed 0.2、axis 'y'）；左下角一行等宽小字「M.waveText(frame, { amp: 18, wl: 6, speed: 0.15 })」（22px，墨黑 55% 透明）全程静止；右上角一颗粉色圆点（#FF6B81，18px）点缀。
+
+纪律：波浪是常驻的行波、不是入场——字母没有进场窗口，整句从第 0 帧就在波上；两行分别证明横轴与纵轴；除标题、两行波浪字、左下角代码行、右上角圆点外不许加别的元素；不许渐变背景、相机运动、音效。
+`,
+    notes: '回填条目：成片随 v0.66.0 发布（waveText 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（10 / 60 / 120 / 149 帧波形相位各不相同、标题与代码行静止）通过；成片 mp4 抽帧（60 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮改用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 64 卡、waveText 卡在动、0 控制台报错。',
+  },
 ];
