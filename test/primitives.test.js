@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet', 'waveText'];
+  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'chroma', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet', 'waveText'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -208,6 +208,30 @@ test('glitch: passthrough outside the window, sliced RGB ghosts inside', () => {
   assert.ok(Math.max(...shifts(mid)) > 1, 'mid-window slices are displaced');
   assert.ok(Math.max(...shifts(M.glitch(10, o))) < 0.05, 'first frame is clean (envelope 0)');
   assert.equal(M.glitch(20, o), mid); // determinism
+});
+
+test('chroma: passthrough outside the window, smooth RGB fringe inside, pulse envelope clean at both ends', () => {
+  const o = { at: 10, dur: 20, html: '<b>X</b>', amount: 8 };
+  assert.equal(M.chroma(9, o), '<b>X</b>');
+  assert.equal(M.chroma(30, o), '<b>X</b>');
+  assert.equal(M.chroma(10, { html: '' }), '');
+  const shifts = (h) => [...h.matchAll(/translate\((-?[\d.]+)px,(-?[\d.]+)px\)/g)]
+    .map((m) => [parseFloat(m[1]), parseFloat(m[2])]);
+  const mid = M.chroma(20, o); // p = 0.5, envelope peak
+  assert.equal((mid.match(/<b>X<\/b>/g) || []).length, 3); // base + 2 channel ghosts
+  assert.ok(mid.includes('feColorMatrix'), 'channel ghosts use SVG isolation');
+  assert.ok(!mid.includes('clip-path'), 'no slicing — that is glitch, not chroma');
+  const m = shifts(mid);
+  assert.equal(m.length, 2);
+  assert.ok(Math.abs(m[0][0]) > 5 && Math.abs(m[1][0]) > 5, 'mid-window ghosts are offset');
+  assert.ok(Math.abs(m[0][0] + m[1][0]) < 0.05, 'ghosts are symmetric around the clean base');
+  assert.ok(Math.max(...shifts(M.chroma(10, o)).flat().map(Math.abs)) < 0.05, 'first frame is clean (envelope 0)');
+  assert.ok(Math.max(...shifts(M.chroma(29, o)).flat().map(Math.abs)) < 1.5, 'last frame nearly clean');
+  assert.equal(M.chroma(20, o), mid); // determinism
+  const sus = M.chroma(50, { ...o, at: 40, dur: 40, mode: 'sustain' });
+  assert.ok(Math.max(...shifts(sus).flat().map(Math.abs)) > 4, 'sustain holds a steady offset');
+  const diag = M.chroma(20, { ...o, angle: 90 });
+  assert.ok(Math.abs(shifts(diag)[0][1]) > 5 && Math.abs(shifts(diag)[0][0]) < 0.05, 'angle 90 splits vertically');
 });
 
 test('beat tools: grid math, phase, pulse decay, bars, frame generation', () => {

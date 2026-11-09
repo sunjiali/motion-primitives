@@ -2088,6 +2088,47 @@ __root.Motion = (function () {
         }
         return layer(s);
     }
+    // Chromatic aberration — the Vox look's signature grade: the clean
+    // content stays centred while its red and cyan channel ghosts
+    // (SVG feColorMatrix isolation, the same machinery family as
+    // glitch's ghosts) drift apart along `angle`, so the scene reads
+    // as shot through a cheap lens. `mode:'pulse'` (default) rides a
+    // sine envelope over the window — a beat-locked fringe spike that
+    // is clean at both ends; `mode:'sustain'` holds a constant offset
+    // with a slow breathing wobble, a permanent grade. Smooth and
+    // continuous where glitch is jagged slices + re-rolled jitter:
+    // no slicing, no re-roll, usable as a standing look. Outside the
+    // window the html passes through untouched. `blend` picks the
+    // ghost composite: 'multiply' (default) for light scenes,
+    // 'screen' for dark ones. From the 2026-11-09 sweep (Chris
+    // Moran's Vox breakdown; corroborated by the Remotion Motion
+    // Design skill's VFX pipeline).
+    function chroma(frame, o) {
+        o = o || {};
+        const html = o.html || '';
+        if (!html)
+            return '';
+        const at = o.at || 0, dur = o.dur || 18;
+        if (frame < at || frame >= at + dur)
+            return html;
+        const p = (frame - at) / dur;
+        const env = o.mode === 'sustain' ? 0.8 + 0.2 * Math.sin(frame * 0.08) : Math.sin(Math.PI * p);
+        const amount = (o.amount == null ? 8 : o.amount) * env;
+        const rad = ((o.angle || 0) * Math.PI) / 180;
+        const dx = amount * Math.cos(rad), dy = amount * Math.sin(rad);
+        const seed = o.seed || 0;
+        const id = 'ch' + at + 'x' + seed;
+        const blend = o.blend || 'multiply';
+        let s = '<svg width="0" height="0" style="position:absolute;"><defs>' +
+            '<filter id="' + id + 'r"><feColorMatrix type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0"/></filter>' +
+            '<filter id="' + id + 'c"><feColorMatrix type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0"/></filter>' +
+            '</defs></svg>';
+        const ghost = (fid, ox, oy) => '<div style="position:absolute;inset:0;opacity:0.55;mix-blend-mode:' + blend +
+            ';filter:url(#' + fid + ');transform:translate(' + ox.toFixed(1) + 'px,' + oy.toFixed(1) + 'px);">' + html + '</div>';
+        s += ghost(id + 'r', dx, dy) + ghost(id + 'c', -dx, -dy);
+        s += '<div style="position:absolute;inset:0;">' + html + '</div>';
+        return '<div style="position:absolute;inset:0;">' + s + '</div>';
+    }
     // Beat tools — the BPM half of music-synced work. (Named beatGrid,
     // not beat: `beat` is the older anticipation-entrance primitive.)
     // `beatGrid` reports where a frame sits inside the grid: which beat
@@ -2566,7 +2607,7 @@ __root.Motion = (function () {
     }
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch,
+        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma,
         beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

@@ -538,6 +538,16 @@
       },
     },
     {
+      name: 'chroma', desc: 'Chromatic aberration — the clean content stays centred while red and cyan channel ghosts drift apart, so the scene reads as shot through a cheap lens; pulse spikes on a beat, sustain holds a permanent grade.',
+      code: 'M.chroma(frame, { html, amount, mode, angle })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        const word = '<div style="position:absolute;left:280px;top:157px;transform:translate(-50%,-50%);font:800 46px system-ui;color:#26221F;white-space:nowrap;">CHROMA</div>';
+        return '<div style="position:absolute;inset:0;background:#FBF6EC;"></div>' +
+          M.chroma(lf, { html: word, at: 35, dur: 70, amount: 8 });
+      },
+    },
+    {
       name: 'waveText', desc: 'A sentence ripples on a travelling sine wave — each letter drifts sideways on its own phase, so the line itself waves instead of entering.',
       code: 'M.waveText(frame, { text, amp, wl, speed, axis })', cycle: 150,
       draw(f) {

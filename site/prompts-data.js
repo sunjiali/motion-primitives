@@ -272,4 +272,20 @@ window.PROMPT_GALLERY = [
 `,
     notes: '回填条目：成片随 v0.66.0 发布（waveText 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（10 / 60 / 120 / 149 帧波形相位各不相同、标题与代码行静止）通过；成片 mp4 抽帧（60 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮改用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 64 卡、waveText 卡在动、0 控制台报错。',
   },
+  {
+    id: 'chroma',
+    title: 'Chroma — The Cheap-Lens Grade',
+    blurb: 'A big word takes two RGB-fringe spikes — first horizontal, then vertical — while a second line wears the sustain grade for the whole film, proving both modes of one primitive.',
+    video: 'videos/chroma.mp4',
+    tags: ['fx', 'chroma', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.67',
+    prompt:
+`用 motion-primitives 做一条 5 秒的色差展示片，composition 名 chroma，核心只用一个新原语 M.chroma。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。奶油底 #FBF6EC、墨字 #26221F；画面上方一行大字「CHROMA」（64px，800 字重）全程静止；中央一行大字「PRISM」（120px，800 字重，居中于 640,330），先在 20–50 帧吃一次横向色差脉冲（amount 12、angle 0），再在 90–120 帧吃一次纵向色差脉冲（amount 12、angle 90），两次脉冲嵌套调用、窗口外原样返回；下方一行小字「sustain grade, always on」（36px，500 字重，居中于 640,500），全程挂 sustain 模式色差（amount 4），带缓慢呼吸起伏；左下角一行等宽小字「M.chroma(frame, { amount: 12, mode: 'pulse' })」（22px，墨黑 55% 透明）全程静止；右上角一颗粉色圆点（#FF6B81，18px）点缀。
+
+纪律：色差是平滑连续的 RGB 边缘、不是 glitch——不许切片、不许抖动重 roll；干净内容始终居中、只有红青两个通道鬼影沿 angle 方向分开；脉冲窗口外内容原样返回；除标题、两行字、左下角代码行、右上角圆点外不许加别的元素；不许渐变背景、相机运动、音效。
+`,
+    notes: '回填条目：成片随 v0.67.0 发布（chroma 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（10 帧大字干净 / 35 帧横向红青边缘清晰 / 75 帧大字干净、小字带常驻边缘 / 105 帧纵向边缘清晰 / 149 帧落定）通过；成片 mp4 抽帧（35 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 65 卡、chroma 卡在动、0 控制台报错。',
+  },
 ];

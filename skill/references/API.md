@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (96 functions)
+# motion-primitives API — the full catalog (97 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -585,6 +585,14 @@ M.glitch(frame: number, o: { at?: number; dur?: number; html: string; amount?: n
 ```
 
 RGB-split glitch transition over wrapped HTML. Returns an HTML string.
+
+### `chroma`
+
+```ts
+M.chroma(frame: number, o: { html: string; at?: number; dur?: number; amount?: number; mode?: string; angle?: number; blend?: 'multiply' | 'screen'; seed?: number }): string
+```
+
+Chromatic-aberration RGB fringe over wrapped HTML: the clean content stays centred while red and cyan channel ghosts drift apart along `angle` — a smooth, continuous fringe, not a glitch. mode 'pulse' (default) rides a sine envelope over the window; 'sustain' holds a constant offset with a slow breathing wobble. Returns the input HTML untouched outside the window.
 
 ### `fx`
 

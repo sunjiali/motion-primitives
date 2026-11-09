@@ -173,6 +173,8 @@ export function noiseGlow(frame: number, o?: { x?: number; y?: number; r?: numbe
 export function morphShape(frame: number, o?: AtOpts & { fn?: string; from?: 'circle' | 'square' | 'triangle' | 'diamond' | 'hexagon' | 'star' | 'heart'; to?: 'circle' | 'square' | 'triangle' | 'diamond' | 'hexagon' | 'star' | 'heart'; x?: number; y?: number; size?: number; color?: string; stroke?: string; strokeWidth?: number; rot?: number }): string;
 /** RGB-split glitch transition over wrapped HTML. Returns an HTML string. */
 export function glitch(frame: number, o: { at?: number; dur?: number; html: string; amount?: number; slices?: number; seed?: number; blend?: 'multiply' | 'screen' }): string;
+/** Chromatic-aberration RGB fringe over wrapped HTML: the clean content stays centred while red and cyan channel ghosts drift apart along `angle` — a smooth, continuous fringe, not a glitch. mode 'pulse' (default) rides a sine envelope over the window; 'sustain' holds a constant offset with a slow breathing wobble. Returns the input HTML untouched outside the window. */
+export function chroma(frame: number, o: { html: string; at?: number; dur?: number; amount?: number; mode?: string; angle?: number; blend?: 'multiply' | 'screen'; seed?: number }): string;
 /** Where a frame sits in a BPM grid: beat index, phase, decay pulse, bar position. */
 export function beatGrid(frame: number, o: { bpm: number; at?: number; fps?: number; perBar?: number }): { beat: number; index: number; phase: number; pulse: number; bar: number; inBar: number };
 /** The BPM grid as frame numbers — SFX score events and cut points. */
@@ -249,6 +251,7 @@ declare const Motion: {
   noiseGlow: typeof noiseGlow;
   morphShape: typeof morphShape;
   glitch: typeof glitch;
+  chroma: typeof chroma;
   beatGrid: typeof beatGrid; beatFrames: typeof beatFrames; inertia: typeof inertia; anticipate: typeof anticipate; followThrough: typeof followThrough; velocitySkew: typeof velocitySkew;
   morphPoly: typeof morphPoly;
   splitText: typeof splitText;

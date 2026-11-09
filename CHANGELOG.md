@@ -2,6 +2,76 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.67.0] — 2026-11-09
+
+### Added — `chroma` primitive + `chroma` composition
+
+- **`chroma(frame, { html, at?, dur?, amount?, mode?, angle?, blend?, seed? })`** —
+  chromatic-aberration RGB fringe over wrapped HTML: the clean
+  content stays centred while red and cyan channel ghosts (SVG
+  feColorMatrix isolation, the same machinery family as `glitch`'s
+  ghosts) drift apart along `angle`, so the scene reads as shot
+  through a cheap lens. `mode:'pulse'` (default) rides a sine
+  envelope over the window — a beat-locked fringe spike, clean at
+  both ends; `mode:'sustain'` holds a constant offset with a slow
+  breathing wobble (0.8 + 0.2·sin(frame·0.08)), a permanent grade.
+  Smooth and continuous where `glitch` is jagged slices + re-rolled
+  jitter: no slicing, no re-roll, usable as a standing look. Outside
+  the window the html passes through untouched; empty html returns
+  ''. The Vox look's signature trick (Chris Moran's "What makes Vox
+  animations look so clean?" breakdown, 2026-11-09 sweep), corroborated
+  by the Remotion Motion Design skill's VFX pipeline listing
+  ChromaticAberration as a subtle grade and by the Claude-motion
+  CapCut finishing pass ("chromatic edges with a mask"). Distinct
+  from `glitch` (transition window, slices, jitter) and from `fx`
+  (grain + vignette, no channel split).
+- **Composition `chroma`** (150 f, silent, house style): cream
+  stage, "CHROMA" title, "PRISM" taking a horizontal fringe spike
+  at 20–50 (amount 12) then a vertical one at 90–120 (amount 12,
+  angle 90, nested calls so each window returns the word untouched
+  outside it), "sustain grade, always on" wearing the sustain grade
+  (amount 4) for the whole film.
+- Site: new `chroma` demo card (65 cards; the editorial header
+  line now reads "Sixty-five motions" and the meta line "65 live
+  demos") and Docs row; skill bundle synced (API catalog now
+  97 functions).
+- X sweep 2026-11-09 (rotated social.search queries: animation
+  breakdown / Lottie / isometric animation / spring physics UI
+  animation, 50 results, plus an X-targeted web sweep and a GitHub
+  skills sweep; backlog was empty): 1 new backlog candidate,
+  implemented this round as `chroma` — the rest of the corpus
+  dedupes (LAIKA smear frames against smear, Kenson's smear
+  taxonomy against squash/smear/trail/speedLines/glitch, LottieFiles
+  principles/rules against the shipped stagger/morph/parallax/
+  easing set, 2.5D wipes against parallax + wipeReveal, fake-3D
+  "joystick" as a parallax recipe, spring onboarding cards and the
+  isometric loader as component recipes, 3D/live-action/traditional
+  pieces out of scope; pixel-sorting needs pixel-buffer access,
+  outside the HTML-string primitive model). Coverage caveat
+  unchanged (social.search does not index X; nothing tonight came
+  from a genuine X post).
+- **Release status — verification, fresh this session.** `npm run
+  check` 69/69 green (68 before + the new chroma test; strict
+  typecheck + syntax + unit/parity, incl. the API-catalog guard
+  now covering 97 functions); two consecutive `npm run build` runs
+  leave `git status` unchanged and the three primitives.js copies
+  (src/lib, site/lib, skill/runtime) md5-identical; `chroma` MP4
+  rendered (1280×720 @30fps, 150 frames, 5.0 s, 225 KB), ffprobe
+  nb_read_frames=150 = durationInFrames; stills at frames 10 / 35 /
+  75 / 105 / 149 visually inspected — 10 clean, 35 horizontal
+  red/cyan fringe at pulse peak, 75 clean again, 105 vertical
+  fringe (angle 90), 149 settled, title and code line static
+  throughout; MP4-extracted frames 35 / 105 match the stills;
+  `CHROME_PATH=<shell> npm run package:smoke` passed; site/index.html
+  in the same headless shell shows 65 demo cards, the chroma card
+  present with 9 distinct stage states across a 6 s poll and the
+  fringe actually rendered, 0 console errors. Render gate: local
+  /opt/meta-chromium still refuses to launch (same Hatch WebGL
+  policy error); the chrome-headless-shell route from v0.66.0
+  (linux-157.0.8103.38, ~/.cache/puppeteer, not committed) renders
+  end to end, render.js already reads CHROME_PATH, no code was
+  modified to use it.
+
 ## [0.66.0] — 2026-10-29
 
 ### Added — `waveText` primitive + `wave-text` composition

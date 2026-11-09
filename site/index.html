@@ -88,8 +88,8 @@ stage.innerHTML =
     <p class="section-lede">Every demo below is running <em>right now in your browser</em> on the exact
     library that renders the videos — driven by a virtual frame counter instead of a screenshot camera.</p>
     <div class="demo-hed">
-      <p class="hed-line">Sixty-four motions, one idea: every move in this library is a single named call.</p>
-      <p class="hed-meta">64 live demos · running on the shipped library · hover any card to replay it from the start</p>
+      <p class="hed-line">Sixty-five motions, one idea: every move in this library is a single named call.</p>
+      <p class="hed-meta">65 live demos · running on the shipped library · hover any card to replay it from the start</p>
     </div>
     <div class="grid" id="demo-grid"></div>
   </section>
@@ -238,6 +238,7 @@ node src/render.js --comp showcase \
           <tr><td><code>letterTrack</code></td><td>Animated letter-spacing reveal — a whole word's tracking eases from wide (or tight) to its resting value as one unit, opacity riding the same ease</td></tr>
           <tr><td><code>speedLines</code></td><td>Anime speed lines — thin streaks radiating from a point during a fast window: full impact burst at spread 360, or a narrow cone trailing behind a moving element</td></tr>
           <tr><td><code>waveText</code></td><td>Travelling sine wave over a typeset string — each letter drifts on a sine field with a per-letter phase stagger, so the sentence itself ripples; axis x drifts sideways, axis y bobs vertically</td></tr>
+          <tr><td><code>chroma</code></td><td>Chromatic-aberration RGB fringe over wrapped HTML — red and cyan channel ghosts drift apart along an angle; pulse rides a sine envelope over the window, sustain holds a constant offset with a slow breathing wobble</td></tr>
         </table>
         <p>Full signatures and defaults live in <code>src/lib/primitives.ts</code> in the repo —
         it is heavily commented and doubles as the manual.</p>

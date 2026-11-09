@@ -6,6 +6,23 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### FX (v0.67)
+- `chroma` — chromatic-aberration RGB fringe over wrapped HTML: the
+  clean content stays centred while red and cyan channel ghosts
+  (SVG feColorMatrix isolation, same machinery family as `glitch`)
+  drift apart along `angle`, so the scene reads as shot through a
+  cheap lens. `mode:'pulse'` (default) rides a sine envelope over
+  the window — a beat-locked fringe spike; `mode:'sustain'` holds a
+  constant offset with a slow breathing wobble for a permanent
+  grade. Distinct from `glitch` (jagged slices + re-rolled jitter,
+  a transition window): chroma is smooth, continuous, slice-free,
+  and usable as a standing look. The Vox look's signature trick
+  (Chris Moran's "What makes Vox animations look so clean?"
+  breakdown, 2026-11-09 sweep), corroborated by the Remotion
+  Motion Design skill's VFX pipeline. Demo card + `chroma`
+  composition (150 f, pulse + sustain scenes) + Prompt Gallery
+  entry. With this, the backlog is empty again.
+
 ### Text (v0.66)
 - `waveText` — travelling sine wave over a typeset string: each
   glyph drifts on one sine field with a per-letter phase stagger
@@ -626,3 +643,39 @@ research/x-motion-sweep-log.md.
   rule; loading-dot / nav-bar micro-interactions dedupe against
   `pulse` / `pop`; Lottie Creator blur/shadow/tint slides are
   tool effects, not a frame-pure primitive.
+
+## Backlog — 2026-11-09 sweep (animation breakdown / Lottie / isometric / spring UI + web + GitHub skills)
+
+Backlog was empty after waveText (v0.66.0); this round's fresh sweep
+(social.search rotated queries + X-targeted web sweep + GitHub skills
+sweep) filed one buildable primitive. Sources and dedup notes in
+research/x-motion-sweep-log.md.
+
+- ~~`chroma`~~ — shipped in v0.67.0: chromatic-aberration RGB fringe
+  over wrapped HTML — the clean content stays centred while red and
+  cyan channel ghosts drift apart along `angle`; `mode:'pulse'`
+  rides a sine envelope over the window (a beat-locked fringe spike),
+  `mode:'sustain'` holds a constant offset with a slow breathing
+  wobble (a permanent grade). The Vox look's signature trick (Chris
+  Moran's "What makes Vox animations look so clean?" breakdown,
+  https://www.instagram.com/reel/DLQ4Wp9pqv3/), corroborated by the
+  Remotion Motion Design skill's VFX pipeline (ChromaticAberration
+  as a subtle grade) and the Claude-motion CapCut finishing pass
+  ("chromatic edges with a mask"). Distinct from `glitch` (jagged
+  slices + re-rolled jitter, a transition window): chroma is smooth,
+  continuous and slice-free. Demo card + `chroma` composition +
+  Prompt Gallery entry. With this, the backlog is empty again.
+- Not taken this round: Kenson's "Animation Smears" taxonomy dedupes
+  against squash/smear/trail/speedLines/glitch (its pixel-sorting
+  panel needs pixel-buffer access, outside the HTML-string primitive
+  model); LottieFiles' principles/rules carousels restate the
+  shipped stagger/morphShape/parallax/kenBurns/pop/anticipate/
+  followThrough set; LottieFiles State Machines is an interactive
+  tool feature, not frame-pure; the fake-3D "joystick" is a parallax
+  recipe; spring onboarding cards and the isometric loader are
+  component recipes; 3D/live-action/traditional pieces are out of
+  scope. Skill leads, not implemented: nexuslinkproductions
+  Remotion Motion Design skill (AE-grade 3D engine incl.
+  ChromaticAberration — the chroma corroboration), nessalazne/
+  aisocialhub-motion-graphics-skills (4 direction skills:
+  purposeful motion / shot cohesion / real demos / focus highlight).
