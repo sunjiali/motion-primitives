@@ -106,6 +106,17 @@ main { max-width: 1180px; margin: 0 auto; padding: 0 24px 40px; }
 .card .c1 { --c: var(--orange); } .card .c2 { --c: var(--blue); } .card .c3 { --c: var(--pink); }
 .card h3 { margin: 0 0 8px; font-size: 19px; }
 .card p { margin: 0; color: #57503F; }
+.card .c4 { --c: var(--green); } .card .c5 { --c: var(--purple); }
+
+/* pipeline — the five-stage motion-engineering flow */
+.pipe { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+.pipe .card { position: relative; padding: 20px 18px; }
+.pipe .card h3 { font-size: 17.5px; }
+.pipe .card p { font-size: 14.5px; }
+.pipe .card:not(:last-child)::after { content: "→"; position: absolute; right: -15px; top: 42px;
+  z-index: 2; font-weight: 800; color: #C25E1E; }
+.pipe .onpage { margin-top: 12px; font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; color: var(--soft); }
+.pipe .onpage a { font-weight: 700; text-decoration: none; }
 
 /* live demo grid — tighter at wide widths so 59 cards scan as a wall, not a scroll */
 .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
@@ -177,7 +188,8 @@ footer .dots i { width: 9px; height: 9px; }
 pre { max-width: 100%; overflow-x: auto; }
 
 @media (max-width: 900px) {
-  .hero, .cards, .grid, .play, .examples, .docs-grid { grid-template-columns: 1fr; }
+  .hero, .cards, .grid, .play, .examples, .docs-grid, .pipe { grid-template-columns: 1fr; }
+  .pipe .card:not(:last-child)::after { content: "↓"; right: auto; left: 50%; top: auto; bottom: -17px; transform: translateX(-50%); }
   .hero { padding-top: 54px; padding-bottom: 48px; border-radius: 0 0 22px 22px; }
   .hero-text, .hero-video, .docs-grid > div, .play-panel { min-width: 0; }
   .hero h1 { font-size: 36px; letter-spacing: -.6px; }
