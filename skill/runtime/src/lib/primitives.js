@@ -2129,6 +2129,53 @@ __root.Motion = (function () {
         s += '<div style="position:absolute;inset:0;">' + html + '</div>';
         return '<div style="position:absolute;inset:0;">' + s + '</div>';
     }
+    // Shine sweep — one band of light travelling across wrapped HTML:
+    // the classic logo/card shine, a localized highlight that crosses
+    // the content and leaves it untouched. The band is a linear
+    // gradient (transparent edges, bright core) on an overlay div with
+    // mix-blend-mode 'screen' (default), so it reads as light falling
+    // across the surface; `angle` steers the travel direction in
+    // degrees (0 = left→right, 90 = top→bottom), `width` is the band
+    // as a fraction of the travel span, `amount` its peak opacity.
+    // Progress rides `fn` (cubicInOut default) and the band starts and
+    // ends fully off-stage, so the first and last frames are clean.
+    // Outside the window the html passes through untouched. Distinct
+    // from `flash` (a full-frame impact flash) and from `fx` (grain +
+    // vignette): shine is a moving highlight, not a flash or a grade.
+    // From the 2026-11-10 sweep (Remotion's effects system lists
+    // `shine()` as a keyframed effect).
+    function shine(frame, o) {
+        o = o || {};
+        const html = o.html || '';
+        if (!html)
+            return '';
+        const at = o.at || 0, dur = o.dur || 18;
+        if (frame < at || frame >= at + dur)
+            return html;
+        const p = (Easing[o.fn || 'cubicInOut'] || Easing.cubicInOut)(clamp01((frame - at) / dur));
+        const w = o.width == null ? 0.3 : Math.max(0.05, o.width);
+        const c = -w / 2 + p * (1 + w); // band centre, 0..1 across the span
+        const amount = o.amount == null ? 0.8 : o.amount;
+        const color = o.color || '#FFFFFF';
+        const hn = color.replace('#', '');
+        const hf = hn.length === 3 ? hn.split('').map((ch) => ch + ch).join('') : hn;
+        const hnum = parseInt(hf, 16);
+        const safe = isNaN(hnum) ? 0xffffff : hnum;
+        const cr = (safe >> 16) & 255, cg = (safe >> 8) & 255, cb = safe & 255;
+        const rgba = (a) => 'rgba(' + cr + ',' + cg + ',' + cb + ',' +
+            Math.max(0, Math.min(1, a)).toFixed(3) + ')';
+        const gradAngle = 90 + (o.angle || 0);
+        const pct = (v) => (v * 100).toFixed(1) + '%';
+        const grad = 'linear-gradient(' + gradAngle + 'deg,' +
+            rgba(0) + ' ' + pct(c - w / 2) + ',' +
+            rgba(1) + ' ' + pct(c - w / 4) + ',' +
+            rgba(1) + ' ' + pct(c + w / 4) + ',' +
+            rgba(0) + ' ' + pct(c + w / 2) + ')';
+        return '<div style="position:absolute;inset:0;">' + html +
+            '<div style="position:absolute;inset:0;background:' + grad +
+            ';mix-blend-mode:' + (o.blend || 'screen') + ';opacity:' + amount.toFixed(3) +
+            ';pointer-events:none;"></div></div>';
+    }
     // Beat tools — the BPM half of music-synced work. (Named beatGrid,
     // not beat: `beat` is the older anticipation-entrance primitive.)
     // `beatGrid` reports where a frame sits inside the grid: which beat
@@ -2607,7 +2654,7 @@ __root.Motion = (function () {
     }
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma,
+        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine,
         beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

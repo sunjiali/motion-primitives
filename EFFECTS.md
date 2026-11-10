@@ -6,6 +6,24 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### FX (v0.68)
+- `shine` — one band of light travelling across wrapped HTML: a
+  linear-gradient band (transparent edges, bright core) on an
+  overlay div with mix-blend-mode 'screen', so it reads as light
+  falling across the surface — the classic logo/card shine sweep.
+  `angle` steers the travel direction (0 = left→right, 90 =
+  top→bottom), `width` is the band as a fraction of the travel
+  span, `amount` its peak opacity, `color` its colour (hex-parsed
+  so the gradient edges fade to true transparent, not grey), `fn`
+  eases the sweep; the band starts and ends fully off-stage, so
+  the first and last frames are clean. Distinct from `flash` (a
+  full-frame impact flash) and from `fx` (grain + vignette, no
+  travelling highlight). The named effect in Remotion's effects
+  system (`shine()`, keyframed — 2026-11-10 sweep). Demo card +
+  `shine` composition (150 f, two sweeps on the hero word plus a
+  top-to-bottom sweep on the sub-line) + Prompt Gallery entry.
+  Remaining backlog: `frost` / `blur` only.
+
 ### FX (v0.67)
 - `chroma` — chromatic-aberration RGB fringe over wrapped HTML: the
   clean content stays centred while red and cyan channel ghosts
@@ -679,3 +697,41 @@ research/x-motion-sweep-log.md.
   ChromaticAberration — the chroma corroboration), nessalazne/
   aisocialhub-motion-graphics-skills (4 direction skills:
   purposeful motion / shot cohesion / real demos / focus highlight).
+
+## Backlog — 2026-11-10 sweep (GSAP tips / text animation / easing / Remotion / isometric / spring UI / Lottie + web + GitHub skills)
+
+Backlog was empty after chroma (v0.67.0); this round's fresh sweep
+(social.search rotated queries, 75 results + X-targeted web sweep +
+GitHub skills sweep) filed two buildable primitives. Sources and dedup
+notes in research/x-motion-sweep-log.md.
+
+- ~~`shine`~~ — shipped in v0.68.0: one band of light travelling
+  across wrapped HTML (linear-gradient band, transparent edges,
+  bright core, screen-blended; `angle` steers the travel
+  direction, `width` the band as a fraction of the span, `amount`
+  its peak opacity). The classic logo/card shine sweep — Remotion's
+  effects system lists `shine()` as a keyframed effect
+  (https://www.instagram.com/reel/DZ47wmCinCV/). Distinct from
+  `flash` (full-frame impact flash) and from `fx` (grain +
+  vignette, no travelling highlight). Demo card + `shine`
+  composition + Prompt Gallery entry. With this, the remaining
+  backlog is `frost` / `blur` only.
+- `frost` / `blur` — animated CSS blur over wrapped HTML: content
+  starts behind frosted glass and clears (or blurs out) over the
+  window. Source: Remotion `blur()` in the same reel, corroborated
+  by Magnific Move's "Focus Reveal" frosted-glass reveal
+  (https://www.instagram.com/p/DfVKp0uiK8P/). Distinct from `whip`'s
+  blur value and `smear`'s motion blur.
+- Not taken this round: Claude/AI-workflow reels are workflow, not
+  techniques; Codrops' GSAP tips dedupe (SplitText masking against
+  splitText/maskReveal; stagger direction is a future `stagger`
+  option, not a primitive; the rest is GSAP tooling); LottieFiles'
+  5 principles and gradient rules dedupe against the shipped
+  stagger/morphShape/parallax/kenBurns/pop set and meshBg;
+  CameraMotionBlur needs pixel buffers (out of scope); Magnific's
+  Tracking/HUD and Reality Split are footage work (out of scope),
+  Paper Echo dedupes against trail. Skill leads, not implemented:
+  emilkowalski/skills review-animations, iart-ai/web-animation-skills
+  (53 skills, 16 packs, MIT), GSAP Skills (official — already noted
+  2026-10-21), haidrrrry/claude-remotion-skill (already upstream in
+  ~/workspace/tools/).

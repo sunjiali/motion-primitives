@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'chroma', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet', 'waveText'];
+  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'chroma', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet', 'waveText', 'shine'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -232,6 +232,35 @@ test('chroma: passthrough outside the window, smooth RGB fringe inside, pulse en
   assert.ok(Math.max(...shifts(sus).flat().map(Math.abs)) > 4, 'sustain holds a steady offset');
   const diag = M.chroma(20, { ...o, angle: 90 });
   assert.ok(Math.abs(shifts(diag)[0][1]) > 5 && Math.abs(shifts(diag)[0][0]) < 0.05, 'angle 90 splits vertically');
+});
+
+test('shine: passthrough outside the window, one light band sweeping across, angle steers the gradient', () => {
+  const o = { at: 10, dur: 20, html: '<b>X</b>' };
+  assert.equal(M.shine(9, o), '<b>X</b>');
+  assert.equal(M.shine(30, o), '<b>X</b>');
+  assert.equal(M.shine(10, { html: '' }), '');
+  const mid = M.shine(20, o); // p = 0.5, band centre at 50%
+  assert.ok(mid.includes('linear-gradient(90deg,'), 'default angle 0 sweeps left-to-right');
+  assert.ok(mid.includes('mix-blend-mode:screen'), 'default blend is screen');
+  assert.ok(mid.includes('opacity:0.800'), 'default amount is 0.8');
+  assert.ok(mid.includes('rgba(255,255,255,1.000)'), 'white band by default');
+  // bright-stop centre: mean of the two full-strength stops
+  const centre = (h) => {
+    const stops = [...h.matchAll(/rgba\(255,255,255,1\.000\) ([-\d.]+)%/g)].map((m) => parseFloat(m[1]));
+    assert.equal(stops.length, 2, 'one bright core, two edge stops');
+    return (stops[0] + stops[1]) / 2;
+  };
+  assert.ok(Math.abs(centre(mid) - 50) < 1, 'band is centred mid-window');
+  assert.ok(centre(M.shine(15, o)) < 0, 'band still off-stage left early on');
+  assert.ok(centre(M.shine(25, o)) > 100, 'band already off-stage right late on');
+  assert.ok(centre(M.shine(15, o)) < centre(mid) && centre(mid) < centre(M.shine(25, o)), 'band travels monotonically');
+  assert.equal(M.shine(20, o), mid); // determinism
+  const diag = M.shine(20, { ...o, angle: 90 });
+  assert.ok(diag.includes('linear-gradient(180deg,'), 'angle 90 sweeps top-to-bottom');
+  const pink = M.shine(20, { ...o, color: '#FF6B81', blend: 'overlay', amount: 0.5 });
+  assert.ok(pink.includes('rgba(255,107,129,1.000)'), 'custom color drives the band');
+  assert.ok(pink.includes('mix-blend-mode:overlay'), 'custom blend respected');
+  assert.ok(pink.includes('opacity:0.500'), 'custom amount respected');
 });
 
 test('beat tools: grid math, phase, pulse decay, bars, frame generation', () => {

@@ -273,6 +273,22 @@ window.PROMPT_GALLERY = [
     notes: '回填条目：成片随 v0.66.0 发布（waveText 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（10 / 60 / 120 / 149 帧波形相位各不相同、标题与代码行静止）通过；成片 mp4 抽帧（60 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮改用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 64 卡、waveText 卡在动、0 控制台报错。',
   },
   {
+    id: 'shine',
+    title: 'Shine — One Band of Light',
+    blurb: 'A big word takes two shine sweeps — first horizontal, then diagonal — while a second line wears its own top-to-bottom sweep, proving one primitive across three angles.',
+    video: 'videos/shine.mp4',
+    tags: ['fx', 'shine', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.68',
+    prompt:
+`用 motion-primitives 做一条 5 秒的光带展示片，composition 名 shine，核心只用一个新原语 M.shine。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。深墨底 #26221F、奶油字 #FBF6EC、珊瑚字 #FF6B81；画面上方一行大字「SHINE」（64px，800 字重）全程静止；中央一行大字「SHINE」（120px，800 字重，珊瑚色，居中于 640,330），先在 20–50 帧吃一次横向光带扫过（amount 0.9、angle 0），再在 90–120 帧吃一次对角光带（amount 0.9、angle 45），两次扫过嵌套调用、窗口外原样返回；下方一行小字「one band of light, two directions」（36px，500 字重，奶油色，居中于 640,500），在 60–90 帧吃一次自上而下的光带（amount 0.7、angle 90）；左下角一行等宽小字「M.shine(frame, { angle: 0, width: 0.3 })」（22px，奶油 55% 透明）全程静止；右上角一颗奶油圆点（#FBF6EC，18px）点缀。
+
+纪律：光带是单条移动的高光、不是闪光——不许全屏闪白、不许颗粒噪点；光带在窗口首尾帧完全出画、画面干净；干净内容始终居中、只有一条亮带沿 angle 方向扫过；除标题、两行字、左下角代码行、右上角圆点外不许加别的元素；不许渐变背景、相机运动、音效。
+`,
+    notes: '回填条目：成片随 v0.68.0 发布（shine 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（10 帧画面干净 / 35 帧竖直亮带居中、珊瑚字被扫过处变淡 / 75 帧横向亮带居中、扫过处字变淡 / 105 帧对角亮带清晰 / 149 帧落定）通过；成片 mp4 抽帧（35 / 105 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 66 卡、shine 卡在动（6 秒采样 5 个不同画面状态、亮带实际渲染）、0 控制台报错。',
+  },
+  {
     id: 'chroma',
     title: 'Chroma — The Cheap-Lens Grade',
     blurb: 'A big word takes two RGB-fringe spikes — first horizontal, then vertical — while a second line wears the sustain grade for the whole film, proving both modes of one primitive.',

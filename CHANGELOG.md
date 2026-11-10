@@ -2,6 +2,77 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.68.0] — 2026-11-10
+
+### Added — `shine` primitive + `shine` composition
+
+- **`shine(frame, { html, at?, dur?, angle?, width?, amount?, color?, blend?, fn? })`** —
+  one band of light travelling across wrapped HTML: a linear-gradient
+  band (transparent edges, bright core) on an overlay div with
+  `mix-blend-mode:'screen'` (default), so it reads as light falling
+  across the surface — the classic logo/card shine sweep. `angle`
+  steers the travel direction (0 = left→right, 90 = top→bottom);
+  `width` is the band as a fraction of the travel span (default 0.3);
+  `amount` its peak opacity (default 0.8); `color` the band's colour
+  (default white, hex-parsed so the gradient edges fade to true
+  transparent, not grey); `fn` eases the sweep (cubicInOut default).
+  The band starts and ends fully off-stage, so the first and last
+  frames are clean; outside the window the html passes through
+  untouched; empty html returns ''. The named effect in Remotion's
+  effects system (`shine()`, keyframed — 2026-11-10 sweep).
+  Distinct from `flash` (a full-frame impact flash) and from `fx`
+  (grain + vignette, no travelling highlight).
+- **Composition `shine`** (150 f, silent, house style): dark ink
+  stage, "SHINE" title, coral "SHINE" taking a horizontal sweep at
+  20–50 (amount 0.9) then a diagonal one at 90–120 (amount 0.9,
+  angle 45, nested calls so each window returns the word untouched
+  outside it), "one band of light, two directions" wearing its own
+  top-to-bottom sweep at 60–90 (amount 0.7, angle 90).
+- Site: new `shine` demo card (66 cards; the editorial header
+  line now reads "Sixty-six motions" and the meta line "66 live
+  demos") and Docs row; skill bundle synced (API catalog now
+  98 functions).
+- X sweep 2026-11-10 (rotated social.search queries: GSAP tips /
+  text animation kinetic typography / easing curves / motion
+  graphics techniques + Remotion / isometric animation / spring
+  physics UI animation / Lottie, 75 results, plus an X-targeted
+  web sweep and a GitHub skills sweep; backlog was empty): 2 new
+  backlog candidates — `shine`, implemented this round, and
+  `frost`/`blur` (animated CSS blur / frosted-glass reveal,
+  Remotion `blur()` + Magnific Move's "Focus Reveal", kept for a
+  later round) — the rest of the corpus dedupes (Claude/AI-workflow
+  reels are workflow, not techniques; Codrops' GSAP tips against
+  splitText/maskReveal/stagger or GSAP tooling; LottieFiles'
+  principles/rules against the shipped stagger/morph/parallax/
+  easing set and meshBg; CameraMotionBlur needs pixel-buffer
+  access, outside the HTML-string primitive model; Magnific's
+  Tracking/HUD and Reality Split are footage work; Paper Echo
+  against trail; hand-drawn anticipation/overshoot and gibbon-swing
+  arcs against anticipate/followThrough; the isometric loader and
+  spring onboarding cards as component recipes). Coverage caveat
+  unchanged (social.search does not index X; nothing tonight came
+  from a genuine X post).
+- **Release status — verification, fresh this session.** `npm run
+  check` 70/70 green (69 before + the new shine test; strict
+  typecheck + syntax + unit/parity, incl. the API-catalog guard
+  now covering 98 functions); two consecutive `npm run build` runs
+  leave `git status` unchanged and the three primitives.js copies
+  (src/lib, site/lib, skill/runtime) md5-identical; `shine` MP4
+  rendered (1280×720 @30fps, 150 frames, 5.0 s, 181,392 bytes),
+  ffprobe nb_read_frames=150 = durationInFrames; stills at frames
+  10 / 35 / 75 / 105 / 149 visually inspected — 10 clean, 35
+  vertical band mid-sweep washing the coral letters pale where it
+  passes, 75 horizontal band mid-travel, 105 diagonal band
+  (angle 45), 149 settled, title and code line static throughout;
+  MP4-extracted frames 35 / 105 match the stills;
+  `CHROME_PATH=<shell> npm run package:smoke` passed; site/index.html
+  in the same headless shell shows 66 demo cards, the shine card
+  present with 5 distinct stage states across a 6 s poll and the
+  band actually rendered, 0 console errors. Render gate: the
+  chrome-headless-shell route from v0.66.0 (linux-157.0.8103.38,
+  ~/.cache/puppeteer, not committed) renders end to end, render.js
+  already reads CHROME_PATH, no code was modified to use it.
+
 ## [0.67.0] — 2026-11-09
 
 ### Added — `chroma` primitive + `chroma` composition

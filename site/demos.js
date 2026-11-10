@@ -538,6 +538,16 @@
       },
     },
     {
+      name: 'shine', desc: 'Shine sweep — one band of light travels across the content on an angle, the classic logo shine: the word washes pale as the band crosses it, then comes back.',
+      code: 'M.shine(frame, { html, angle, width, amount })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        const word = '<div style="position:absolute;left:280px;top:157px;transform:translate(-50%,-50%);font:800 46px system-ui;color:#FF6B81;white-space:nowrap;">SHINE</div>';
+        return '<div style="position:absolute;inset:0;background:#26221F;"></div>' +
+          M.shine(lf, { html: word, at: 35, dur: 70, amount: 0.9 });
+      },
+    },
+    {
       name: 'chroma', desc: 'Chromatic aberration — the clean content stays centred while red and cyan channel ghosts drift apart, so the scene reads as shot through a cheap lens; pulse spikes on a beat, sustain holds a permanent grade.',
       code: 'M.chroma(frame, { html, amount, mode, angle })', cycle: 150,
       draw(f) {

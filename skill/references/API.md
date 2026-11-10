@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (97 functions)
+# motion-primitives API — the full catalog (98 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -593,6 +593,14 @@ M.chroma(frame: number, o: { html: string; at?: number; dur?: number; amount?: n
 ```
 
 Chromatic-aberration RGB fringe over wrapped HTML: the clean content stays centred while red and cyan channel ghosts drift apart along `angle` — a smooth, continuous fringe, not a glitch. mode 'pulse' (default) rides a sine envelope over the window; 'sustain' holds a constant offset with a slow breathing wobble. Returns the input HTML untouched outside the window.
+
+### `shine`
+
+```ts
+M.shine(frame: number, o: { html: string; at?: number; dur?: number; angle?: number; width?: number; amount?: number; color?: string; blend?: string; fn?: string }): string
+```
+
+Shine sweep over wrapped HTML: one band of light travels across the content on `angle` (0 = left→right, 90 = top→bottom) — a localized travelling highlight, the classic logo/card shine. `width` is the band as a fraction of the travel span; `amount` its peak opacity; blend defaults to 'screen'. The band starts and ends fully off-stage, so the first and last frames are clean. Returns the input HTML untouched outside the window.
 
 ### `fx`
 

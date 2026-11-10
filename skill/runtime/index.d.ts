@@ -175,6 +175,8 @@ export function morphShape(frame: number, o?: AtOpts & { fn?: string; from?: 'ci
 export function glitch(frame: number, o: { at?: number; dur?: number; html: string; amount?: number; slices?: number; seed?: number; blend?: 'multiply' | 'screen' }): string;
 /** Chromatic-aberration RGB fringe over wrapped HTML: the clean content stays centred while red and cyan channel ghosts drift apart along `angle` — a smooth, continuous fringe, not a glitch. mode 'pulse' (default) rides a sine envelope over the window; 'sustain' holds a constant offset with a slow breathing wobble. Returns the input HTML untouched outside the window. */
 export function chroma(frame: number, o: { html: string; at?: number; dur?: number; amount?: number; mode?: string; angle?: number; blend?: 'multiply' | 'screen'; seed?: number }): string;
+/** Shine sweep over wrapped HTML: one band of light travels across the content on `angle` (0 = left→right, 90 = top→bottom) — a localized travelling highlight, the classic logo/card shine. `width` is the band as a fraction of the travel span; `amount` its peak opacity; blend defaults to 'screen'. The band starts and ends fully off-stage, so the first and last frames are clean. Returns the input HTML untouched outside the window. */
+export function shine(frame: number, o: { html: string; at?: number; dur?: number; angle?: number; width?: number; amount?: number; color?: string; blend?: string; fn?: string }): string;
 /** Where a frame sits in a BPM grid: beat index, phase, decay pulse, bar position. */
 export function beatGrid(frame: number, o: { bpm: number; at?: number; fps?: number; perBar?: number }): { beat: number; index: number; phase: number; pulse: number; bar: number; inBar: number };
 /** The BPM grid as frame numbers — SFX score events and cut points. */
@@ -252,6 +254,7 @@ declare const Motion: {
   morphShape: typeof morphShape;
   glitch: typeof glitch;
   chroma: typeof chroma;
+  shine: typeof shine;
   beatGrid: typeof beatGrid; beatFrames: typeof beatFrames; inertia: typeof inertia; anticipate: typeof anticipate; followThrough: typeof followThrough; velocitySkew: typeof velocitySkew;
   morphPoly: typeof morphPoly;
   splitText: typeof splitText;
