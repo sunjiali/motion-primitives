@@ -72,6 +72,15 @@ All notable changes to motion-primitives are documented here.
   chrome-headless-shell route from v0.66.0 (linux-157.0.8103.38,
   ~/.cache/puppeteer, not committed) renders end to end, render.js
   already reads CHROME_PATH, no code was modified to use it.
+- **Release outcomes — PUSHED 2026-11-10.** Commit 1a681c1 pushed
+  to main; CI run 42833035678 success; Deploy Pages run 42833035732
+  success; live byte-check — site/lib/primitives.js 149,202,
+  site/demos.js 63,169, site/index.html 20,747,
+  site/prompts-data.js 39,383, site/videos/shine.mp4 181,392, all
+  five identical to local; annotated tag v0.68.0 pushed; GitHub
+  Release v0.68.0 created with the CHANGELOG section as notes and
+  motion-skill-v0.68.0.zip attached. Main is v0.68.0; remaining
+  backlog is `frost` / `blur` only.
 
 ## [0.67.0] — 2026-11-09
 
