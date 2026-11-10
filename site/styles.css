@@ -118,6 +118,15 @@ main { max-width: 1180px; margin: 0 auto; padding: 0 24px 40px; }
 .pipe .onpage { margin-top: 12px; font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; color: var(--soft); }
 .pipe .onpage a { font-weight: 700; text-decoration: none; }
 
+/* mid widths: five-across gets cramped (~180px cards), so wrap 3 + 2 on a
+   6-column grid; the third card's arrow turns down to point at the next row */
+@media (min-width: 901px) and (max-width: 1200px) {
+  .pipe { grid-template-columns: repeat(6, 1fr); }
+  .pipe .card { grid-column: span 2; }
+  .pipe .card:nth-child(n+4) { grid-column: span 3; }
+  .pipe .card:nth-child(3)::after { content: "↓"; right: auto; left: 50%; top: auto; bottom: -17px; transform: translateX(-50%); }
+}
+
 /* live demo grid — tighter at wide widths so 59 cards scan as a wall, not a scroll */
 .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
 @media (min-width: 1100px) { .grid { grid-template-columns: repeat(3, 1fr); } }
