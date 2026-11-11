@@ -2,6 +2,75 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.69.0] — 2026-11-11
+
+### Added — `frost` primitive + `frost` composition
+
+- **`frost(frame, { html, at?, dur?, from?, to?, fn? })`** —
+  animated CSS blur over wrapped HTML: the blur radius animates
+  from `from` (default 12 px) to `to` (default 0) on `fn`
+  (cubicOut default — fast clear, gentle settle, right for a
+  reveal), so content clears out of frosted glass; reverse it
+  (from 0 to 12) and the content sinks behind the glass instead.
+  Outside the window the html passes through untouched; empty html
+  returns ''. Remotion's effects system lists `blur()` as a
+  keyframed effect (2026-11-10 sweep), corroborated by Magnific
+  Move's "Focus Reveal" frosted-glass reveal
+  (https://www.instagram.com/p/DfVKp0uiK8P/). Distinct from
+  `whip`'s blur value (a mid-pan streak blur) and from `smear`'s
+  motion blur (ghost copies along a path): frost blurs the content
+  itself, in place.
+- **Composition `frost`** (150 f, silent, house style): dark ink
+  stage, "FROST" title, coral "FROST" opening behind the glass
+  (from 16) and clearing over 0–40, sinking back 80–110 (from 0
+  to 16, linear) and clearing again 110–140 — the sink and the
+  re-clear meet at the same radius at frame 110, so no frame pops
+  (caught on the first still pass: the opening window started at
+  20, so the word sat sharp for 20 frames then jumped to frosted;
+  the film now opens frosted at frame 0) — plus "from frosted
+  glass, into focus" clearing from deeper frost (from 24, linear)
+  over 0–30.
+- Site: new `frost` demo card (67 cards; the editorial header
+  line now reads "Sixty-seven motions" and the meta line "67 live
+  demos") and Docs row; skill bundle synced (API catalog now
+  99 functions).
+- X sweep 2026-11-11 (rotated social.search queries: motion
+  graphics techniques / animation breakdown / spring physics UI
+  animation / isometric animation, 50 results; backlog top item
+  frost/blur built this round): 1 new backlog candidate —
+  `dominoReveal` (domino topple chain reveal — tiles fall one
+  after another with a contact-propagated wave, each rotating
+  ~90° around its base edge — the "Domino Reveal" panel of
+  @matt_penny_applied_ai's "9 Claude Animation styles" reel,
+  https://www.instagram.com/reel/DfX8t_hGfxY/) — the rest of the
+  corpus dedupes (Quentin Belluc's anchor-bottom/offset/Bend-Bulge
+  against pop/fadeUp/stagger; Vox layered backgrounds as
+  composition craft; one-movement-to-patterns and trippy loops
+  against patternField/stagger; @sonduckfilm's top-5 against
+  pixelDissolve/mosaic/drawOn/orbit or tooling; slow-mo UI
+  micro-interactions as component recipes against
+  morphShape/pop/springSheet/drop/squash; gibbon-swing arcs and
+  anticipation breakdowns against followThrough/anticipate/squash;
+  3D-camera parallax and 2.5D wipes against camera/parallax/
+  wipeReveal; Kenson's smear taxonomy against the shipped smear
+  set; LottieFiles' principles against the shipped set; Magnific's
+  "Motion Trends" — Focus Reveal is the frost corroboration, the
+  rest footage/3D/recipes; isometric loader and Figma Motion demos
+  as recipes/tooling; GSAP/Anime/Motion.dev/React-Spring roundups
+  as tooling). Coverage caveat unchanged (social.search does not
+  index X; nothing tonight came from a genuine X post).
+- **Release status — verification, fresh this session.** `npm run
+  check` 71/71 green (70 before + the new frost test; strict
+  typecheck + syntax + unit/parity, incl. the API-catalog guard
+  now covering 99 functions); two consecutive `npm run build` runs
+  leave `git status` unchanged and the three primitives.js copies
+  (src/lib, site/lib, skill/runtime) md5-identical; `frost` MP4
+  rendered locally (150 frames by ffprobe = durationInFrames,
+  1280×720, 30 fps) and its extracted frames 0 / 95 match the
+  verification stills; site checked in headless Chrome (67 cards,
+  frost card animating — blur samples 10.42 → 6.66 → 0.67 across
+  6 s, no filter outside the window — 0 console errors).
+
 ## [0.68.0] — 2026-11-10
 
 ### Added — `shine` primitive + `shine` composition

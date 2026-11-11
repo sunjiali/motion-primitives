@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (98 functions)
+# motion-primitives API — the full catalog (99 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -601,6 +601,14 @@ M.shine(frame: number, o: { html: string; at?: number; dur?: number; angle?: num
 ```
 
 Shine sweep over wrapped HTML: one band of light travels across the content on `angle` (0 = left→right, 90 = top→bottom) — a localized travelling highlight, the classic logo/card shine. `width` is the band as a fraction of the travel span; `amount` its peak opacity; blend defaults to 'screen'. The band starts and ends fully off-stage, so the first and last frames are clean. Returns the input HTML untouched outside the window.
+
+### `frost`
+
+```ts
+M.frost(frame: number, o: { html: string; at?: number; dur?: number; from?: number; to?: number; fn?: string }): string
+```
+
+Frosted-glass blur over wrapped HTML: the blur radius animates from `from` (default 12 px) to `to` (default 0) on `fn` (cubicOut default) — content clears out of frosted glass, or sinks behind it when reversed. Returns the input HTML untouched outside the window.
 
 ### `fx`
 

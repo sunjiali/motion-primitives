@@ -241,6 +241,10 @@ interface ShineOpts {
   html: string; at?: number; dur?: number; angle?: number; width?: number;
   amount?: number; color?: string; blend?: string; fn?: EasingName;
 }
+interface FrostOpts {
+  html: string; at?: number; dur?: number; from?: number; to?: number;
+  fn?: EasingName;
+}
 interface BeatGridOpts { bpm: number; at?: number; fps?: number; perBar?: number }
 interface BeatInfo { beat: number; index: number; phase: number; pulse: number; bar: number; inBar: number }
 interface MorphPolyOpts extends EaseOpts {
@@ -2388,6 +2392,31 @@ __root.Motion = (function () {
       ';pointer-events:none;"></div></div>';
   }
 
+  // Frosted-glass blur over wrapped HTML: the content starts behind
+  // frosted glass and clears (or blurs out) over the window — a CSS
+  // blur radius animated from `from` (default 12 px) to `to`
+  // (default 0) on `fn` (cubicOut default: fast clear, gentle
+  // settle, right for a reveal). Reverse it (from 0 to 12) and the
+  // content sinks behind the glass instead. Outside the window the
+  // html passes through untouched. Distinct from `whip`'s blur value
+  // (a mid-pan streak blur, not a content blur) and from `smear`'s
+  // motion blur (ghost copies along a path): frost blurs the content
+  // itself, in place. From the 2026-11-10 sweep (Remotion's effects
+  // system lists `blur()` as a keyframed effect; corroborated by
+  // Magnific Move's "Focus Reveal" frosted-glass reveal).
+  function frost(frame: number, o: FrostOpts): string {
+    o = o || ({} as FrostOpts);
+    const html = o.html || '';
+    if (!html) return '';
+    const at = o.at || 0, dur = o.dur || 18;
+    if (frame < at || frame >= at + dur) return html;
+    const p = (Easing[o.fn || 'cubicOut'] || Easing.cubicOut)(clamp01((frame - at) / dur));
+    const from = o.from == null ? 12 : o.from;
+    const to = o.to == null ? 0 : o.to;
+    const r = Math.max(0, from + (to - from) * p);
+    return '<div style="position:absolute;inset:0;filter:blur(' + r.toFixed(2) + 'px);">' + html + '</div>';
+  }
+
   // Beat tools — the BPM half of music-synced work. (Named beatGrid,
   // not beat: `beat` is the older anticipation-entrance primitive.)
   // `beatGrid` reports where a frame sits inside the grid: which beat
@@ -2873,7 +2902,7 @@ __root.Motion = (function () {
 
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost,
     beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

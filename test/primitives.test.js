@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'chroma', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet', 'waveText', 'shine'];
+  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'chroma', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet', 'waveText', 'shine', 'frost'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -261,6 +261,31 @@ test('shine: passthrough outside the window, one light band sweeping across, ang
   assert.ok(pink.includes('rgba(255,107,129,1.000)'), 'custom color drives the band');
   assert.ok(pink.includes('mix-blend-mode:overlay'), 'custom blend respected');
   assert.ok(pink.includes('opacity:0.500'), 'custom amount respected');
+});
+
+test('frost: passthrough outside the window, blur radius clears from `from` to `to` on the ease', () => {
+  const o = { at: 10, dur: 20, html: '<b>X</b>' };
+  assert.equal(M.frost(9, o), '<b>X</b>');
+  assert.equal(M.frost(30, o), '<b>X</b>');
+  assert.equal(M.frost(10, { html: '' }), '');
+  const radius = (h) => {
+    const m = h.match(/filter:blur\(([-\d.]+)px\)/);
+    assert.ok(m, 'blur filter present, got: ' + h);
+    return parseFloat(m[1]);
+  };
+  assert.ok(Math.abs(radius(M.frost(10, o)) - 12) < 0.01, 'first frame is fully frosted (from 12)');
+  // p = 0.5, cubicOut(0.5) = 0.875, so 12 * (1 - 0.875) = 1.5
+  assert.ok(Math.abs(radius(M.frost(20, o)) - 1.5) < 0.05, 'mid-window nearly clear on cubicOut');
+  assert.ok(radius(M.frost(29, o)) < 0.05, 'last frame essentially clear');
+  assert.ok(radius(M.frost(15, o)) > radius(M.frost(20, o)) && radius(M.frost(20, o)) > radius(M.frost(25, o)), 'blur clears monotonically');
+  const mid = M.frost(20, o);
+  assert.equal(M.frost(20, o), mid); // determinism
+  const rev = M.frost(20, { ...o, from: 0, to: 12 });
+  assert.ok(Math.abs(radius(rev) - 10.5) < 0.05, 'reversed frost sinks in (0 -> 12)');
+  const lin = M.frost(20, { ...o, fn: 'linear' });
+  assert.ok(Math.abs(radius(lin) - 6) < 0.01, 'custom fn respected (linear mid = 6)');
+  const deep = M.frost(20, { ...o, from: 24 });
+  assert.ok(Math.abs(radius(deep) - 3) < 0.05, 'custom from respected (24 * 0.125)');
 });
 
 test('beat tools: grid math, phase, pulse decay, bars, frame generation', () => {

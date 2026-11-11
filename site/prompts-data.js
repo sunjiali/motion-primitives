@@ -289,6 +289,22 @@ window.PROMPT_GALLERY = [
     notes: '回填条目：成片随 v0.68.0 发布（shine 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（10 帧画面干净 / 35 帧竖直亮带居中、珊瑚字被扫过处变淡 / 75 帧横向亮带居中、扫过处字变淡 / 105 帧对角亮带清晰 / 149 帧落定）通过；成片 mp4 抽帧（35 / 105 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 66 卡、shine 卡在动（6 秒采样 5 个不同画面状态、亮带实际渲染）、0 控制台报错。',
   },
   {
+    id: 'frost',
+    title: 'Frost — Out of the Glass',
+    blurb: 'A big word clears out of frosted glass, sinks back behind it, and clears again, while a second line clears on its own knobs — proving both directions of one primitive.',
+    video: 'videos/frost.mp4',
+    tags: ['fx', 'frost', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.69',
+    prompt:
+`用 motion-primitives 做一条 5 秒的磨砂玻璃展示片，composition 名 frost，核心只用一个新原语 M.frost。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。深墨底 #26221F、奶油字 #FBF6EC、珊瑚字 #FF6B81；画面上方一行大字「FROST」（64px，800 字重）全程静止；中央一行大字「FROST」（120px，800 字重，珊瑚色，居中于 640,330），开场即在磨砂玻璃后（from 16），0–40 帧化开变清晰，80–110 帧再沉回玻璃后（from 0、to 16、fn linear），110–140 帧第二次化开，三段嵌套调用、沉与化在 110 帧以同一模糊半径衔接、不许跳帧；下方一行小字「from frosted glass, into focus」（36px，500 字重，奶油色，居中于 640,500），0–30 帧从更深的磨砂（from 24、fn linear）化开；左下角一行等宽小字「M.frost(frame, { from: 16, to: 0 })」（22px，奶油 55% 透明）全程静止；右上角一颗奶油圆点（#FBF6EC，18px）点缀。
+
+纪律：模糊是内容本身的磨砂、不是镜头虚化——不许相机运动、不许颗粒噪点；窗口外内容原样返回；除标题、两行字、左下角代码行、右上角圆点外不许加别的元素；不许渐变背景、音效。
+`,
+    notes: '回填条目：成片随 v0.69.0 发布（frost 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧双行皆磨砂 / 95 帧主词沉回约 8px、小字清晰 / 125 帧主词二次化开微糊 / 149 帧全片落定清晰）通过；成片 mp4 抽帧（0 / 95 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 67 卡、frost 卡在动（6 秒采样模糊半径 10.42 → 6.66 → 0.67，窗口外无滤镜）、0 控制台报错。',
+  },
+  {
     id: 'chroma',
     title: 'Chroma — The Cheap-Lens Grade',
     blurb: 'A big word takes two RGB-fringe spikes — first horizontal, then vertical — while a second line wears the sustain grade for the whole film, proving both modes of one primitive.',

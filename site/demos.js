@@ -548,6 +548,16 @@
       },
     },
     {
+      name: 'frost', desc: 'Frosted-glass blur — the content starts behind frosted glass and clears into focus, or sinks back behind it when reversed: a blur radius animated from `from` to `to`.',
+      code: 'M.frost(frame, { html, from, to, fn })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        const word = '<div style="position:absolute;left:280px;top:157px;transform:translate(-50%,-50%);font:800 46px system-ui;color:#FF6B81;white-space:nowrap;">FROST</div>';
+        return '<div style="position:absolute;inset:0;background:#26221F;"></div>' +
+          M.frost(lf, { html: word, at: 0, dur: 75, from: 16 });
+      },
+    },
+    {
       name: 'chroma', desc: 'Chromatic aberration — the clean content stays centred while red and cyan channel ghosts drift apart, so the scene reads as shot through a cheap lens; pulse spikes on a beat, sustain holds a permanent grade.',
       code: 'M.chroma(frame, { html, amount, mode, angle })', cycle: 150,
       draw(f) {

@@ -177,6 +177,8 @@ export function glitch(frame: number, o: { at?: number; dur?: number; html: stri
 export function chroma(frame: number, o: { html: string; at?: number; dur?: number; amount?: number; mode?: string; angle?: number; blend?: 'multiply' | 'screen'; seed?: number }): string;
 /** Shine sweep over wrapped HTML: one band of light travels across the content on `angle` (0 = left→right, 90 = top→bottom) — a localized travelling highlight, the classic logo/card shine. `width` is the band as a fraction of the travel span; `amount` its peak opacity; blend defaults to 'screen'. The band starts and ends fully off-stage, so the first and last frames are clean. Returns the input HTML untouched outside the window. */
 export function shine(frame: number, o: { html: string; at?: number; dur?: number; angle?: number; width?: number; amount?: number; color?: string; blend?: string; fn?: string }): string;
+/** Frosted-glass blur over wrapped HTML: the blur radius animates from `from` (default 12 px) to `to` (default 0) on `fn` (cubicOut default) — content clears out of frosted glass, or sinks behind it when reversed. Returns the input HTML untouched outside the window. */
+export function frost(frame: number, o: { html: string; at?: number; dur?: number; from?: number; to?: number; fn?: string }): string;
 /** Where a frame sits in a BPM grid: beat index, phase, decay pulse, bar position. */
 export function beatGrid(frame: number, o: { bpm: number; at?: number; fps?: number; perBar?: number }): { beat: number; index: number; phase: number; pulse: number; bar: number; inBar: number };
 /** The BPM grid as frame numbers — SFX score events and cut points. */
@@ -255,6 +257,7 @@ declare const Motion: {
   glitch: typeof glitch;
   chroma: typeof chroma;
   shine: typeof shine;
+  frost: typeof frost;
   beatGrid: typeof beatGrid; beatFrames: typeof beatFrames; inertia: typeof inertia; anticipate: typeof anticipate; followThrough: typeof followThrough; velocitySkew: typeof velocitySkew;
   morphPoly: typeof morphPoly;
   splitText: typeof splitText;

@@ -6,6 +6,25 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### FX (v0.69)
+- `frost` — animated CSS blur over wrapped HTML: the blur radius
+  animates from `from` (default 12 px) to `to` (default 0) on `fn`
+  (cubicOut default), so content clears out of frosted glass — or
+  sinks behind it when reversed (from 0 to 12). A single
+  `filter:blur()` on a wrapper div; outside the window the html
+  passes through untouched, empty html returns ''. Distinct from
+  `whip`'s blur value (a mid-pan streak blur) and from `smear`'s
+  motion blur (ghost copies along a path): frost blurs the content
+  itself, in place. Composing note: a window that starts with
+  `from` > 0 after a sharp stretch pops (sharp → frosted in one
+  frame), and a sink window's end snaps back to sharp — chain
+  windows so the radii meet (the `frost` composition's sink and
+  re-clear meet at 16 px on frame 110; its opening window starts
+  at frame 0 so the film opens frosted, not sharp-then-frosted).
+  Demo card + `frost` composition (150 f, clear / sink /
+  re-clear + a deeper-frost sub-line) + Prompt Gallery entry.
+  Remaining backlog: `dominoReveal` only.
+
 ### FX (v0.68)
 - `shine` — one band of light travelling across wrapped HTML: a
   linear-gradient band (transparent edges, bright core) on an
@@ -716,12 +735,16 @@ notes in research/x-motion-sweep-log.md.
   vignette, no travelling highlight). Demo card + `shine`
   composition + Prompt Gallery entry. With this, the remaining
   backlog is `frost` / `blur` only.
-- `frost` / `blur` — animated CSS blur over wrapped HTML: content
-  starts behind frosted glass and clears (or blurs out) over the
-  window. Source: Remotion `blur()` in the same reel, corroborated
-  by Magnific Move's "Focus Reveal" frosted-glass reveal
-  (https://www.instagram.com/p/DfVKp0uiK8P/). Distinct from `whip`'s
-  blur value and `smear`'s motion blur.
+- ~~`frost` / `blur`~~ — shipped in v0.69.0 as `frost`: animated
+  CSS blur over wrapped HTML — content starts behind frosted glass
+  and clears (or blurs out) over the window. Source: Remotion
+  `blur()` in the same reel, corroborated by Magnific Move's "Focus
+  Reveal" frosted-glass reveal
+  (https://www.instagram.com/p/DfVKp0uiK8P/); the reel re-appeared
+  in the 2026-11-11 sweep as further corroboration. Distinct from
+  `whip`'s blur value and `smear`'s motion blur. Demo card +
+  `frost` composition + Prompt Gallery entry. With this, the
+  remaining backlog is `dominoReveal` only.
 - Not taken this round: Claude/AI-workflow reels are workflow, not
   techniques; Codrops' GSAP tips dedupe (SplitText masking against
   splitText/maskReveal; stagger direction is a future `stagger`
@@ -735,3 +758,42 @@ notes in research/x-motion-sweep-log.md.
   (53 skills, 16 packs, MIT), GSAP Skills (official — already noted
   2026-10-21), haidrrrry/claude-remotion-skill (already upstream in
   ~/workspace/tools/).
+
+## Backlog — 2026-11-11 sweep (motion graphics techniques / animation breakdown / spring physics UI animation / isometric animation)
+
+Backlog was empty after frost (v0.69.0) apart from this round's fresh
+sweep (social.search rotated queries, 50 results). Sources and dedup
+notes in research/x-motion-sweep-log.md.
+
+- `dominoReveal` — domino topple chain reveal: a row of tiles falls
+  one after another with a contact-propagated wave, each tile
+  rotating ~90° around its base edge and settling, spelling or
+  revealing content as the wave passes. Source: the "Domino Reveal"
+  panel of @matt_penny_applied_ai's "9 Claude Animation styles"
+  reel (https://www.instagram.com/reel/DfX8t_hGfxY/, 2026-11-05),
+  dominos falling to spell 'PHYSICS'. Distinct from `pivot` (a
+  single joint rotation) and from `drop` (a gravity fall): the
+  chained propagation timing is the point.
+- Not taken this round: Quentin Belluc's anchor-bottom rise / offset
+  timing / Bend-Bulge breakdown against pop/fadeUp/stagger; Chris
+  Moran's Vox layered textured backgrounds as composition craft
+  (meshBg/patternField territory); @studio.baseline's
+  one-movement-to-patterns carousel against patternField/stagger/
+  marquee; trippy-loop pattern combining against patternField;
+  @sonduckfilm's top-5 techniques — CC Ball Action dots against
+  pixelDissolve/mosaic, trim-path strokes against drawOn, camera
+  focus-distance DOF blur as a tool feature overlapping the frost
+  build, orbiting rings against orbit; @motion_ui_interface's
+  slow-mo UI micro-interactions (morph-don't-swap, float-don't-
+  vanish, draw-fill-wake, drop-then-bounce, fly-into-bin,
+  follow-then-return) as component recipes against morphShape/pop/
+  springSheet/drop/squash; Aaron Blaise's gibbon-swing arcs and
+  @ema_colombo's anticipation/squash/secondary-action breakdown
+  against followThrough/anticipate/squash; @redxvfx_'s 3D-camera
+  lyric parallax against camera/parallax; the 2.5D wipe against
+  parallax + wipeReveal; Kenson's "Animation Smears" taxonomy
+  against the shipped smear set; LottieFiles' 5 principles against
+  the shipped set; Magnific Move's "Motion Trends" — Focus Reveal
+  is the frost corroboration, the rest footage/3D/recipes; the
+  isometric message-box loader and Figma Motion demos as recipes/
+  tooling; GSAP/Anime/Motion.dev/React-Spring roundups as tooling.
