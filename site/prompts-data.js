@@ -305,6 +305,22 @@ window.PROMPT_GALLERY = [
     notes: '回填条目：成片随 v0.69.0 发布（frost 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧双行皆磨砂 / 95 帧主词沉回约 8px、小字清晰 / 125 帧主词二次化开微糊 / 149 帧全片落定清晰）通过；成片 mp4 抽帧（0 / 95 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 67 卡、frost 卡在动（6 秒采样模糊半径 10.42 → 6.66 → 0.67，窗口外无滤镜）、0 控制台报错。',
   },
   {
+    id: 'domino',
+    title: 'Domino — One Falls, the Next Follows',
+    blurb: 'A row of cream tiles stands across the hero word and topples left to right, uncovering DOMINO as the wave passes, while a second reversed wave in coral reveals the sub-line — proving the chain timing and the band geometry of one primitive.',
+    video: 'videos/domino.mp4',
+    tags: ['reveal', 'domino', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.70',
+    prompt:
+`用 motion-primitives 做一条 5 秒的多米诺揭示展示片，composition 名 domino，核心只用一个新原语 M.dominoReveal。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。深墨底 #26221F、奶油字 #FBF6EC、珊瑚字 #FF6B81；画面上方一行大字「DOMINO」（64px，800 字重）全程静止；中央一行大字「DOMINO」（120px，800 字重，珊瑚色，居中于 640,330），10–70 帧被一排 12 块奶油色骨牌揭示（count 12、fall 12、fade 10，骨牌带 x 0、y 240、w 1280、h 180，只盖住这一行字）；下方一行小字「one falls, the next follows」（36px，500 字重，奶油色，居中于 640,500），85–130 帧被一排 10 块珊瑚色骨牌从右向左揭示（dir left、count 10、fall 10、fade 8，骨牌带 x 0、y 460、w 1280、h 80）；左下角一行等宽小字「M.dominoReveal(frame, { count: 12, fall: 12 })」（22px，奶油 55% 透明）全程静止；右上角一颗奶油圆点（#FBF6EC，18px）点缀。
+
+纪律：骨牌是站立的色块、不是描边框——倒下时绕底边旋转约 90°、落定后淡出，不许残留色块盖住文字；两排骨牌只盖各自的字行，标题与代码行全程干净；除标题、两行字、左下角代码行、右上角圆点外不许加别的元素；不许渐变背景、相机运动、音效。
+`,
+    notes: '回填条目：成片随 v0.70.0 发布（dominoReveal 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧两排骨牌站立、标题干净 / 30 帧主词波前斜切、已倒骨牌叠成淡灰色堆 / 70 帧主词全露、小字行珊瑚带站立 / 110 帧小字行自右向左揭示中 / 149 帧全片落定）通过；成片 mp4 抽帧（30 / 110 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 68 卡、dominoReveal 卡在动、0 控制台报错。',
+  },
+  {
     id: 'chroma',
     title: 'Chroma — The Cheap-Lens Grade',
     blurb: 'A big word takes two RGB-fringe spikes — first horizontal, then vertical — while a second line wears the sustain grade for the whole film, proving both modes of one primitive.',

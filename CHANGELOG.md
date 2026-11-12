@@ -2,6 +2,55 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.70.0] — 2026-11-12
+
+### Added — `dominoReveal` primitive + `domino` composition
+
+- **`dominoReveal(frame, { html, at?, dur?, count?, fall?, fade?, angle?, dir?, color?, gap?, fn?, x?, y?, w?, h? })`** —
+  domino topple-chain reveal: a row of standing tiles covers the
+  content and falls one after another, each tile rotating ~90°
+  around its base edge on a gravity ease (`quadIn` default — the
+  fall accelerates like a real domino), then fading out once flat,
+  so the wave uncovers the content as it passes. The chain is
+  contact-propagated: tile i starts `step` frames after tile i-1,
+  where step is derived so the last tile lands and fades exactly
+  at `at + dur`. Before `at` the tiles stand (content hidden);
+  after `at + dur` the html passes through untouched. `x/y/w/h`
+  confines the tiles to a band (e.g. one line of type) while the
+  wrapped html keeps its stage coordinates; without them the tiles
+  cover the whole stage. The "Domino Reveal" panel of
+  @matt_penny_applied_ai's "9 Claude Animation styles" reel
+  (https://www.instagram.com/reel/DfX8t_hGfxY/, 2026-11-05),
+  dominos falling to spell 'PHYSICS'. Distinct from `pivot` (a
+  single joint rotation) and from `drop` (a gravity fall): the
+  chained propagation timing is the point. Design note: the first
+  cut positioned the tiles by wrapping the whole stage in a band
+  div, which would have shifted the wrapped html's coordinates —
+  caught in review before rendering; the tiles now position
+  themselves inside a full-stage wrapper, so callers keep stage
+  coordinates.
+- **Composition `domino`** (150 f, silent, house style): dark ink
+  stage, "DOMINO" title, coral "DOMINO" revealed 10–70 by twelve
+  cream tiles (count 12, fall 12, fade 10, band y 240 h 180) and
+  "one falls, the next follows" revealed 85–130 by ten coral tiles
+  from the right (dir 'left', count 10, band y 460 h 80) — the
+  second wave proves the direction knob and the band geometry.
+- Site: new `dominoReveal` demo card (68 cards; the editorial header
+  line now reads "Sixty-eight motions" and the meta line "68 live
+  demos") and Docs row; skill bundle synced (API catalog now
+  100 functions).
+- X sweep 2026-11-12 (rotated social.search queries: GSAP tips /
+  text animation kinetic typography / easing curves + Remotion /
+  spring physics UI animation / Lottie, 100 results across 2
+  calls): 0 new candidates — GSAP basics restate the shipped
+  pop/stagger/splitText set; Claude+Remotion workflow reels are
+  workflow, not techniques; Codrops' GSAP tips, Webflow's pixelated
+  transition, LottieFiles' 5 principles / gradient rules / State
+  Machines, the stroke-gradient airplane path, and the FlipaClip
+  "liquid appear" logo all dedupe against shipped primitives
+  (details in research/x-motion-sweep-log.md). Backlog top item
+  dominoReveal built this round; the backlog is empty again.
+
 ## [0.69.0] — 2026-11-11
 
 ### Added — `frost` primitive + `frost` composition

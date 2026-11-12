@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'chroma', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet', 'waveText', 'shine', 'frost'];
+  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'chroma', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet', 'waveText', 'shine', 'frost', 'dominoReveal'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -286,6 +286,48 @@ test('frost: passthrough outside the window, blur radius clears from `from` to `
   assert.ok(Math.abs(radius(lin) - 6) < 0.01, 'custom fn respected (linear mid = 6)');
   const deep = M.frost(20, { ...o, from: 24 });
   assert.ok(Math.abs(radius(deep) - 3) < 0.05, 'custom from respected (24 * 0.125)');
+});
+
+test('dominoReveal: tiles stand before at, topple in a propagated wave, fade flat, passthrough after dur', () => {
+  // count 4, dur 30, fall 10, fade 8 -> step = (30-10-8)/3 = 4
+  const o = { at: 10, dur: 30, count: 4, html: '<b>X</b>' };
+  assert.equal(M.dominoReveal(40, o), '<b>X</b>'); // past the window: passthrough
+  assert.equal(M.dominoReveal(10, { html: '' }), '');
+  const tiles = (h) => {
+    const ms = [...h.matchAll(/transform:rotate\(([-\d.]+)deg\);opacity:([\d.]+)/g)];
+    assert.equal(ms.length, 4, 'four tiles, got: ' + h);
+    return ms.map((m) => ({ deg: parseFloat(m[1]), op: parseFloat(m[2]) }));
+  };
+  const before = tiles(M.dominoReveal(9, o));
+  assert.ok(before.every((t) => t.deg === 0 && t.op === 1), 'all tiles standing before at');
+  const mid = tiles(M.dominoReveal(20, o));
+  // tile 0 started at 10, 10 frames in: fully fallen (quadIn(1) = 1 -> 90°)
+  assert.ok(Math.abs(mid[0].deg - 90) < 0.01, 'first tile flat by frame 20');
+  // tile 1 started at 14, 6/10 through the fall: quadIn(0.6) = 0.36 -> 32.4°
+  assert.ok(Math.abs(mid[1].deg - 32.4) < 0.05, 'second tile mid-fall on the gravity ease');
+  // tile 2 started at 18, 2/10 in: quadIn(0.2) = 0.04 -> 3.6°
+  assert.ok(Math.abs(mid[2].deg - 3.6) < 0.05, 'third tile barely started');
+  assert.equal(mid[3].deg, 0, 'last tile still standing');
+  assert.ok(mid[0].deg > mid[1].deg && mid[1].deg > mid[2].deg, 'wave propagates in order');
+  const late = tiles(M.dominoReveal(29, o));
+  // tile 0 landed at 20, 9 frames into its 8-frame fade: opacity 0
+  assert.equal(late[0].op, 0, 'fallen tile faded out');
+  // tile 1 landed at 24, 5/8 through its fade: opacity 0.375; tile 2 just landed (1/8): 0.875
+  assert.ok(Math.abs(late[1].op - 0.375) < 0.01, 'second tile mid-fade');
+  assert.ok(Math.abs(late[2].op - 0.875) < 0.01, 'third tile just landed, barely faded');
+  assert.equal(late[3].op, 1, 'last tile still falling, full opacity');
+  const left = tiles(M.dominoReveal(20, { ...o, dir: 'left' }));
+  assert.ok(Math.abs(left[3].deg + 90) < 0.01, 'left wave: last tile falls first, negative angle');
+  assert.equal(left[0].deg, 0, 'left wave: first tile still standing');
+  const stay = tiles(M.dominoReveal(29, { ...o, fade: 0 }));
+  assert.ok(stay.every((t) => t.op === 1), 'fade 0 keeps fallen tiles lying');
+  const band = M.dominoReveal(15, { ...o, x: 10, y: 20, w: 400, h: 100 });
+  assert.ok(band.includes('left:10.0px;top:20px;width:100.0px;height:100px;'), 'band geometry respected (first tile)');
+  assert.ok(band.includes('left:310.0px;'), 'band tiles span x..x+w');
+  const full = M.dominoReveal(15, o);
+  assert.ok(full.includes('top:0;') && full.includes('height:100%;'), 'no band: tiles cover the full stage');
+  assert.ok(full.includes('inset:0;overflow:hidden;'), 'wrapper stays full-stage so html keeps its coordinates');
+  assert.equal(M.dominoReveal(20, o), M.dominoReveal(20, o)); // determinism
 });
 
 test('beat tools: grid math, phase, pulse decay, bars, frame generation', () => {

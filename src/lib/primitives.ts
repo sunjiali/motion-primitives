@@ -245,6 +245,11 @@ interface FrostOpts {
   html: string; at?: number; dur?: number; from?: number; to?: number;
   fn?: EasingName;
 }
+interface DominoRevealOpts {
+  html: string; at?: number; dur?: number; count?: number; fall?: number;
+  fade?: number; angle?: number; dir?: 'left' | 'right'; color?: string;
+  gap?: number; fn?: EasingName; x?: number; y?: number; w?: number; h?: number;
+}
 interface BeatGridOpts { bpm: number; at?: number; fps?: number; perBar?: number }
 interface BeatInfo { beat: number; index: number; phase: number; pulse: number; bar: number; inBar: number }
 interface MorphPolyOpts extends EaseOpts {
@@ -2417,6 +2422,66 @@ __root.Motion = (function () {
     return '<div style="position:absolute;inset:0;filter:blur(' + r.toFixed(2) + 'px);">' + html + '</div>';
   }
 
+  // Domino topple-chain reveal: a row of standing tiles covers the
+  // content and falls one after another, each tile rotating ~90°
+  // around its base edge on a gravity ease (quadIn default: the fall
+  // accelerates like a real domino), then fading out once flat — so
+  // the wave uncovers the content as it passes. The chain is
+  // contact-propagated: tile i starts `step` frames after tile i-1,
+  // where step is derived so the last tile lands and fades exactly
+  // at `at + dur` (keep dur >= fall + fade, or the last tile's fade
+  // is cut at the window end). Before `at` the tiles stand (content
+  // hidden); after `at + dur` the html passes through untouched.
+  // `x/y/w/h` confines the tiles to a band (e.g. one line of type,
+  // while the wrapped html keeps its stage coordinates); without
+  // them the tiles cover the whole stage. Distinct from `pivot` (a
+  // single joint rotation) and from `drop` (a gravity fall): the
+  // chained propagation timing is the point. From the 2026-11-11
+  // sweep (the "Domino Reveal" panel of @matt_penny_applied_ai's
+  // "9 Claude Animation styles" reel, dominos falling to spell
+  // 'PHYSICS').
+  function dominoReveal(frame: number, o: DominoRevealOpts): string {
+    o = o || ({} as DominoRevealOpts);
+    const html = o.html || '';
+    if (!html) return '';
+    const at = o.at || 0, dur = o.dur || 30;
+    if (frame >= at + dur) return html;
+    const count = Math.max(1, Math.round(o.count == null ? 8 : o.count));
+    const fall = Math.max(1, o.fall == null ? 10 : o.fall);
+    const fade = Math.max(0, o.fade == null ? 8 : o.fade);
+    const angle = o.angle == null ? 90 : o.angle;
+    const left = o.dir === 'left';
+    const step = Math.max(0, (dur - fall - fade) / Math.max(1, count - 1));
+    const ease = Easing[o.fn || 'quadIn'] || Easing.quadIn;
+    const color = o.color || '#26221F';
+    const gap = Math.max(0, o.gap || 0);
+    const banded = o.w != null && o.h != null;
+    const tileTop = banded ? (o.y || 0) + 'px' : '0';
+    const tileH = banded ? o.h + 'px' : '100%';
+    const pct = 100 / count;
+    let tiles = '';
+    for (let i = 0; i < count; i++) {
+      const start = at + (left ? count - 1 - i : i) * step;
+      const p = ease(clamp01((frame - start) / fall));
+      const deg = (left ? -angle : angle) * p;
+      const landed = frame - start - fall;
+      const op = fade > 0 && landed > 0 ? 1 - clamp01(landed / fade) : 1;
+      const z = left ? i + 1 : count - i;
+      const leftStr = banded
+        ? ((o.x || 0) + i * (o.w as number) / count).toFixed(1) + 'px'
+        : (i * pct).toFixed(3) + '%';
+      const w = banded
+        ? ((o.w as number) / count - gap).toFixed(1) + 'px'
+        : gap > 0 ? 'calc(' + pct.toFixed(3) + '% - ' + gap + 'px)' : pct.toFixed(3) + '%';
+      tiles += '<div style="position:absolute;left:' + leftStr + ';top:' + tileTop + ';width:' + w +
+        ';height:' + tileH + ';background:' + color +
+        ';transform-origin:' + (left ? '0% 100%' : '100% 100%') +
+        ';transform:rotate(' + deg.toFixed(2) + 'deg);opacity:' + op.toFixed(3) +
+        ';z-index:' + z + ';"></div>';
+    }
+    return '<div style="position:absolute;inset:0;overflow:hidden;">' + html + tiles + '</div>';
+  }
+
   // Beat tools — the BPM half of music-synced work. (Named beatGrid,
   // not beat: `beat` is the older anticipation-entrance primitive.)
   // `beatGrid` reports where a frame sits inside the grid: which beat
@@ -2902,7 +2967,7 @@ __root.Motion = (function () {
 
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost, dominoReveal,
     beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

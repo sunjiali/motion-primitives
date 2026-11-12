@@ -6,6 +6,25 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Reveal (v0.70)
+- `dominoReveal` — domino topple-chain reveal: a row of standing
+  tiles covers the content and falls one after another, each tile
+  rotating ~90° around its base edge on a gravity ease (quadIn
+  default) and fading out once flat, so the wave uncovers the
+  content as it passes; the chain is contact-propagated (tile i
+  starts `step` frames after tile i-1, step derived so the last
+  tile lands and fades exactly at `at + dur`). `dir:'left'`
+  reverses the wave; `x/y/w/h` confines the tiles to a band while
+  the wrapped html keeps its stage coordinates. The "Domino
+  Reveal" panel of @matt_penny_applied_ai's "9 Claude Animation
+  styles" reel (https://www.instagram.com/reel/DfX8t_hGfxY/),
+  dominos falling to spell 'PHYSICS'. Distinct from `pivot` (a
+  single joint rotation) and from `drop` (a gravity fall): the
+  chained propagation timing is the point. Demo card + `domino`
+  composition (150 f, cream wave on the hero word + reversed
+  coral wave on the sub-line) + Prompt Gallery entry. With this,
+  the backlog is empty again.
+
 ### FX (v0.69)
 - `frost` — animated CSS blur over wrapped HTML: the blur radius
   animates from `from` (default 12 px) to `to` (default 0) on `fn`
@@ -23,7 +42,8 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
   at frame 0 so the film opens frosted, not sharp-then-frosted).
   Demo card + `frost` composition (150 f, clear / sink /
   re-clear + a deeper-frost sub-line) + Prompt Gallery entry.
-  Remaining backlog: `dominoReveal` only.
+  Remaining backlog at the time: `dominoReveal` only (shipped
+  in v0.70.0).
 
 ### FX (v0.68)
 - `shine` — one band of light travelling across wrapped HTML: a
@@ -765,15 +785,9 @@ Backlog was empty after frost (v0.69.0) apart from this round's fresh
 sweep (social.search rotated queries, 50 results). Sources and dedup
 notes in research/x-motion-sweep-log.md.
 
-- `dominoReveal` — domino topple chain reveal: a row of tiles falls
-  one after another with a contact-propagated wave, each tile
-  rotating ~90° around its base edge and settling, spelling or
-  revealing content as the wave passes. Source: the "Domino Reveal"
-  panel of @matt_penny_applied_ai's "9 Claude Animation styles"
-  reel (https://www.instagram.com/reel/DfX8t_hGfxY/, 2026-11-05),
-  dominos falling to spell 'PHYSICS'. Distinct from `pivot` (a
-  single joint rotation) and from `drop` (a gravity fall): the
-  chained propagation timing is the point.
+- ~~`dominoReveal`~~ — shipped in v0.70.0: domino topple-chain
+  reveal (see Implemented above). With this, the backlog is empty
+  again.
 - Not taken this round: Quentin Belluc's anchor-bottom rise / offset
   timing / Bend-Bulge breakdown against pop/fadeUp/stagger; Chris
   Moran's Vox layered textured backgrounds as composition craft
