@@ -2263,6 +2263,78 @@ __root.Motion = (function () {
         }
         return '<div style="position:absolute;inset:0;overflow:hidden;">' + html + tiles + '</div>';
     }
+    // Iris reveal: the wrapped content is clipped to a circle centred
+    // at (x, y) whose radius animates 0 → the farthest stage corner,
+    // so the scene arrives through an opening camera iris. `mode`
+    // picks the direction of travel: 'open' (default) reveals,
+    // 'close' sinks the content into a dot and vanishes it, 'blink'
+    // closes, holds as a dot for `hold` frames, then reopens — the
+    // cartoon "that's all folks" beat. `feather` softens the rim: 0
+    // uses a hard clip-path circle, > 0 a mask radial-gradient with a
+    // `feather`-px falloff band. The radius is eased on `fn` (cubicOut
+    // opening, cubicIn closing, cubicInOut for the blink halves unless
+    // overridden). Before `at` an opening iris shows nothing and a
+    // closing/blinking one shows the content untouched; after `at + dur`
+    // the open iris passes the html through and the close iris returns
+    // ''. Distinct from `portalWipe` (a two-scene transition: an opaque
+    // disc blooms, swallows the outgoing scene, holds, then contracts
+    // to reveal the scene drawn underneath) and from `wipeReveal` /
+    // `maskReveal` (linear / flat covers, no aperture). From the
+    // 2026-11-13 sweep (Remotion @remotion/transitions `iris()`,
+    // corroborated by Motion.dev curtains `iris()` and Remocn's
+    // `iris-wipe`).
+    function iris(frame, o) {
+        o = o || {};
+        const html = o.html || '';
+        if (!html)
+            return '';
+        const at = o.at || 0, dur = Math.max(1, o.dur || 30);
+        const mode = o.mode || 'open';
+        const w = o.w || 1280, h = o.h || 720;
+        const x = o.x == null ? w / 2 : o.x, y = o.y == null ? h / 2 : o.y;
+        if (frame < at)
+            return mode === 'open' ? '' : html;
+        if (frame >= at + dur)
+            return mode === 'close' ? '' : html;
+        // Farthest-corner radius: the circle must cover the whole stage
+        // whichever corner the origin sits nearest.
+        const maxR = Math.hypot(Math.max(x, w - x), Math.max(y, h - y)) * 1.02;
+        const defaultFn = mode === 'close' ? 'cubicIn' : mode === 'blink' ? 'cubicInOut' : 'cubicOut';
+        const ease = Easing[o.fn || defaultFn] || Easing.cubicOut;
+        let r;
+        if (mode === 'blink') {
+            const hold = Math.max(0, Math.min(o.hold == null ? Math.round(dur * 0.2) : o.hold, dur - 2));
+            const half = (dur - hold) / 2;
+            const t = frame - at;
+            const dot = Math.max(0, o.dot == null ? 8 : o.dot);
+            if (t < half)
+                r = maxR * (1 - ease(clamp01(t / half)));
+            else if (t < half + hold)
+                r = dot;
+            else
+                r = maxR * ease(clamp01((t - half - hold) / half));
+        }
+        else if (mode === 'close') {
+            r = maxR * (1 - ease(clamp01((frame - at) / dur)));
+        }
+        else {
+            r = maxR * ease(clamp01((frame - at) / dur));
+        }
+        if (r <= 0)
+            return '';
+        const feather = Math.max(0, o.feather || 0);
+        const cx = x.toFixed(1), cy = y.toFixed(1), rr = r.toFixed(1);
+        let clip;
+        if (feather <= 0) {
+            clip = 'clip-path:circle(' + rr + 'px at ' + cx + 'px ' + cy + 'px);';
+        }
+        else {
+            const inner = Math.max(0, r - feather).toFixed(1);
+            const g = 'radial-gradient(circle ' + rr + 'px at ' + cx + 'px ' + cy + 'px,#000 0,#000 ' + inner + 'px,transparent ' + rr + 'px)';
+            clip = '-webkit-mask-image:' + g + ';mask-image:' + g + ';';
+        }
+        return '<div style="position:absolute;inset:0;' + clip + '">' + html + '</div>';
+    }
     // Beat tools — the BPM half of music-synced work. (Named beatGrid,
     // not beat: `beat` is the older anticipation-entrance primitive.)
     // `beatGrid` reports where a frame sits inside the grid: which beat
@@ -2741,7 +2813,7 @@ __root.Motion = (function () {
     }
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost, dominoReveal,
+        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost, dominoReveal, iris,
         beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

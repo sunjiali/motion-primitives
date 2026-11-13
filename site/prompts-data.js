@@ -321,6 +321,22 @@ window.PROMPT_GALLERY = [
     notes: '回填条目：成片随 v0.70.0 发布（dominoReveal 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧两排骨牌站立、标题干净 / 30 帧主词波前斜切、已倒骨牌叠成淡灰色堆 / 70 帧主词全露、小字行珊瑚带站立 / 110 帧小字行自右向左揭示中 / 149 帧全片落定）通过；成片 mp4 抽帧（30 / 110 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 68 卡、dominoReveal 卡在动、0 控制台报错。',
   },
   {
+    id: 'iris',
+    title: 'Iris — A Circle Opens, the Scene Arrives',
+    blurb: 'The hero word arrives through a camera iris opening from the stage centre, the sub-line through a second iris opening from the bottom-left corner, and the whole stage irises out to a dot — proving the aperture, origin and feather knobs of one primitive.',
+    video: 'videos/iris.mp4',
+    tags: ['reveal', 'iris', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.71',
+    prompt:
+`用 motion-primitives 做一条 5 秒的圆形光圈揭示展示片，composition 名 iris，核心只用一个新原语 M.iris。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。深墨底 #26221F、奶油字 #FBF6EC、珊瑚字 #FF6B81；画面上方一行大字「IRIS」（64px，800 字重）全程静止；中央一行大字「IRIS」（120px，800 字重，珊瑚色，居中于 640,330），10–60 帧被一个从画面中心张开的光圈揭示（feather 24，边缘柔化）；下方一行小字「a circle opens, the scene arrives」（36px，500 字重，奶油色，居中于 640,500），75–120 帧被第二个光圈从左下角揭示（圆心 x 140、y 640，feather 16）；左下角一行等宽小字「M.iris(frame, { mode: 'open', feather: 24 })」（22px，奶油 55% 透明）全程静止；右上角一颗奶油圆点（#FBF6EC，18px）点缀；110–150 帧整个画面以 mode close 向中心收成一个点（feather 12），经典电影 iris-out 收尾。
+
+纪律：光圈是内容本身的圆形裁剪、不是不透明圆盘盖住画面——揭示时画面从圆心向外出现、收尾时向圆心收拢；两个揭示窗口的圆心不同，要读出是两次独立开合；除标题、两行字、左下角代码行、右上角圆点外不许加别的元素；不许渐变背景、相机运动、颗粒噪点、音效。
+`,
+    notes: '回填条目：成片随 v0.71.0 发布（iris 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧只有标题、主词未出 / 35 帧主词已开 / 60 帧主词全露、小字未出 / 95 帧小字自左下角揭示中 / 130 帧收尾光圈已裁掉四角、代码行左端被裁 / 149 帧只剩中心一点带柔边的主词残影）通过；成片 mp4 抽帧（35 / 130 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 69 卡、iris 卡在动（实测遮罩半径 283.5px、羽化带 271.5–283.5px；无头 shell 下 rAF 只在 BeginFrame 前进，连续截图可能重复，改以截图哈希变化确认卡片在动）、0 控制台报错。',
+  },
+  {
     id: 'chroma',
     title: 'Chroma — The Cheap-Lens Grade',
     blurb: 'A big word takes two RGB-fringe spikes — first horizontal, then vertical — while a second line wears the sustain grade for the whole film, proving both modes of one primitive.',

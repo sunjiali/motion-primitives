@@ -330,6 +330,55 @@ test('dominoReveal: tiles stand before at, topple in a propagated wave, fade fla
   assert.equal(M.dominoReveal(20, o), M.dominoReveal(20, o)); // determinism
 });
 
+test('iris: circular-aperture reveal — open grows, close shrinks, blink holds a dot, feather softens the rim', () => {
+  const o = { at: 10, dur: 30, html: '<b>X</b>' };
+  const radius = (h) => {
+    const m = h.match(/circle\(([\d.]+)px at ([\d.]+)px ([\d.]+)px\)/);
+    assert.ok(m, 'clip circle present, got: ' + h);
+    return { r: parseFloat(m[1]), x: parseFloat(m[2]), y: parseFloat(m[3]) };
+  };
+  // open: hidden before at, passthrough after the window
+  assert.equal(M.iris(9, o), '');
+  assert.equal(M.iris(40, o), '<b>X</b>');
+  assert.equal(M.iris(10, { html: '' }), '');
+  // maxR for the 1280x720 default stage from centre: hypot(640,360)*1.02
+  const maxR = Math.hypot(640, 360) * 1.02;
+  const mid = radius(M.iris(25, { ...o, fn: 'linear' }));
+  assert.ok(Math.abs(mid.r - maxR / 2) < 0.05, 'linear mid = half the farthest-corner radius');
+  assert.deepEqual([mid.x, mid.y], [640, 360]);
+  const late = radius(M.iris(39, { ...o, fn: 'linear' }));
+  assert.ok(Math.abs(late.r - maxR * (29 / 30)) < 0.05, 'radius still growing at the window end');
+  // custom fn respected: cubicOut(0.5) = 0.875
+  const eased = radius(M.iris(25, o));
+  assert.ok(Math.abs(eased.r - maxR * 0.875) < 0.05, 'default cubicOut ease on the open');
+  // custom origin: corner origin reaches the opposite corner
+  const corner = radius(M.iris(25, { ...o, fn: 'linear', x: 0, y: 0 }));
+  assert.ok(Math.abs(corner.r - (Math.hypot(1280, 720) * 1.02) / 2) < 0.05, 'corner origin uses the farthest corner');
+  assert.deepEqual([corner.x, corner.y], [0, 0]);
+  // close: content before, gone after, radius shrinking mid-window
+  assert.equal(M.iris(9, { ...o, mode: 'close' }), '<b>X</b>');
+  assert.equal(M.iris(40, { ...o, mode: 'close' }), '');
+  const closing = radius(M.iris(25, { ...o, mode: 'close', fn: 'linear' }));
+  assert.ok(Math.abs(closing.r - maxR / 2) < 0.05, 'close mid = half radius');
+  // blink: closes to a dot, holds, reopens — content visible before and after
+  const blink = { at: 10, dur: 40, hold: 8, html: '<b>X</b>' };
+  assert.equal(M.iris(9, { ...blink, mode: 'blink' }), '<b>X</b>');
+  assert.equal(M.iris(50, { ...blink, mode: 'blink' }), '<b>X</b>');
+  const held = radius(M.iris(30, { ...blink, mode: 'blink' }));
+  assert.ok(Math.abs(held.r - 8) < 0.05, 'blink holds at the dot radius (default 8)');
+  const reopened = radius(M.iris(42, { ...blink, mode: 'blink' }));
+  assert.ok(Math.abs(reopened.r - maxR * 0.5) < 0.05, 'blink reopens on cubicInOut(0.5)');
+  // feather: soft rim via mask gradient (inner stop = r - feather), hard clip otherwise
+  const soft = M.iris(25, { ...o, fn: 'linear', feather: 20 });
+  const g = soft.match(/mask-image:radial-gradient\(circle ([\d.]+)px at [\d.]+px [\d.]+px,#000 0,#000 ([\d.]+)px,transparent ([\d.]+)px\)/);
+  assert.ok(g, 'feathered iris carries a mask gradient, got: ' + soft);
+  assert.ok(Math.abs(parseFloat(g[1]) - maxR / 2) < 0.05, 'gradient outer stop = radius');
+  assert.ok(Math.abs(parseFloat(g[2]) - (maxR / 2 - 20)) < 0.05, 'gradient inner stop = radius - feather');
+  assert.ok(!soft.includes('clip-path'), 'feathered iris uses a mask, not clip-path');
+  assert.ok(M.iris(25, o).includes('clip-path:circle('), 'feather 0 uses a hard clip-path');
+  assert.equal(M.iris(25, o), M.iris(25, o)); // determinism
+});
+
 test('beat tools: grid math, phase, pulse decay, bars, frame generation', () => {
   const o = { bpm: 120, fps: 30 }; // 15 frames per beat
   const b0 = M.beatGrid(0, o);

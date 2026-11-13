@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (100 functions)
+# motion-primitives API — the full catalog (101 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -633,6 +633,14 @@ M.dominoReveal(frame: number, o: { html: string; at?: number; dur?: number; coun
 ```
 
 Domino topple-chain reveal: a row of standing tiles covers the content and falls one after another — each tile rotates ~90° around its base edge on a gravity ease, then fades out once flat — so the wave uncovers the content as it passes. `count` tiles (default 8), `fall` frames per tile (default 10), `fade` frames to clear a fallen tile (default 8); `dir` picks the wave direction; `x/y/w/h` confines the tiles to a band, otherwise they cover the whole stage. Before `at` the tiles stand (content hidden); after `at + dur` the input HTML passes through untouched.
+
+### `iris`
+
+```ts
+M.iris(frame: number, o: { html: string; at?: number; dur?: number; x?: number; y?: number; w?: number; h?: number; mode?: 'open' | 'close' | 'blink'; hold?: number; dot?: number; feather?: number; fn?: string }): string
+```
+
+Circular-aperture (iris) reveal: the wrapped content is clipped to a circle centred at (`x`, `y`) whose radius animates 0 → the farthest stage corner, so the scene arrives through an opening camera iris. `mode:'close'` runs it backwards (the content sinks into a dot and vanishes); `mode:'blink'` closes, holds as a dot for `hold` frames, then reopens. `feather` softens the rim (a mask gradient instead of a hard clip-path). Before `at` an opening iris shows nothing; after `at + dur` it passes the input HTML through untouched.
 
 ### `spotlight`
 

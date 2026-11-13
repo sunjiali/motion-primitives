@@ -2,6 +2,72 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.71.0] — 2026-11-13
+
+### Added — `iris` primitive + `iris` composition
+
+- **`iris(frame, { html, at?, dur?, x?, y?, w?, h?, mode?, hold?, dot?, feather?, fn? })`** —
+  circular-aperture reveal: the wrapped content is clipped to a
+  circle centred at (`x`, `y`) whose radius animates 0 → the
+  farthest stage corner, so the scene arrives through an opening
+  camera iris. `mode:'open'` (default) reveals; `mode:'close'` runs
+  it backwards — the content sinks into a dot and vanishes;
+  `mode:'blink'` closes, holds as a dot for `hold` frames (default
+  20% of `dur`, dot radius `dot` default 8 px), then reopens — the
+  cartoon "that's all folks" beat. `feather` softens the rim: 0
+  uses a hard `clip-path: circle()`, > 0 a mask radial-gradient
+  with a `feather`-px falloff band. The radius eases on `fn`
+  (cubicOut opening, cubicIn closing, cubicInOut for the blink
+  halves unless overridden). Before `at` an opening iris shows
+  nothing and a closing/blinking one shows the content untouched;
+  after `at + dur` the open iris passes the html through and the
+  close iris returns ''. Remotion @remotion/transitions `iris()`
+  ("reveal the scene through a circular mask from center",
+  https://www.remotion.dev/docs/transitions/presentations/iris),
+  corroborated by Motion.dev curtains `iris()` ("a circle that
+  expands from a point to cover, then contracts to reveal",
+  origin-configurable, https://motion.dev/docs/curtains), Remocn's
+  `iris-wipe` ("a cartoon iris closes on the subject, holds as a
+  dot, then reopens", 36 f, https://remocn.dev/docs/transitions),
+  and Motion Fab's chain-reaction showreel ("an iris opens on my
+  brand's end card",
+  https://www.motionfab.app/en/prompts/motion-design-chain-reaction-showreel).
+  Distinct from `portalWipe` (a two-scene transition: an opaque
+  disc blooms, swallows the outgoing scene, holds, then contracts
+  to reveal the scene drawn underneath — layering, not a clip) and
+  from `wipeReveal` / `maskReveal` (linear / flat covers, no
+  aperture).
+- **Composition `iris`** (150 f, silent, house style): dark ink
+  stage, "IRIS" title, coral "IRIS" revealed 10–60 by an iris
+  opening from the stage centre (feather 24) and "a circle opens,
+  the scene arrives" revealed 75–120 by a second iris opening
+  from the bottom-left corner (x 140, y 640, feather 16) — the
+  second opening proves the origin knob; the whole stage then
+  irises out to a dot 110–150 (mode 'close', feather 12), the
+  classic film iris-out.
+- Site: new `iris` demo card (69 cards; the editorial header line
+  now reads "Sixty-nine motions" and the meta line "69 live
+  demos") showing the blink mode, and Docs row; skill bundle
+  synced (API catalog now 101 functions).
+- X sweep 2026-11-13 (rotated social.search queries: motion
+  graphics techniques / kinetic typography / logo animation
+  reveal / isometric animation + UI micro-interaction / spring
+  physics UI / after effects breakdown / parallax, 100 results
+  across 2 calls; X-targeted web sweep + GitHub/Remotion skills
+  sweep): 1 new candidate filed and built (`iris`); the
+  social.search output files were unreadable this run (listed in
+  /tmp but every read failed — recorded as a tooling gap in
+  research/x-motion-sweep-log.md, 0 usable items from that
+  channel). Not taken: the kinetic-typography skill's Slam/Reveal
+  timing rules, Codrops' GSAP scroll kinetic typography, Chorono's
+  title card, Motion Fab's strip-word / shape-morph / chrome-ink
+  melt, CapCut's masked/blur/parallax/camera moves, Remotion's
+  HTML-in-canvas shader presentations, the rest of Remocn's 59
+  transitions — all dedupe, scroll-driven, tooling, or outside
+  the HTML-string primitive model (details in
+  research/x-motion-sweep-log.md). Backlog top item `iris` built
+  this round; the backlog is empty again.
+
 ## [0.70.0] — 2026-11-12
 
 ### Added — `dominoReveal` primitive + `domino` composition

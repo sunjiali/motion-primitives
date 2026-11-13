@@ -6,6 +6,31 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Reveal (v0.71)
+- `iris` — circular-aperture reveal: the wrapped content is
+  clipped to a circle centred at (`x`, `y`) whose radius animates
+  0 → the farthest stage corner, so the scene arrives through an
+  opening camera iris; `mode:'close'` runs it backwards (the
+  content sinks into a dot and vanishes), `mode:'blink'` closes,
+  holds as a dot for `hold` frames, then reopens (the Remocn
+  iris-wipe cartoon beat); `feather` softens the rim (a mask
+  radial-gradient with a `feather`-px falloff band instead of a
+  hard clip-path). The radius eases on `fn` (cubicOut opening,
+  cubicIn closing, cubicInOut for the blink halves unless
+  overridden). Remotion @remotion/transitions `iris()`
+  (https://www.remotion.dev/docs/transitions/presentations/iris),
+  corroborated by Motion.dev curtains `iris()`
+  (https://motion.dev/docs/curtains), Remocn's `iris-wipe`
+  (https://remocn.dev/docs/transitions), and Motion Fab's
+  chain-reaction showreel
+  (https://www.motionfab.app/en/prompts/motion-design-chain-reaction-showreel).
+  Distinct from `portalWipe` (a two-scene opaque-disc transition,
+  not a single-content clip) and from `wipeReveal` / `maskReveal`
+  (linear / flat covers, no aperture). Demo card (blink mode) +
+  `iris` composition (150 f, centre open + corner open + full-stage
+  iris-out close) + Prompt Gallery entry. With this, the backlog is
+  empty again.
+
 ### Reveal (v0.70)
 - `dominoReveal` — domino topple-chain reveal: a row of standing
   tiles covers the content and falls one after another, each tile
@@ -811,3 +836,30 @@ notes in research/x-motion-sweep-log.md.
   is the frost corroboration, the rest footage/3D/recipes; the
   isometric message-box loader and Figma Motion demos as recipes/
   tooling; GSAP/Anime/Motion.dev/React-Spring roundups as tooling.
+
+## Backlog — 2026-11-13 sweep (motion graphics / kinetic typography / logo reveal / isometric + UI micro-interaction / spring UI / AE breakdown / parallax + web + GitHub skills)
+
+Backlog was empty after dominoReveal (v0.70.0); this round's fresh
+sweep (social.search rotated queries — output files unreadable this
+run, see the sweep log — + X-targeted web sweep + GitHub/Remotion
+skills sweep) filed one buildable primitive. Sources and dedup notes
+in research/x-motion-sweep-log.md.
+
+- ~~`iris`~~ — shipped in v0.71.0: circular-aperture reveal (see
+  Implemented above). With this, the backlog is empty again.
+- Not taken this round: the kinetic-typography skill's Slam/Reveal
+  timing rules (director guidance; Slam overlaps pop +
+  velocitySkew); Codrops' GSAP scroll kinetic typography (SlowMo
+  hold + zoom + letter trails — scroll-driven, trail overlaps
+  `trail`); Chorono's Claude-Code title card (fade-up + underline +
+  arc circle — all shipped); Motion Fab's strip-word (alternating
+  side strips with motion blur — overlaps `sliceWave`, stays a
+  recipe), shape-morph outline interpolation (`morphShape`),
+  chrome-ball-to-ink melt (3D/material, out of scope); CapCut's
+  masked reveals / blur transitions / parallax / fake-3D camera
+  (dedupe against maskReveal / frost / parallax / camera);
+  Remotion's HTML-in-canvas shader presentations (zoomBlur /
+  dreamyZoom / filmBurn / ripple / crosswarp — per-pixel blending
+  behind a Chrome flag, outside the HTML-string primitive model);
+  the rest of Remocn's 59 transitions (scene-pair or shader work,
+  not single-content primitives).

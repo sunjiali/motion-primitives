@@ -568,6 +568,16 @@
       },
     },
     {
+      name: 'iris', desc: 'Circular-aperture reveal — the content is clipped to a circle whose radius animates from a point to the farthest stage corner, so the scene arrives through an opening camera iris; `mode` closes it back to a dot or blinks it shut and open again, `feather` softens the rim.',
+      code: 'M.iris(frame, { html, mode, feather })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        const word = '<div style="position:absolute;left:280px;top:157px;transform:translate(-50%,-50%);font:800 46px system-ui;color:#FF6B81;white-space:nowrap;">IRIS</div>';
+        return '<div style="position:absolute;inset:0;background:#26221F;"></div>' +
+          M.iris(lf, { html: word, at: 35, dur: 80, mode: 'blink', hold: 12, feather: 12, x: 280, y: 157, w: 560, h: 315 });
+      },
+    },
+    {
       name: 'chroma', desc: 'Chromatic aberration — the clean content stays centred while red and cyan channel ghosts drift apart, so the scene reads as shot through a cheap lens; pulse spikes on a beat, sustain holds a permanent grade.',
       code: 'M.chroma(frame, { html, amount, mode, angle })', cycle: 150,
       draw(f) {
