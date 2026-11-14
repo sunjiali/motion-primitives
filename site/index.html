@@ -140,8 +140,8 @@ stage.innerHTML =
     <p class="section-lede">Every demo below is running <em>right now in your browser</em> on the exact
     library that renders the videos — driven by a virtual frame counter instead of a screenshot camera.</p>
     <div class="demo-hed">
-      <p class="hed-line">Sixty-nine motions, one idea: every move in this library is a single named call.</p>
-      <p class="hed-meta">69 live demos · running on the shipped library · hover any card to replay it from the start</p>
+      <p class="hed-line">Seventy motions, one idea: every move in this library is a single named call.</p>
+      <p class="hed-meta">70 live demos · running on the shipped library · hover any card to replay it from the start</p>
     </div>
     <div class="grid" id="demo-grid"></div>
   </section>
@@ -295,6 +295,7 @@ node src/render.js --comp showcase \
           <tr><td><code>frost</code></td><td>Frosted-glass blur over wrapped HTML — the blur radius animates from <code>from</code> (default 12 px) to <code>to</code> (default 0) on <code>fn</code>, so content clears out of frosted glass, or sinks behind it when reversed</td></tr>
           <tr><td><code>dominoReveal</code></td><td>Domino topple-chain reveal — a row of standing tiles falls one after another, each rotating ~90° around its base edge on a gravity ease and fading once flat, uncovering the content as the wave passes; <code>count</code> / <code>fall</code> / <code>fade</code> shape the chain, <code>dir</code> picks the wave direction, <code>x/y/w/h</code> confines the tiles to a band</td></tr>
           <tr><td><code>iris</code></td><td>Circular-aperture reveal — the wrapped content is clipped to a circle centred at (<code>x</code>, <code>y</code>) whose radius animates 0 → the farthest stage corner, so the scene arrives through an opening camera iris; <code>mode</code> opens, closes to a dot, or blinks shut and open again, <code>feather</code> softens the rim</td></tr>
+          <tr><td><code>dotText</code></td><td>Halftone dot-filled text — the letterforms are a field of dots (an SVG dot grid clipped by a text mask), so the word reads as a printed halftone poster; <code>mode</code> grows the dots in on a hash stagger, breathes them on a pulse, or shrinks them away; <code>gap</code> sets the dot spacing, <code>dot</code> the radius as a fraction of it</td></tr>
         </table>
         <p>Full signatures and defaults live in <code>src/lib/primitives.ts</code> in the repo —
         it is heavily commented and doubles as the manual.</p>

@@ -568,6 +568,15 @@
       },
     },
     {
+      name: 'dotText', desc: 'Halftone dot-filled text — the letterforms are a field of dots clipped by a text mask, so the word reads as a printed poster; `mode` grows the dots in on a hash stagger, breathes them on a pulse, or shrinks them away.',
+      code: 'M.dotText(frame, { text, mode, gap, dot })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        return '<div style="position:absolute;inset:0;background:#26221F;"></div>' +
+          M.dotText(lf, { text: 'DOTS', x: 280, y: 157, size: 64, color: '#FF6B81', at: 35, dur: 80, gap: 12, w: 560, h: 260 });
+      },
+    },
+    {
       name: 'iris', desc: 'Circular-aperture reveal — the content is clipped to a circle whose radius animates from a point to the farthest stage corner, so the scene arrives through an opening camera iris; `mode` closes it back to a dot or blinks it shut and open again, `feather` softens the rim.',
       code: 'M.iris(frame, { html, mode, feather })', cycle: 150,
       draw(f) {

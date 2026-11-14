@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (101 functions)
+# motion-primitives API — the full catalog (102 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -365,6 +365,14 @@ M.waveText(frame: number, o: { text?: string; x?: number; y?: number; amp?: numb
 ```
 
 Travelling sine wave over a typeset string: each glyph drifts on a sine field with a per-letter phase stagger (phase = 2π·i/wl − frame·speed), so the sentence itself ripples — sustained and looping, not an entrance. axis 'x' (default) drifts sideways, 'y' bobs vertically. Returns a centred div ('' for empty text).
+
+### `dotText`
+
+```ts
+M.dotText(frame: number, o: { text?: string; x?: number; y?: number; w?: number; h?: number; size?: number; weight?: number; fontFamily?: string; letterSpacing?: number; color?: string; gap?: number; dot?: number; at?: number; dur?: number; mode?: 'in' | 'pulse' | 'out'; fn?: string; pulse?: number; speed?: number; seed?: number }): string
+```
+
+Halftone dot-filled text: the letterforms are rendered as a field of dots — an SVG dot grid clipped by a text mask — so the word reads as a printed halftone poster. `mode:'in'` (default) grows the dots in on a hash stagger, eased on `fn`; `mode:'pulse'` breathes every dot on its own hash phase (sustained, `at`/`dur` ignored); `mode:'out'` shrinks them away. `gap` is the dot spacing, `dot` the dot radius as a fraction of it (default 0.42). Before `at` an 'in' dotText is '', after `at + dur` it settles to the full dot field. Returns an SVG string ('' for empty text).
 
 ## Shapes & drawing
 

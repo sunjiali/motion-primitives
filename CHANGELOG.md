@@ -2,6 +2,59 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.72.0] — 2026-11-14
+
+### Added — `dotText` primitive + `dot-text` composition
+
+- **`dotText(frame, { text, x?, y?, w?, h?, size?, weight?, fontFamily?, letterSpacing?, color?, gap?, dot?, at?, dur?, mode?, fn?, pulse?, speed?, seed? })`** —
+  halftone dot-filled text: the letterforms are rendered as a field
+  of dots — an SVG dot grid over the stage clipped by a text mask —
+  so the word reads as a printed halftone poster. `mode:'in'`
+  (default) grows the dots in on a hash stagger (the print
+  developing), eased on `fn`; `mode:'pulse'` breathes every dot on
+  its own hash phase (a living poster, sustained — `at`/`dur`
+  ignored); `mode:'out'` shrinks them away. `gap` is the dot spacing
+  (default 16 px), `dot` the dot radius as a fraction of it (default
+  0.42); `pulse` is the breathe amplitude (default 0.25), `speed`
+  the pulse period in frames (default 30). Dots carry a small
+  deterministic size variation (±8%) so the field reads as print.
+  Before `at` an 'in' dotText is ''; after `at + dur` it settles to
+  the full dot field; 'out' is the mirror. The mask id is derived
+  from the text and geometry, so two dotText calls with the same
+  word at different spots never share — and overwrite — each
+  other's mask. Adhemas Batista's "Do All Good" — "three rows of
+  fluid, dot-filled letterforms pulse in blue and green against a
+  bold red canvas"
+  (https://www.instagram.com/reel/DMjuKnSuaym/), corroborated by
+  Figma Motion's pixel-dot letters
+  (https://www.instagram.com/p/DbML8Nrks-9/) and by the ecosystem
+  (Remotion @remotion/effects `dither()`, React Bits `Dither`).
+  Distinct from `charGrid` (a grid of characters, not a dot field),
+  `patternField` (a pattern fill, not a text mask) and `waveText`
+  (per-letter drift, no dot texture).
+- **Composition `dot-text`** (150 f, silent, house style): dark ink
+  stage, "DOT TEXT" title, coral "DOT" printed dot by dot 10–55,
+  cream "TEXT" printed 60–105, and a small teal line "printed, one
+  dot at a time" breathing in pulse mode for the whole film — three
+  rows of dot-filled letterforms, the Adhemas poster.
+- Site: new `dotText` demo card (70 cards; the editorial header line
+  now reads "Seventy motions" and the meta line "70 live demos")
+  showing the in mode, and Docs row; skill bundle synced (API
+  catalog now 102 functions).
+- X sweep 2026-11-14 (rotated social.search queries: animation
+  breakdown / GSAP tips / easing curves + Remotion / Lottie / text
+  animation kinetic typography, 100 results across 2 calls — output
+  files readable this round, unlike 2026-11-13; X-targeted web sweep
+  returned nothing; GitHub/Remotion skills sweep): 3 candidates
+  filed — `dotText` (built this round), `clockWipe` (Remotion
+  @remotion/transitions, radial sector reveal), `textWarp`
+  (@kiel.d.m STG V.EXPOGRID field-warped type); the rest deduped
+  (easing explainers against the `fn` system, Claude+Remotion
+  workflow reels, LottieFiles' 5 principles, Mat Voyce's
+  kinetic-type retrospective, Figma Motion carousel, V.BOOST/V.SPIN
+  3-D extrusions, "NEVER STOP CREATING", "Cheesy 80s Zooms",
+  Remotion's HTML-in-canvas shaders re-affirmed out of scope).
+
 ## [0.71.0] — 2026-11-13
 
 ### Added — `iris` primitive + `iris` composition

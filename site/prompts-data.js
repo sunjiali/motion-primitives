@@ -337,6 +337,22 @@ window.PROMPT_GALLERY = [
     notes: '回填条目：成片随 v0.71.0 发布（iris 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧只有标题、主词未出 / 35 帧主词已开 / 60 帧主词全露、小字未出 / 95 帧小字自左下角揭示中 / 130 帧收尾光圈已裁掉四角、代码行左端被裁 / 149 帧只剩中心一点带柔边的主词残影）通过；成片 mp4 抽帧（35 / 130 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 69 卡、iris 卡在动（实测遮罩半径 283.5px、羽化带 271.5–283.5px；无头 shell 下 rAF 只在 BeginFrame 前进，连续截图可能重复，改以截图哈希变化确认卡片在动）、0 控制台报错。',
   },
   {
+    id: 'dotText',
+    title: 'Dot Text — The Poster Prints Itself, One Dot at a Time',
+    blurb: 'The hero word prints itself dot by dot in coral, the second line follows in cream, and a small third line breathes for the whole film — three rows of halftone letterforms proving the in and pulse modes of one primitive.',
+    video: 'videos/dot-text.mp4',
+    tags: ['text', 'halftone', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.72',
+    prompt:
+`用 motion-primitives 做一条 5 秒的半调圆点字展示片，composition 名 dot-text，核心只用一个新原语 M.dotText。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。深墨底 #26221F、奶油字 #FBF6EC、珊瑚字 #FF6B81、天蓝字 #3FB6FF；画面上方一行大字「DOT TEXT」（64px，800 字重）全程静止；中央第一行大字「DOT」（150px，800 字重，珊瑚色，居中于 640,285），10–55 帧以 mode in、gap 16 从圆点逐个长出；第二行大字「TEXT」（150px，800 字重，奶油色，居中于 640,440），60–105 帧同样以 mode in、gap 16 长出；第三行小字「printed, one dot at a time」（34px，500 字重，天蓝色，居中于 640,580），全程以 mode pulse、gap 10、dot 0.45、speed 40 呼吸；左下角一行等宽小字「M.dotText(frame, { mode: 'in', gap: 16 })」（22px，奶油 55% 透明）全程静止；右上角一颗奶油圆点（#FBF6EC，18px）点缀。
+
+纪律：字形必须是圆点场、不是实心字——圆点网格被文字形状裁剪，字外无点；in 模式的圆点按哈希错峰长出，要读出「印刷显影」的先后而不是整字淡入；pulse 行从第 0 帧就一直在呼吸；除标题、三行字、左下角代码行、右上角圆点外不许加别的元素；不许渐变背景、相机运动、颗粒噪点、音效。
+`,
+    notes: '回填条目：成片随 v0.72.0 发布（dotText 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧只有标题与呼吸小字、两行大字未出 / 30 帧 DOT 长出一半、圆点大小不一 / 55 帧 DOT 全露、TEXT 未出 / 85 帧 TEXT 长出一半 / 105 帧两行全露、小字呼吸中 / 149 帧全片落定）通过；成片 mp4 抽帧（30 / 85 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 70 卡、dotText 卡在动、0 控制台报错。',
+  },
+  {
     id: 'chroma',
     title: 'Chroma — The Cheap-Lens Grade',
     blurb: 'A big word takes two RGB-fringe spikes — first horizontal, then vertical — while a second line wears the sustain grade for the whole film, proving both modes of one primitive.',

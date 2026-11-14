@@ -2335,6 +2335,97 @@ __root.Motion = (function () {
         }
         return '<div style="position:absolute;inset:0;' + clip + '">' + html + '</div>';
     }
+    // dotText — halftone dot-filled text: the letterforms are a field of
+    // dots, not a solid fill. An SVG dot grid over the stage is clipped
+    // by a text mask, so the word reads as a printed halftone poster.
+    // `mode:'in'` (default) grows the dots in on a hash stagger — the
+    // print developing, eased on `fn`; `mode:'pulse'` breathes every dot
+    // on its own hash phase (a living poster, sustained — `at`/`dur`
+    // ignored); `mode:'out'` shrinks the dots away. `gap` is the dot
+    // spacing, `dot` the dot radius as a fraction of it (default 0.42);
+    // `pulse` is the breathe amplitude (default 0.25), `speed` the pulse
+    // period in frames (default 30). Dots carry a small deterministic
+    // size variation so the field reads as print, not a spreadsheet.
+    // Before `at` an 'in' dotText is '', after `at + dur` it settles to
+    // the full dot field; 'out' is the mirror. Distinct from `charGrid`
+    // (a grid of characters) and `waveText` (per-letter drift, no dot
+    // texture). From the 2026-11-14 sweep (Adhemas Batista's "Do All
+    // Good" dot-filled letterforms, corroborated by Figma Motion's
+    // pixel-dot letters and by Remotion @remotion/effects `dither()`).
+    function dotText(frame, o) {
+        o = o || {};
+        const text = String(o.text || '');
+        if (!text)
+            return '';
+        const mode = o.mode || 'in';
+        const at = o.at || 0, dur = Math.max(1, o.dur || 30);
+        if (mode === 'in' && frame < at)
+            return '';
+        if (mode === 'out' && frame >= at + dur)
+            return '';
+        const w = o.w || 1280, h = o.h || 720;
+        const cx = o.x == null ? w / 2 : o.x, cy = o.y == null ? h / 2 : o.y;
+        const size = o.size == null ? 120 : o.size;
+        const weight = o.weight == null ? 800 : o.weight;
+        const fontFamily = o.fontFamily || 'system-ui';
+        const letterSpacing = o.letterSpacing || 0;
+        const color = o.color || '#26221F';
+        const gap = Math.max(8, o.gap == null ? 16 : o.gap);
+        const dotFrac = Math.min(1, Math.max(0.05, o.dot == null ? 0.42 : o.dot));
+        const baseR = gap * dotFrac;
+        const seed = o.seed || 0;
+        const ease = Easing[o.fn || 'cubicOut'] || Easing.cubicOut;
+        const pulseAmp = o.pulse == null ? 0.25 : o.pulse;
+        const period = Math.max(1, o.speed == null ? 30 : o.speed);
+        const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        // Mask id: deterministic from everything the mask depends on, so
+        // two dotText calls with the same text at different spots (or
+        // sizes) never share — and overwrite — each other's mask.
+        const key = text + '|' + size + '|' + weight + '|' + fontFamily + '|' +
+            letterSpacing + '|' + cx + '|' + cy + '|' + w + '|' + h;
+        let folded = seed;
+        for (let k = 0; k < key.length; k++)
+            folded = (folded * 31 + key.charCodeAt(k)) >>> 0;
+        const mid = 'dtm' + Math.floor(hash(folded) * 1e9).toString(36);
+        const t = (frame - at) / dur;
+        const cols = Math.ceil(w / gap), rows = Math.ceil(h / gap);
+        const circles = [];
+        for (let j = 0; j < rows; j++) {
+            const cyDot = gap / 2 + j * gap;
+            for (let i = 0; i < cols; i++) {
+                const h1 = hash(seed * 1013 + i * 131 + j * 17 + 7);
+                const h2 = hash(seed * 733 + i * 57 + j * 269 + 3);
+                const vary = 0.92 + 0.16 * h2;
+                let r;
+                if (mode === 'pulse') {
+                    r = baseR * vary * (1 + pulseAmp * Math.sin(2 * Math.PI * frame / period + h1 * 2 * Math.PI));
+                }
+                else if (mode === 'out') {
+                    if (frame < at)
+                        r = baseR * vary;
+                    else
+                        r = baseR * vary * (1 - ease(clamp01((t - h1 * 0.5) / 0.5)));
+                }
+                else {
+                    r = baseR * vary * ease(clamp01((t - h1 * 0.5) / 0.5));
+                }
+                if (r < 0.05)
+                    continue;
+                circles.push('<circle cx="' + (gap / 2 + i * gap).toFixed(1) + '" cy="' + cyDot.toFixed(1) +
+                    '" r="' + r.toFixed(1) + '" fill="' + color + '"/>');
+            }
+        }
+        if (!circles.length)
+            return '';
+        return '<svg style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none;">' +
+            '<defs><mask id="' + mid + '" x="0" y="0" width="' + w + '" height="' + h + '" maskUnits="userSpaceOnUse">' +
+            '<rect x="0" y="0" width="' + w + '" height="' + h + '" fill="black"/>' +
+            '<text x="' + cx + '" y="' + cy + '" fill="white" text-anchor="middle" dominant-baseline="central" ' +
+            'font-family="' + fontFamily + '" font-size="' + size + '" font-weight="' + weight + '"' +
+            (letterSpacing ? ' letter-spacing="' + letterSpacing + '"' : '') + '>' + esc(text) + '</text>' +
+            '</mask></defs>' +
+            '<g mask="url(#' + mid + ')">' + circles.join('') + '</g></svg>';
+    }
     // Beat tools — the BPM half of music-synced work. (Named beatGrid,
     // not beat: `beat` is the older anticipation-entrance primitive.)
     // `beatGrid` reports where a frame sits inside the grid: which beat
@@ -2814,7 +2905,7 @@ __root.Motion = (function () {
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
         paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost, dominoReveal, iris,
-        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText,
+        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, dotText,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
         scramble, splitFlap, kenBurns, breathe, fx, hash,

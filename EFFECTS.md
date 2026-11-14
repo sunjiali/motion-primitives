@@ -6,6 +6,33 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Reveal (v0.72)
+- `dotText` — halftone dot-filled text: the letterforms are a field
+  of dots — an SVG dot grid over the stage clipped by a text mask —
+  so the word reads as a printed halftone poster. `mode:'in'`
+  (default) grows the dots in on a hash stagger (the print
+  developing), eased on `fn`; `mode:'pulse'` breathes every dot on
+  its own hash phase (a living poster, sustained — `at`/`dur`
+  ignored); `mode:'out'` shrinks them away. `gap` sets the dot
+  spacing (default 16 px), `dot` the dot radius as a fraction of it
+  (default 0.42); `pulse` is the breathe amplitude (default 0.25),
+  `speed` the pulse period in frames (default 30). Dots carry a
+  small deterministic size variation (±8%) so the field reads as
+  print. The mask id is derived from the text and geometry, so two
+  dotText calls with the same word at different spots never share —
+  and overwrite — each other's mask. Adhemas Batista's "Do All Good"
+  (https://www.instagram.com/reel/DMjuKnSuaym/), corroborated by
+  Figma Motion's pixel-dot letters
+  (https://www.instagram.com/p/DbML8Nrks-9/) and by the ecosystem
+  (Remotion @remotion/effects `dither()`, React Bits `Dither`).
+  Distinct from `charGrid` (a grid of characters, not a dot field),
+  `patternField` (a pattern fill, not a text mask) and `waveText`
+  (per-letter drift, no dot texture). Demo card (in mode) +
+  `dot-text` composition (150 f, coral DOT 10–55 + cream TEXT 60–105
+  printed in, teal sub-line breathing in pulse mode all film) +
+  Prompt Gallery entry. With this, the remaining backlog is
+  `clockWipe` / `textWarp` only.
+
 ### Reveal (v0.71)
 - `iris` — circular-aperture reveal: the wrapped content is
   clipped to a circle centred at (`x`, `y`) whose radius animates
@@ -863,3 +890,70 @@ in research/x-motion-sweep-log.md.
   behind a Chrome flag, outside the HTML-string primitive model);
   the rest of Remocn's 59 transitions (scene-pair or shader work,
   not single-content primitives).
+
+## Backlog — 2026-11-14 sweep (animation breakdown / GSAP tips / easing curves / Remotion / Lottie / text animation + web + GitHub skills)
+
+Backlog was empty after iris (v0.71.0); this round's fresh sweep
+(social.search rotated queries, 100 results across 2 calls — the
+output files were readable this round, unlike 2026-11-13 — +
+X-targeted web sweep, which returned nothing for site:x.com, +
+GitHub/Remotion skills sweep) filed three buildable primitives.
+Sources and dedup notes in research/x-motion-sweep-log.md.
+
+- ~~`dotText`~~ — shipped in v0.72.0: halftone dot-filled text (see
+  Implemented above). With this, the remaining backlog is
+  `clockWipe` / `textWarp` only.
+- `clockWipe` — radial clock-hand sector reveal: the wrapped content
+  is revealed as a pie sector sweeping 0 → 360° around (`x`, `y`),
+  like a clock hand — the angular counterpart to `iris` (radial)
+  and `wipeReveal` (linear). Source: Remotion
+  @remotion/transitions `clockWipe()` — "Reveal the new scene in a
+  circular movement" (https://www.remotion.dev/docs/transitions/).
+  Plain mask geometry, no shader — fits the HTML-string model.
+- `textWarp` — field-warped kinetic type: a whole string typeset
+  along a 2-D deformation field (concentric arches, mirrored
+  ripples), each letter placed on the field and tangent-rotated, so
+  the sentence flows like water. Source: @kiel.d.m's STG V.EXPOGRID
+  — "'LAST WAVE FRONT' creating concentric arches, 'GOING GONE'
+  producing undulating letter flows"
+  (https://www.instagram.com/p/DHly2ppxbdT/). Distinct from
+  `waveText` (1-D horizontal sine drift, no rotation, no arch) and
+  from `textOnPath` (letters on one fixed path, not a live field).
+- Not taken this round: ~10 easing-curve explainers restate the
+  shipped `fn` system (Adobevideo's "Niche Easing Curves" are named
+  personas of shipped easings; "Buffering" stutter against
+  `stepped`); Claude/ChatGPT + Remotion workflow reels are workflow,
+  not techniques; LottieFiles' 5 principles re-appear, deduped;
+  Mat Voyce's kinetic-type retrospective dedupes piece by piece
+  (Inflate → squash/pop, MUTATE flashes / ZERO ENERGY cycling →
+  chroma/glitch, HOPE→NOPE morph → morphShape+orbit, DAMN stretch
+  → squash, NOW! scale+shadow → pop; MIRROR 3-D distortion out of
+  scope); Figma Motion carousel — glitch letters → glitch/chroma,
+  inflatable blobs / glossy 3-D Stretch are 3-D tooling, star→flower
+  morph → morphShape, liquid-metal WOW → liquidMetal, circle-packing
+  is a layout, F-logo assembly → assembleText; @synthymental's
+  text-into-flower silhouette is a maskReveal recipe and its
+  text-filled "BOO" is a text-fill variant of the dotText family,
+  not filed separately; @kiel.d.m V.BOOST/V.SPIN 3-D extrusions are
+  generator tooling, out of scope; "NEVER STOP CREATING" —
+  word-multiply → marquee, STOP tunnel stays a kenBurns+marquee
+  recipe, glitch STOP → glitch/chroma; "Cheesy 80s Zooms" —
+  slide/stretch/inflate/flip/zoom/outline all shipped; browser→
+  phone→icons morph → morphShape; 3-D planes + virtual camera →
+  camera/parallax; parallax scroll → parallax; OLA / CRUX /
+  vasilskakun logo reveals → spotlight/assembleText; AE Text
+  Animator kinetic type, the Blender kinetic-typography addon and
+  GSAP Timed Cards are tooling / component recipes; pop-up text →
+  pop/splitText; pendulum reveal → swing; rotating phrases →
+  marquee; sepia photo separation is footage work; Remotion's
+  HTML-in-canvas shader presentations re-affirmed out of scope;
+  Remocn's remaining transitions are scene-pair or shader work;
+  @remotion/effects `venetianBlinds` not filed (slat rotation
+  overlaps sliceWave's strip machinery — a possible future variant);
+  React Bits react-animation — ShinyText → shine, GlitchText →
+  glitch, BlurText → frost, DecryptedText → scramble, TextType →
+  typewriter, GradientText is a fill style not motion, LetterGlitch
+  → glitch, LightRays is background craft (meshBg territory).
+  Skill leads, not implemented: remotion-dev/skills (official,
+  already noted), nexuslinkproductions Remotion Motion Design
+  (already noted 2026-11-10).

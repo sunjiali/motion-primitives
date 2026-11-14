@@ -330,6 +330,53 @@ test('dominoReveal: tiles stand before at, topple in a propagated wave, fade fla
   assert.equal(M.dominoReveal(20, o), M.dominoReveal(20, o)); // determinism
 });
 
+test('dotText: halftone dot-filled text — in grows on a hash stagger, out shrinks away, pulse breathes on a period', () => {
+  const o = { text: 'DOT', at: 10, dur: 30 };
+  const circles = (h) => [...h.matchAll(/<circle cx="([\d.]+)" cy="([\d.]+)" r="([\d.]+)" fill="([^"]+)"/g)]
+    .map((m) => ({ x: parseFloat(m[1]), y: parseFloat(m[2]), r: parseFloat(m[3]), fill: m[4] }));
+  const maskId = (h) => { const m = h.match(/<mask id="([^"]+)"/); assert.ok(m, 'mask present, got: ' + h.slice(0, 200)); return m[1]; };
+  assert.equal(M.dotText(5, o), '', 'in: hidden before at');
+  assert.equal(M.dotText(10, { text: '' }), '', 'empty text returns nothing');
+  // Full field at the window end: 1280x720 stage, gap 16 -> 80x45 dots,
+  // every dot at its full radius (base 16*0.42 = 6.72, ±8% print variation).
+  const full = circles(M.dotText(40, o));
+  assert.equal(full.length, 3600, 'full field covers the whole stage grid');
+  assert.ok(full.every((c) => c.r >= 6.72 * 0.92 - 0.1 && c.r <= 6.72 * 1.08 + 0.1),
+    'settled radii sit at base ± print variation');
+  assert.ok(full.every((c) => c.fill === '#26221F'), 'default ink colour on every dot');
+  assert.ok(M.dotText(40, o).includes('<text') && M.dotText(40, o).includes('>DOT</text>'),
+    'mask carries the text itself');
+  // Mid-window: dots are mid-growth, a few still below the 0.05 skip floor.
+  const mid = circles(M.dotText(25, { ...o, fn: 'linear' }));
+  assert.ok(mid.length < 3600 && mid.length > 3000, 'mid-window field is mostly grown, got ' + mid.length);
+  assert.ok(mid.some((c) => c.r < 6), 'stagger leaves some dots small mid-window');
+  assert.ok(mid.every((c) => c.r <= 6.72 * 1.08 + 0.1), 'no dot overshoots its settled radius');
+  // Mask ids are deterministic per text+geometry, and differ by position.
+  assert.equal(maskId(M.dotText(40, o)), maskId(M.dotText(40, o)), 'same call, same mask id');
+  assert.notEqual(maskId(M.dotText(40, o)), maskId(M.dotText(40, { ...o, x: 100 })),
+    'same text at another spot gets another mask id');
+  assert.notEqual(maskId(M.dotText(40, o)), maskId(M.dotText(40, { ...o, text: 'DOG' })),
+    'another word gets another mask id');
+  // Gap steers the grid: gap 32 quarters the dot count.
+  assert.equal(circles(M.dotText(40, { ...o, gap: 32 })).length, 920, 'gap 32 -> 40x23 grid');
+  // Custom dot fraction steers the radius: dot 0.5 -> base 8.
+  const chunky = circles(M.dotText(40, { ...o, dot: 0.5 }));
+  assert.ok(chunky.every((c) => c.r <= 8 * 1.08 + 0.1) && chunky.some((c) => c.r > 7.5),
+    'dot fraction scales the radius');
+  // Out: full before at, gone after the window, shrinking mid-window.
+  assert.equal(circles(M.dotText(9, { ...o, mode: 'out' })).length, 3600, 'out: full field before at');
+  assert.equal(M.dotText(40, { ...o, mode: 'out' }), '', 'out: gone after the window');
+  const shrinking = circles(M.dotText(25, { ...o, mode: 'out', fn: 'linear' }));
+  assert.ok(shrinking.length < 3600 && shrinking.length > 3000, 'out: dots shrink away staggered');
+  // Pulse: sustained (ignores at/dur) and periodic on `speed` (default 30 f).
+  assert.ok(M.dotText(0, { ...o, mode: 'pulse' }).length > 1000, 'pulse: dots present from frame 0');
+  assert.equal(M.dotText(0, { ...o, mode: 'pulse' }), M.dotText(30, { ...o, mode: 'pulse' }),
+    'pulse repeats every period');
+  assert.notEqual(M.dotText(0, { ...o, mode: 'pulse' }), M.dotText(8, { ...o, mode: 'pulse' }),
+    'pulse actually moves mid-period');
+  assert.equal(M.dotText(40, o), M.dotText(40, o)); // determinism
+});
+
 test('iris: circular-aperture reveal — open grows, close shrinks, blink holds a dot, feather softens the rim', () => {
   const o = { at: 10, dur: 30, html: '<b>X</b>' };
   const radius = (h) => {

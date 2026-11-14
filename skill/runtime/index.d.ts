@@ -147,6 +147,8 @@ export function letterTrack(frame: number, o: { text?: string; at?: number; dur?
 export function speedLines(frame: number, o: { x?: number; y?: number; at?: number; dur?: number; n?: number; color?: string; width?: number; minLen?: number; maxLen?: number; gap?: number; angle?: number; spread?: number; seed?: number }): string;
 /** Travelling sine wave over a typeset string: each glyph drifts on a sine field with a per-letter phase stagger (phase = 2π·i/wl − frame·speed), so the sentence itself ripples — sustained and looping, not an entrance. axis 'x' (default) drifts sideways, 'y' bobs vertically. Returns a centred div ('' for empty text). */
 export function waveText(frame: number, o: { text?: string; x?: number; y?: number; amp?: number; wl?: number; speed?: number; axis?: string; size?: number; color?: string; fontFamily?: string; weight?: number }): string;
+/** Halftone dot-filled text: the letterforms are rendered as a field of dots — an SVG dot grid clipped by a text mask — so the word reads as a printed halftone poster. `mode:'in'` (default) grows the dots in on a hash stagger, eased on `fn`; `mode:'pulse'` breathes every dot on its own hash phase (sustained, `at`/`dur` ignored); `mode:'out'` shrinks them away. `gap` is the dot spacing, `dot` the dot radius as a fraction of it (default 0.42). Before `at` an 'in' dotText is '', after `at + dur` it settles to the full dot field. Returns an SVG string ('' for empty text). */
+export function dotText(frame: number, o: { text?: string; x?: number; y?: number; w?: number; h?: number; size?: number; weight?: number; fontFamily?: string; letterSpacing?: number; color?: string; gap?: number; dot?: number; at?: number; dur?: number; mode?: 'in' | 'pulse' | 'out'; fn?: string; pulse?: number; speed?: number; seed?: number }): string;
 /** Circular portal transition: a flat disc blooms from (x, y), swallows the outgoing scene, holds, then contracts toward (x2, y2) revealing the incoming scene beneath. Pass the outgoing scene as `html` (draw the incoming scene first). Returns an overlay div ('' after the window). */
 export function portalWipe(frame: number, o: { at?: number; dur?: number; html?: string; x?: number; y?: number; x2?: number; y2?: number; w?: number; h?: number; color?: string; echo?: number; hold?: number; fn?: string }): string;
 /** Concentric thin rings around a focal point: an expanding pulse train (default), a slow breathing set, or counter-rotating dashed arcs ('spin'). Returns a positioned overlay div ('' before `at`). */
@@ -275,6 +277,7 @@ declare const Motion: {
   letterTrack: typeof letterTrack;
   speedLines: typeof speedLines;
   waveText: typeof waveText;
+  dotText: typeof dotText;
   portalWipe: typeof portalWipe;
   rings: typeof rings;
   mosaic: typeof mosaic;
