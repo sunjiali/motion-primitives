@@ -353,6 +353,22 @@ window.PROMPT_GALLERY = [
     notes: '回填条目：成片随 v0.72.0 发布（dotText 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧只有标题与呼吸小字、两行大字未出 / 30 帧 DOT 长出一半、圆点大小不一 / 55 帧 DOT 全露、TEXT 未出 / 85 帧 TEXT 长出一半 / 105 帧两行全露、小字呼吸中 / 149 帧全片落定）通过；成片 mp4 抽帧（30 / 85 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 70 卡、dotText 卡在动、0 控制台报错。',
   },
   {
+    id: 'clockWipe',
+    title: 'Clock Wipe — A Hand Sweeps, the Scene Arrives',
+    blurb: 'The hero word is swept in clockwise from 12 o\'clock, the sub-line counter-clockwise from the bottom-left corner, and the whole stage winds away at the end — proving the sector, direction and origin knobs of one primitive.',
+    video: 'videos/clock-wipe.mp4',
+    tags: ['reveal', 'clock', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.73',
+    prompt:
+`用 motion-primitives 做一条 5 秒的时钟扇形揭示展示片，composition 名 clock-wipe，核心只用一个新原语 M.clockWipe。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。深墨底 #26221F、奶油字 #FBF6EC、珊瑚字 #FF6B81；画面上方一行大字「CLOCK WIPE」（64px，800 字重）全程静止；中央一行大字「CLOCK」（120px，800 字重，珊瑚色，居中于 640,330），10–60 帧被一个从 12 点方向顺时针扫过的扇形揭示（默认 start 0、dir cw）；下方一行小字「a hand sweeps, the scene arrives」（36px，500 字重，奶油色，居中于 640,500），75–120 帧被第二个扇形从左下角逆时针揭示（圆心 x 140、y 640，dir ccw）；左下角一行等宽小字「M.clockWipe(frame, { dir: 'cw' })」（22px，奶油 55% 透明）全程静止；右上角一颗奶油圆点（#FBF6EC，18px）点缀；110–150 帧整个画面以 mode close 顺时针收成一条细缝（收尾时只剩顶部一条窄扇形残影），经典时钟收尾。
+
+纪律：揭示是内容本身的扇形裁剪、不是不透明扇形盖住画面——扇形边缘是一条从圆心出发的直线，扫过之处内容出现、收尾时内容沿同一条线收走；两次揭示的圆心与方向不同，要读出是两次独立扫动；除标题、两行字、左下角代码行、右上角圆点外不许加别的元素；不许渐变背景、相机运动、颗粒噪点、音效。
+`,
+    notes: '回填条目：成片随 v0.73.0 发布（clockWipe 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧只有标题、主词未出 / 25 帧主词顺时针扫出一半、左半缺失、右半在 / 60 帧主词全露、小字未出 / 95 帧小字自左下角逆时针揭示中、左端沿斜线裁切 / 130 帧收尾扇形已裁掉左上象限、主词 O 字带斜切口 / 149 帧只剩顶部一条窄扇形残影）通过；成片 mp4 抽帧（25 / 130 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 71 卡、clockWipe 卡在动、0 控制台报错。',
+  },
+  {
     id: 'chroma',
     title: 'Chroma — The Cheap-Lens Grade',
     blurb: 'A big word takes two RGB-fringe spikes — first horizontal, then vertical — while a second line wears the sustain grade for the whole film, proving both modes of one primitive.',

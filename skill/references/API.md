@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (102 functions)
+# motion-primitives API — the full catalog (103 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -649,6 +649,14 @@ M.iris(frame: number, o: { html: string; at?: number; dur?: number; x?: number; 
 ```
 
 Circular-aperture (iris) reveal: the wrapped content is clipped to a circle centred at (`x`, `y`) whose radius animates 0 → the farthest stage corner, so the scene arrives through an opening camera iris. `mode:'close'` runs it backwards (the content sinks into a dot and vanishes); `mode:'blink'` closes, holds as a dot for `hold` frames, then reopens. `feather` softens the rim (a mask gradient instead of a hard clip-path). Before `at` an opening iris shows nothing; after `at + dur` it passes the input HTML through untouched.
+
+### `clockWipe`
+
+```ts
+M.clockWipe(frame: number, o: { html: string; at?: number; dur?: number; x?: number; y?: number; w?: number; h?: number; mode?: 'open' | 'close'; dir?: 'cw' | 'ccw'; start?: number; fn?: string }): string
+```
+
+Radial clock-hand sector reveal: the wrapped content is revealed as a pie sector sweeping 0 → 360° around (`x`, `y`), like a clock hand — the angular counterpart to `iris` (radial) and `wipeReveal` (linear). `mode:'close'` winds it back 360 → 0; `dir:'ccw'` sweeps counter-clockwise; `start` moves the hand's home angle in degrees (0 = 12 o'clock, clockwise positive). Before `at` an opening wipe shows nothing; after `at + dur` it passes the input HTML through untouched.
 
 ### `spotlight`
 

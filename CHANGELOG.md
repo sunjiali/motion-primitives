@@ -2,6 +2,56 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.73.0] — 2026-11-15
+
+### Added — `clockWipe` primitive + `clock-wipe` composition
+
+- **`clockWipe(frame, { html, at?, dur?, x?, y?, w?, h?, mode?, dir?, start?, fn? })`** —
+  radial clock-hand sector reveal: the wrapped content is revealed
+  as a pie sector sweeping 0 → 360° around (`x`, `y`), like a clock
+  hand — the angular counterpart to `iris` (radial) and `wipeReveal`
+  (linear). The sector is a conic-gradient mask (CSS conic angles
+  start at 12 o'clock and grow clockwise, exactly the clock-hand
+  reading), so the edge is one straight radial line from the origin
+  and the sweep needs no path math. `mode:'close'` winds it back
+  360 → 0; `dir:'ccw'` sweeps counter-clockwise; `start` moves the
+  hand's home angle in degrees (0 = 12 o'clock). The sweep eases on
+  `fn` (cubicOut opening, cubicIn closing unless overridden).
+  Before `at` an opening wipe shows nothing; after `at + dur` it
+  passes the input HTML through untouched. Source: Remotion
+  @remotion/transitions `clockWipe()` — "Reveal the new scene in a
+  circular movement" (https://www.remotion.dev/docs/transitions/).
+  Distinct from `iris` (a growing circle, no direction of travel)
+  and from `wipeReveal` (a straight edge, no pivot).
+- **Composition `clock-wipe`** (150 f, silent, house style): dark ink
+  stage, "CLOCK WIPE" title, coral "CLOCK" swept in clockwise from
+  12 o'clock 10–60, cream "a hand sweeps, the scene arrives"
+  swept in counter-clockwise from the bottom-left corner 75–120,
+  and the whole stage wound away clockwise 110–150 — three
+  independent sweeps proving the sector, direction and origin
+  knobs of one primitive.
+- Site: new `clockWipe` demo card (71 cards; the editorial header
+  line now reads "Seventy-one motions" and the meta line "71 live
+  demos") showing the open mode, and Docs row; skill bundle synced
+  (API catalog now 103 functions).
+- X sweep 2026-11-15 (rotated social.search queries: isometric
+  animation / spring physics UI animation / motion graphics
+  techniques / Remotion transition effects + text animation kinetic
+  typography / logo reveal / easing curves / Lottie, 100 results
+  across 2 calls — output files readable this round): 0 new
+  candidates filed. @ginyboi's "top 5 transitions" (swipe /
+  A-to-B masking / shape morphing / glitch / match-cut) and
+  @sonduckfilm's "top five favorite techniques" (CC Ball Action
+  dots / trim paths / DOF blur / orbiting ring / auto-orient)
+  dedupe against wipeReveal / maskReveal / morphShape / glitch /
+  matchCut / pixelDissolve / drawOn / frost / orbit; the easing
+  explainer restates the shipped `fn` system; @raminnasibov's 27
+  looping animations are UI micro-interaction / loop recipes;
+  Figma Motion updates, Lottie Lab principles, STG V.BOOST,
+  @studio.baseline patterns, Mat Voyce's NOPE, "NEVER STOP
+  CREATING" and "Cheesy 80s Zooms" all re-appear already deduped.
+  Full notes in research/x-motion-sweep-log.md.
+
 ## [0.72.0] — 2026-11-14
 
 ### Added — `dotText` primitive + `dot-text` composition

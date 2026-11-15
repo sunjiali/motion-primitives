@@ -6,6 +6,28 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Reveal (v0.73)
+- `clockWipe` — radial clock-hand sector reveal: the wrapped
+  content is revealed as a pie sector sweeping 0 → 360° around
+  (`x`, `y`), like a clock hand — the angular counterpart to `iris`
+  (radial) and `wipeReveal` (linear). The sector is a conic-gradient
+  mask (CSS conic angles start at 12 o'clock and grow clockwise,
+  exactly the clock-hand reading), so the edge is one straight
+  radial line from the origin and no path math is needed.
+  `mode:'close'` winds it back 360 → 0; `dir:'ccw'` sweeps
+  counter-clockwise; `start` moves the hand's home angle in
+  degrees (0 = 12 o'clock). The sweep eases on `fn` (cubicOut
+  opening, cubicIn closing unless overridden). Source: Remotion
+  @remotion/transitions `clockWipe()` — "Reveal the new scene in a
+  circular movement" (https://www.remotion.dev/docs/transitions/).
+  Distinct from `iris` (a growing circle, no direction of travel)
+  and from `wipeReveal` (a straight edge, no pivot). Demo card
+  (open mode) + `clock-wipe` composition (150 f, clockwise hero
+  sweep 10–60 + counter-clockwise sub-line sweep from the
+  bottom-left corner 75–120 + whole-stage close 110–150) +
+  Prompt Gallery entry. With this, the remaining backlog is
+  `textWarp` only.
+
 ### Reveal (v0.72)
 - `dotText` — halftone dot-filled text: the letterforms are a field
   of dots — an SVG dot grid over the stage clipped by a text mask —
@@ -903,13 +925,9 @@ Sources and dedup notes in research/x-motion-sweep-log.md.
 - ~~`dotText`~~ — shipped in v0.72.0: halftone dot-filled text (see
   Implemented above). With this, the remaining backlog is
   `clockWipe` / `textWarp` only.
-- `clockWipe` — radial clock-hand sector reveal: the wrapped content
-  is revealed as a pie sector sweeping 0 → 360° around (`x`, `y`),
-  like a clock hand — the angular counterpart to `iris` (radial)
-  and `wipeReveal` (linear). Source: Remotion
-  @remotion/transitions `clockWipe()` — "Reveal the new scene in a
-  circular movement" (https://www.remotion.dev/docs/transitions/).
-  Plain mask geometry, no shader — fits the HTML-string model.
+- ~~`clockWipe`~~ — shipped in v0.73.0: radial clock-hand sector
+  reveal (see Implemented above). With this, the remaining backlog
+  is `textWarp` only.
 - `textWarp` — field-warped kinetic type: a whole string typeset
   along a 2-D deformation field (concentric arches, mirrored
   ripples), each letter placed on the field and tangent-rotated, so

@@ -2335,6 +2335,54 @@ __root.Motion = (function () {
         }
         return '<div style="position:absolute;inset:0;' + clip + '">' + html + '</div>';
     }
+    // Clock wipe: the wrapped content is revealed as a pie sector
+    // sweeping 0 → 360° around (x, y), like a clock hand — the angular
+    // counterpart to `iris` (radial) and `wipeReveal` (linear). The
+    // sector is a conic-gradient mask, so the edge is one straight
+    // radial line from the origin and the sweep needs no path math:
+    // CSS conic angles start at 12 o'clock and grow clockwise, which
+    // is exactly the clock-hand reading. `mode:'close'` runs the hand
+    // backwards (360 → 0, the content winds away); `dir:'ccw'` sweeps
+    // counter-clockwise; `start` moves the hand's 12-o'clock home
+    // (degrees, 0 = top). The sweep eases on `fn` (cubicOut opening,
+    // cubicIn closing unless overridden). Before `at` an opening wipe
+    // shows nothing and a closing one shows the content untouched;
+    // after `at + dur` the open wipe passes the html through and the
+    // close wipe returns ''. Distinct from `iris` (a growing circle,
+    // no direction of travel) and from `wipeReveal` (a straight edge,
+    // no pivot). From the 2026-11-14 sweep (Remotion
+    // @remotion/transitions `clockWipe()` — "Reveal the new scene in
+    // a circular movement").
+    function clockWipe(frame, o) {
+        o = o || {};
+        const html = o.html || '';
+        if (!html)
+            return '';
+        const at = o.at || 0, dur = Math.max(1, o.dur || 30);
+        const mode = o.mode || 'open';
+        const w = o.w || 1280, h = o.h || 720;
+        const x = o.x == null ? w / 2 : o.x, y = o.y == null ? h / 2 : o.y;
+        if (frame < at)
+            return mode === 'open' ? '' : html;
+        if (frame >= at + dur)
+            return mode === 'close' ? '' : html;
+        const defaultFn = mode === 'close' ? 'cubicIn' : 'cubicOut';
+        const ease = Easing[o.fn || defaultFn] || Easing.cubicOut;
+        const p = ease(clamp01((frame - at) / dur));
+        const sweep = mode === 'close' ? 360 * (1 - p) : 360 * p;
+        if (sweep <= 0)
+            return '';
+        if (sweep >= 360)
+            return html;
+        const start = o.start == null ? 0 : o.start;
+        // Clockwise: the sector runs [start, start + sweep]. Counter-
+        // clockwise: the same sweep measured backwards, [start - sweep,
+        // start] — expressed as a clockwise gradient starting lower.
+        const from = o.dir === 'ccw' ? start - sweep : start;
+        const g = 'conic-gradient(from ' + from.toFixed(2) + 'deg at ' + x.toFixed(1) + 'px ' + y.toFixed(1) +
+            'px,#000 0deg,#000 ' + sweep.toFixed(2) + 'deg,transparent ' + sweep.toFixed(2) + 'deg)';
+        return '<div style="position:absolute;inset:0;-webkit-mask-image:' + g + ';mask-image:' + g + ';">' + html + '</div>';
+    }
     // dotText — halftone dot-filled text: the letterforms are a field of
     // dots, not a solid fill. An SVG dot grid over the stage is clipped
     // by a text mask, so the word reads as a printed halftone poster.
@@ -2904,7 +2952,7 @@ __root.Motion = (function () {
     }
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost, dominoReveal, iris,
+        paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost, dominoReveal, iris, clockWipe,
         beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, dotText,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

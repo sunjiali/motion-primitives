@@ -426,6 +426,42 @@ test('iris: circular-aperture reveal — open grows, close shrinks, blink holds 
   assert.equal(M.iris(25, o), M.iris(25, o)); // determinism
 });
 
+test('clockWipe: radial clock-hand sector reveal — open sweeps 0→360, close winds back, ccw mirrors, start moves home', () => {
+  const o = { at: 10, dur: 30, html: '<b>X</b>' };
+  const sector = (h) => {
+    const m = h.match(/conic-gradient\(from (-?[\d.]+)deg at ([\d.]+)px ([\d.]+)px,#000 0deg,#000 ([\d.]+)deg,transparent ([\d.]+)deg\)/);
+    assert.ok(m, 'conic-gradient sector mask present, got: ' + h);
+    return { from: parseFloat(m[1]), x: parseFloat(m[2]), y: parseFloat(m[3]), sweep: parseFloat(m[4]) };
+  };
+  // open: hidden before at, passthrough after the window
+  assert.equal(M.clockWipe(9, o), '');
+  assert.equal(M.clockWipe(40, o), '<b>X</b>');
+  assert.equal(M.clockWipe(10, { html: '' }), '');
+  // linear mid = half the circle; origin defaults to stage centre
+  const mid = sector(M.clockWipe(25, { ...o, fn: 'linear' }));
+  assert.ok(Math.abs(mid.sweep - 180) < 0.05, 'linear mid = 180 degrees');
+  assert.deepEqual([mid.from, mid.x, mid.y], [0, 640, 360]);
+  // custom fn respected: cubicOut(0.5) = 0.875 -> 315 degrees
+  const eased = sector(M.clockWipe(25, o));
+  assert.ok(Math.abs(eased.sweep - 315) < 0.05, 'default cubicOut ease on the open');
+  // close: content before, gone after, sector shrinking mid-window
+  assert.equal(M.clockWipe(9, { ...o, mode: 'close' }), '<b>X</b>');
+  assert.equal(M.clockWipe(40, { ...o, mode: 'close' }), '');
+  const closing = sector(M.clockWipe(25, { ...o, mode: 'close', fn: 'linear' }));
+  assert.ok(Math.abs(closing.sweep - 180) < 0.05, 'close mid = 180 degrees remaining');
+  // ccw: same sweep, gradient starts lower so the sector runs backwards
+  const ccw = sector(M.clockWipe(25, { ...o, fn: 'linear', dir: 'ccw' }));
+  assert.ok(Math.abs(ccw.sweep - 180) < 0.05, 'ccw keeps the sweep size');
+  assert.ok(Math.abs(ccw.from - (-180)) < 0.05, 'ccw starts one sweep below home');
+  // start: moves the hand's home angle (90 = 3 o'clock)
+  const started = sector(M.clockWipe(25, { ...o, fn: 'linear', start: 90 }));
+  assert.ok(Math.abs(started.from - 90) < 0.05, 'start 90 puts the hand at 3 o\'clock');
+  // custom origin: sector centred where asked
+  const corner = sector(M.clockWipe(25, { ...o, fn: 'linear', x: 0, y: 0 }));
+  assert.deepEqual([corner.x, corner.y], [0, 0]);
+  assert.equal(M.clockWipe(25, o), M.clockWipe(25, o)); // determinism
+});
+
 test('beat tools: grid math, phase, pulse decay, bars, frame generation', () => {
   const o = { bpm: 120, fps: 30 }; // 15 frames per beat
   const b0 = M.beatGrid(0, o);

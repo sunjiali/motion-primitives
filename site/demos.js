@@ -568,6 +568,16 @@
       },
     },
     {
+      name: 'clockWipe', desc: 'Radial clock-hand sector reveal — the content is revealed as a pie sector sweeping 0 → 360° around a point, like a clock hand; `mode` winds it back, `dir` sweeps counter-clockwise, `start` moves the hand\'s home angle (0 = 12 o\'clock).',
+      code: 'M.clockWipe(frame, { html, mode, dir, start })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        const word = '<div style="position:absolute;left:280px;top:157px;transform:translate(-50%,-50%);font:800 46px system-ui;color:#FF6B81;white-space:nowrap;">CLOCK</div>';
+        return '<div style="position:absolute;inset:0;background:#26221F;"></div>' +
+          M.clockWipe(lf, { html: word, at: 35, dur: 80, x: 280, y: 157, w: 560, h: 315 });
+      },
+    },
+    {
       name: 'dotText', desc: 'Halftone dot-filled text — the letterforms are a field of dots clipped by a text mask, so the word reads as a printed poster; `mode` grows the dots in on a hash stagger, breathes them on a pulse, or shrinks them away.',
       code: 'M.dotText(frame, { text, mode, gap, dot })', cycle: 150,
       draw(f) {
