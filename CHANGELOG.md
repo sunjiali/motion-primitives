@@ -2,6 +2,50 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.74.0] — 2026-11-16
+
+### Added — `textWarp` primitive + `text-warp` composition
+
+- **`textWarp(frame, { text, field?, amp?, wl?, speed?, x?, y?, size?, color?, fontFamily?, weight? })`** —
+  field-warped kinetic type: a whole string typeset along a 2-D
+  deformation field, each glyph placed on the field and rotated to
+  its local tangent, so the sentence flows like water.
+  `field:'arch'` (default) bends the baseline into a parabola
+  peaking `amp` px above the centre — a negative `amp` hangs it into
+  a valley — and the arch breathes slowly on `speed`;
+  `field:'ripple'` sends mirrored sine ripples outward from the
+  string centre (phase = 2π·|x − cx|/wl − frame·speed). Sustained and
+  looping, no window. Source: @kiel.d.m's STG V.EXPOGRID —
+  "'LAST WAVE FRONT' creating concentric arches, 'GOING GONE'
+  producing undulating letter flows"
+  (https://www.instagram.com/p/DHly2ppxbdT/). Distinct from
+  `waveText` (1-D horizontal sine drift, no rotation, no arch) and
+  from `textOnPath` (letters on one fixed path, not a live field).
+  Composition note: the ripple's tangent rotation widens each
+  letter's footprint, so small-size ripple lines need gentle
+  slopes — the showcase sub-line was tuned from amp 16 / wl 6
+  (letters overstruck) to amp 10 / wl 10 after the first stills
+  caught the overlap.
+- **Composition `text-warp`** (150 f, silent, house style): dark ink
+  stage, "TEXT WARP" title, coral "WARP" riding a breathing arch
+  (amp 55, speed 0.08) and cream "letters flow like water" flowing
+  on travelling mirrored ripples (amp 10, wl 10, speed 0.12) —
+  proving both fields of one primitive.
+- Site: new `textWarp` demo card (72 cards; the editorial header
+  line now reads "Seventy-two motions" and the meta line "72 live
+  demos") showing the arch mode, and Docs row; skill bundle synced
+  (API catalog now 104 functions).
+- X sweep 2026-11-16 (rotated social.search queries: motion graphics
+  techniques / kinetic typography animation / isometric animation /
+  spring physics UI animation + animation breakdown / text warp
+  deformation effect / Remotion transition effects / easing curves
+  animation, 100 results across 2 calls): 2 new backlog items filed
+  — `edgeBoil` (organic boiling-outline wobble, Chris Moran's
+  edge-boil tutorial) and `varFont` (variable-font kinetic type,
+  @joshschaub.ch); the rest deduped against the shipped API or out
+  of scope (traditional-animation breakdowns, 3-D tooling, footage).
+  Full notes in research/x-motion-sweep-log.md.
+
 ## [0.73.0] — 2026-11-15
 
 ### Added — `clockWipe` primitive + `clock-wipe` composition

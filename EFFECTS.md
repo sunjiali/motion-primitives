@@ -6,6 +6,26 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Text (v0.74)
+- `textWarp` — field-warped kinetic type: a whole string typeset
+  along a 2-D deformation field (concentric arches, mirrored
+  ripples), each letter placed on the field and tangent-rotated, so
+  the sentence flows like water. `field:'arch'` (default) bends the
+  baseline into a parabola peaking `amp` px above the centre — a
+  negative `amp` hangs it into a valley — and the arch breathes
+  slowly on `speed`; `field:'ripple'` sends mirrored sine ripples
+  outward from the string centre (phase = 2π·|x − cx|/wl −
+  frame·speed). Sustained and looping, no window. Source:
+  @kiel.d.m's STG V.EXPOGRID — "'LAST WAVE FRONT' creating
+  concentric arches, 'GOING GONE' producing undulating letter
+  flows" (https://www.instagram.com/p/DHly2ppxbdT/). Distinct from
+  `waveText` (1-D horizontal sine drift, no rotation, no arch) and
+  from `textOnPath` (letters on one fixed path, not a live field).
+  Demo card (arch mode) + `text-warp` composition (150 f, coral
+  WARP on a breathing arch + cream sub-line on travelling mirrored
+  ripples) + Prompt Gallery entry. With this, the remaining backlog
+  is `edgeBoil` / `varFont` (2026-11-16 sweep).
+
 ### Reveal (v0.73)
 - `clockWipe` — radial clock-hand sector reveal: the wrapped
   content is revealed as a pie sector sweeping 0 → 360° around
@@ -928,15 +948,9 @@ Sources and dedup notes in research/x-motion-sweep-log.md.
 - ~~`clockWipe`~~ — shipped in v0.73.0: radial clock-hand sector
   reveal (see Implemented above). With this, the remaining backlog
   is `textWarp` only.
-- `textWarp` — field-warped kinetic type: a whole string typeset
-  along a 2-D deformation field (concentric arches, mirrored
-  ripples), each letter placed on the field and tangent-rotated, so
-  the sentence flows like water. Source: @kiel.d.m's STG V.EXPOGRID
-  — "'LAST WAVE FRONT' creating concentric arches, 'GOING GONE'
-  producing undulating letter flows"
-  (https://www.instagram.com/p/DHly2ppxbdT/). Distinct from
-  `waveText` (1-D horizontal sine drift, no rotation, no arch) and
-  from `textOnPath` (letters on one fixed path, not a live field).
+- ~~`textWarp`~~ — shipped in v0.74.0: field-warped kinetic type
+  (see Implemented above). With this, the 2026-11-14 sweep backlog
+  is fully shipped.
 - Not taken this round: ~10 easing-curve explainers restate the
   shipped `fn` system (Adobevideo's "Niche Easing Curves" are named
   personas of shipped easings; "Buffering" stutter against
@@ -975,3 +989,39 @@ Sources and dedup notes in research/x-motion-sweep-log.md.
   Skill leads, not implemented: remotion-dev/skills (official,
   already noted), nexuslinkproductions Remotion Motion Design
   (already noted 2026-11-10).
+
+## Backlog — 2026-11-16 sweep (motion graphics techniques / kinetic typography / isometric / spring UI + animation breakdown / text warp / Remotion / easing)
+
+Backlog was empty after textWarp shipped (v0.74.0); this round's fresh
+sweep (social.search rotated queries, 100 results across 2 calls) filed
+two buildable primitives. Sources and dedup notes in
+research/x-motion-sweep-log.md.
+
+- `edgeBoil` — organic "boiling" outline wobble: the hand-drawn line
+  movement that makes animation feel alive — AE Roughen Edges +
+  Turbulent Displace with a re-rolled random seed. Transferable as an
+  SVG feTurbulence + feDisplacementMap filter over wrapped HTML with a
+  hash-stepped seed. Source: Chris Moran's edge-boil tutorial
+  (https://www.instagram.com/reel/DZdCD2YNk4d/). Distinct from `wiggle`
+  (shakes the whole element, no outline deformation) and from `smear`
+  (motion blur, not a wobble).
+- `varFont` — variable-font kinetic type: per-letter
+  font-variation-settings (Weight / Width / Italic) driven by a
+  travelling sine across textIndex, no keyframes. Source: @joshschaub.ch
+  (https://www.instagram.com/reel/DVN0yNWjTnW/). Distinct from
+  `waveText` (transform drift, no font-axis change) and from
+  `splitText` (entrance, not a sustained wave). Caveat: needs a
+  variable font available at render time — check what the renderer
+  can load before building.
+- Not taken this round: @ginyboi's top-5 transitions and @sonduckfilm's
+  top five re-appear, all shipped; @antonin.work's Frutiger digit-grid
+  kinetic type dedupes against charGrid; @motiongraphictv's 'BALANCE'
+  warping is a further textWarp corroboration; @holke79's blobby
+  letterforms against morphShape; @kiel.d.m's STG V.SPIN / V.BOOST are
+  3-D extrusion generator tooling, out of scope; Figma Motion carousel,
+  Kenson's "Animation Smears", LottieFiles' principles carousels and the
+  easing explainers all re-appear, deduped; the 'Animation Breakdown'
+  reels (traditional pipeline craft) and the dance/VFX footage reels are
+  out of scope; @sophuia's 10 UX animations are component recipes;
+  @matt_penny_applied_ai's skill-level reel re-appears (domino panel
+  already shipped, the rest are recipes / 3-D).

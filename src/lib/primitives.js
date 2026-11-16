@@ -1051,6 +1051,67 @@ __root.Motion = (function () {
             'px;transform:translate(-50%,-50%);font-family:' + fontFamily + ';font-size:' + size +
             'px;font-weight:' + weight + ';color:' + color + ';white-space:nowrap;">' + spans + '</div>';
     }
+    // textWarp(): a whole string typeset along a 2-D deformation
+    // field — each glyph is placed on the field and rotated to its
+    // local tangent, so the sentence itself flows like water instead
+    // of drifting as a rigid line. Two fields: `arch` (default) bends
+    // the baseline into a parabola peaking `amp` px above the centre
+    // — a negative amp hangs it into a valley — and the arch breathes
+    // slowly on `speed`; `ripple` sends mirrored sine ripples outward
+    // from the string centre (phase = 2π·|x − cx|/wl − frame·speed), so
+    // the wave flows away from the middle in both directions. Sustained
+    // and looping, no window. Source: @kiel.d.m's STG V.EXPOGRID —
+    // "'LAST WAVE FRONT' creating concentric arches, 'GOING GONE'
+    // producing undulating letter flows"
+    // (https://www.instagram.com/p/DHly2ppxbdT/, 2026-11-14 sweep).
+    // Distinct from waveText (1-D sine drift, no rotation, no arch)
+    // and from textOnPath (letters on one fixed path, not a live
+    // field). Frame-pure, no hash; empty text returns ''.
+    function textWarp(frame, o) {
+        o = o || {};
+        const text = String(o.text || '');
+        if (!text)
+            return '';
+        const field = o.field === 'ripple' ? 'ripple' : 'arch';
+        const size = o.size == null ? 64 : o.size;
+        const weight = o.weight == null ? 800 : o.weight;
+        const color = o.color || '#26221F';
+        const fontFamily = o.fontFamily || 'system-ui';
+        const cx = o.x == null ? 640 : o.x, cy = o.y == null ? 360 : o.y;
+        const amp = o.amp == null ? 40 : o.amp;
+        const wl = o.wl == null || o.wl === 0 ? 6 : Math.abs(o.wl);
+        const speed = o.speed == null ? 0.1 : o.speed;
+        const adv = size * 0.62;
+        const W = text.length * adv;
+        if (W <= 0)
+            return '';
+        const x0 = cx - W / 2;
+        // Field height at an absolute x: arch is a parabola peaking at
+        // the string centre (breathing ±15% on speed); ripple is a sine
+        // in the distance from centre, mirrored at cx.
+        const yAt = (px) => {
+            if (field === 'arch') {
+                const breathe = 1 + 0.15 * Math.sin(frame * speed);
+                const u = (px - x0) / W;
+                return cy - amp * breathe * 4 * u * (1 - u);
+            }
+            const r = Math.abs(px - cx);
+            return cy + amp * Math.sin(2 * Math.PI * r / (wl * adv) - frame * speed);
+        };
+        const esc = (ch) => (ch === '&' ? '&amp;' : ch === '<' ? '&lt;' : ch === '>' ? '&gt;' : ch);
+        const spans = text.split('').map((ch, i) => {
+            if (ch === ' ')
+                return '';
+            const px = x0 + (i + 0.5) * adv;
+            const y = yAt(px);
+            // tangent from a 1-px finite difference, like textOnPath's sampler
+            const ang = Math.atan2(yAt(px + 1) - yAt(px - 1), 2) * 180 / Math.PI;
+            return '<span style="position:absolute;left:0;top:0;transform:translate(' + px.toFixed(1) + 'px,' + y.toFixed(1) +
+                'px) rotate(' + ang.toFixed(1) + 'deg) translate(-50%,-50%);">' + esc(ch) + '</span>';
+        }).join('');
+        return '<div style="position:absolute;left:0;top:0;font-family:' + fontFamily + ';font-size:' + size +
+            'px;font-weight:' + weight + ';color:' + color + ';white-space:nowrap;">' + spans + '</div>';
+    }
     // portalWipe(): a circular portal transition — a flat disc blooms
     // from (x, y) with an easeOutCubic pop, swallows the outgoing
     // scene, holds, then contracts (cubicInOut) toward (x2, y2),
@@ -2953,7 +3014,7 @@ __root.Motion = (function () {
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
         paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost, dominoReveal, iris, clockWipe,
-        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, dotText,
+        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, dotText,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
         scramble, splitFlap, kenBurns, breathe, fx, hash,

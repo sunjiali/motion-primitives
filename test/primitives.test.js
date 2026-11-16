@@ -462,6 +462,39 @@ test('clockWipe: radial clock-hand sector reveal — open sweeps 0→360, close 
   assert.equal(M.clockWipe(25, o), M.clockWipe(25, o)); // determinism
 });
 
+test('textWarp: field-warped kinetic type — arch bends the line and rotates letters to the tangent, ripple mirrors from the centre', () => {
+  const spans = (h) => [...h.matchAll(/translate\((-?[\d.]+)px,(-?[\d.]+)px\) rotate\((-?[\d.]+)deg\)/g)]
+    .map((m) => ({ x: parseFloat(m[1]), y: parseFloat(m[2]), a: parseFloat(m[3]) }));
+  assert.equal(M.textWarp(0, { text: '' }), '', 'empty text returns nothing');
+  // arch, frame 0, speed 0: size 100 -> adv 62, W 248, x0 516; u = 0.125/0.375/0.625/0.875
+  const o = { text: 'WARP', x: 640, y: 360, size: 100, amp: 40, speed: 0 };
+  const arch = spans(M.textWarp(0, o));
+  assert.equal(arch.length, 4, 'one span per letter');
+  assert.ok(Math.abs(arch[0].y - 342.5) < 0.05 && Math.abs(arch[1].y - 322.5) < 0.05, 'arch peaks amp above the centre line');
+  assert.ok(arch[1].y < arch[0].y && arch[2].y < arch[3].y, 'middle letters sit higher than the ends');
+  assert.ok(Math.abs(arch[0].a - -25.8) < 0.2 && Math.abs(arch[1].a - -9.2) < 0.2, 'left letters tilt up to the right');
+  assert.ok(Math.abs(arch[2].a - 9.2) < 0.2 && Math.abs(arch[3].a - 25.8) < 0.2, 'right letters tilt down to the right');
+  assert.equal(M.textWarp(0, o), M.textWarp(0, { ...o, field: 'arch' }), 'arch is the default field');
+  // negative amp hangs the arch into a valley
+  const valley = spans(M.textWarp(0, { ...o, amp: -40 }));
+  assert.ok(valley[1].y > valley[0].y, 'negative amp inverts the arch');
+  // arch breathes on speed: frame 15 (sin pi/2) lifts the peak 15%, frame 60 is one full period
+  const breathing = spans(M.textWarp(15, { ...o, speed: Math.PI / 30 }));
+  assert.ok(Math.abs(breathing[1].y - (360 - 40 * 1.15 * 0.9375)) < 0.05, 'arch breathes to 1.15x amp at a quarter period');
+  assert.equal(M.textWarp(0, { ...o, speed: Math.PI / 30 }), M.textWarp(60, { ...o, speed: Math.PI / 30 }), 'arch period is exact');
+  // ripple: wl 6 -> wl*adv 372; r = 93/31/31/93 px from centre, mirrored pairs share y and opposite angles
+  const r = spans(M.textWarp(0, { ...o, field: 'ripple', amp: 20 }));
+  assert.equal(r[0].y, r[3].y, 'ripple mirrors left/right y');
+  assert.equal(r[1].y, r[2].y, 'inner pair mirrors too');
+  assert.ok(Math.abs(r[0].y - 380) < 0.05 && Math.abs(r[1].y - 370) < 0.05, 'outer letters ride the crest, inner ones halfway down');
+  assert.equal(r[0].a, 0, 'crest letters sit flat');
+  assert.ok(Math.abs(r[1].a - -16.3) < 0.2 && Math.abs(r[2].a - 16.3) < 0.2, 'inner letters tilt toward the crest');
+  assert.ok(Math.abs(r[0].a + r[3].a) < 0.05 && Math.abs(r[1].a + r[2].a) < 0.05, 'mirrored letters tilt opposite');
+  assert.equal(M.textWarp(0, { ...o, field: 'ripple', speed: Math.PI / 30 }),
+    M.textWarp(60, { ...o, field: 'ripple', speed: Math.PI / 30 }), 'ripple period is exact');
+  assert.equal(M.textWarp(0, o), M.textWarp(0, o)); // determinism
+});
+
 test('beat tools: grid math, phase, pulse decay, bars, frame generation', () => {
   const o = { bpm: 120, fps: 30 }; // 15 frames per beat
   const b0 = M.beatGrid(0, o);

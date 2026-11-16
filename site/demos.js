@@ -578,6 +578,15 @@
       },
     },
     {
+      name: 'textWarp', desc: 'Field-warped kinetic type — a whole string typeset along a 2-D deformation field, each letter placed on the field and rotated to its tangent; `arch` bends the line into a breathing parabola, `ripple` sends mirrored waves outward from the centre.',
+      code: 'M.textWarp(frame, { text, field, amp, wl, speed })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        return '<div style="position:absolute;inset:0;background:#26221F;"></div>' +
+          M.textWarp(lf, { text: 'WARP', x: 280, y: 157, size: 64, amp: 30, speed: 0.08, color: '#FF6B81' });
+      },
+    },
+    {
       name: 'dotText', desc: 'Halftone dot-filled text — the letterforms are a field of dots clipped by a text mask, so the word reads as a printed poster; `mode` grows the dots in on a hash stagger, breathes them on a pulse, or shrinks them away.',
       code: 'M.dotText(frame, { text, mode, gap, dot })', cycle: 150,
       draw(f) {

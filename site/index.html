@@ -140,8 +140,8 @@ stage.innerHTML =
     <p class="section-lede">Every demo below is running <em>right now in your browser</em> on the exact
     library that renders the videos — driven by a virtual frame counter instead of a screenshot camera.</p>
     <div class="demo-hed">
-      <p class="hed-line">Seventy-one motions, one idea: every move in this library is a single named call.</p>
-      <p class="hed-meta">71 live demos · running on the shipped library · hover any card to replay it from the start</p>
+      <p class="hed-line">Seventy-two motions, one idea: every move in this library is a single named call.</p>
+      <p class="hed-meta">72 live demos · running on the shipped library · hover any card to replay it from the start</p>
     </div>
     <div class="grid" id="demo-grid"></div>
   </section>
@@ -290,6 +290,7 @@ node src/render.js --comp showcase \
           <tr><td><code>letterTrack</code></td><td>Animated letter-spacing reveal — a whole word's tracking eases from wide (or tight) to its resting value as one unit, opacity riding the same ease</td></tr>
           <tr><td><code>speedLines</code></td><td>Anime speed lines — thin streaks radiating from a point during a fast window: full impact burst at spread 360, or a narrow cone trailing behind a moving element</td></tr>
           <tr><td><code>waveText</code></td><td>Travelling sine wave over a typeset string — each letter drifts on a sine field with a per-letter phase stagger, so the sentence itself ripples; axis x drifts sideways, axis y bobs vertically</td></tr>
+          <tr><td><code>textWarp</code></td><td>Field-warped kinetic type — a whole string typeset along a 2-D deformation field, each letter placed on the field and rotated to its tangent; <code>arch</code> bends the baseline into a breathing parabola (negative <code>amp</code> hangs a valley), <code>ripple</code> sends mirrored sine waves outward from the string centre</td></tr>
           <tr><td><code>chroma</code></td><td>Chromatic-aberration RGB fringe over wrapped HTML — red and cyan channel ghosts drift apart along an angle; pulse rides a sine envelope over the window, sustain holds a constant offset with a slow breathing wobble</td></tr>
           <tr><td><code>shine</code></td><td>Shine sweep over wrapped HTML — one band of light travels across the content on an angle (0 = left-to-right, 90 = top-to-bottom); the band starts and ends fully off-stage, so the first and last frames are clean</td></tr>
           <tr><td><code>frost</code></td><td>Frosted-glass blur over wrapped HTML — the blur radius animates from <code>from</code> (default 12 px) to <code>to</code> (default 0) on <code>fn</code>, so content clears out of frosted glass, or sinks behind it when reversed</td></tr>

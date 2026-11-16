@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (103 functions)
+# motion-primitives API — the full catalog (104 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -365,6 +365,14 @@ M.waveText(frame: number, o: { text?: string; x?: number; y?: number; amp?: numb
 ```
 
 Travelling sine wave over a typeset string: each glyph drifts on a sine field with a per-letter phase stagger (phase = 2π·i/wl − frame·speed), so the sentence itself ripples — sustained and looping, not an entrance. axis 'x' (default) drifts sideways, 'y' bobs vertically. Returns a centred div ('' for empty text).
+
+### `textWarp`
+
+```ts
+M.textWarp(frame: number, o: { text?: string; x?: number; y?: number; size?: number; color?: string; fontFamily?: string; weight?: number; field?: 'arch' | 'ripple'; amp?: number; wl?: number; speed?: number }): string
+```
+
+Field-warped kinetic type: a whole string typeset along a 2-D deformation field — each glyph is placed on the field and rotated to its local tangent, so the sentence flows like water. `field:'arch'` (default) bends the baseline into a parabola peaking `amp` px above the centre (negative `amp` hangs a valley) and breathes slowly on `speed`; `field:'ripple'` sends mirrored sine ripples outward from the string centre (phase = 2π·|x − cx|/wl − frame·speed). Sustained and looping, not an entrance. Returns a positioned div ('' for empty text).
 
 ### `dotText`
 

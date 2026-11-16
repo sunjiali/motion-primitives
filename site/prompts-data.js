@@ -369,6 +369,22 @@ window.PROMPT_GALLERY = [
     notes: '回填条目：成片随 v0.73.0 发布（clockWipe 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧只有标题、主词未出 / 25 帧主词顺时针扫出一半、左半缺失、右半在 / 60 帧主词全露、小字未出 / 95 帧小字自左下角逆时针揭示中、左端沿斜线裁切 / 130 帧收尾扇形已裁掉左上象限、主词 O 字带斜切口 / 149 帧只剩顶部一条窄扇形残影）通过；成片 mp4 抽帧（25 / 130 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 71 卡、clockWipe 卡在动、0 控制台报错。',
   },
   {
+    id: 'textWarp',
+    title: 'Text Warp — Letters Flow Like Water',
+    blurb: 'The hero word rides a breathing arch while the sub-line flows on mirrored ripples outward from its centre — two live deformation fields, one primitive.',
+    video: 'videos/text-warp.mp4',
+    tags: ['text', 'warp', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.74',
+    prompt:
+`用 motion-primitives 做一条 5 秒的场变形动态文字展示片，composition 名 text-warp，核心只用一个新原语 M.textWarp。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。深墨底 #26221F、奶油字 #FBF6EC、珊瑚字 #FF6B81；画面上方一行大字「TEXT WARP」（64px，800 字重）全程静止；中央一行大字「WARP」（150px，800 字重，珊瑚色，居中于 640,330），骑在一条缓慢呼吸的拱形场上（field arch、amp 55、speed 0.08）；下方一行小字「letters flow like water」（36px，500 字重，奶油色，居中于 640,500），踩在镜像涟漪场上向两侧流动（field ripple、amp 10、wl 10、speed 0.12）；左下角一行等宽小字「M.textWarp(frame, { field: 'arch' })」（22px，奶油 55% 透明）全程静止；右上角一颗奶油圆点（#FBF6EC，18px）点缀。
+
+纪律：字是沿着变形场逐字排布、按场切线旋转的——不是整行平移也不是逐字淡入；拱形要读出中央高、两端低的抛物线，两侧字母向外倾斜；涟漪要读出以行中为界向两侧镜像流动、波峰处字母放平；除标题、两行字、左下角代码行、右上角圆点外不许加别的元素；不许渐变背景、相机运动、颗粒噪点、音效。
+`,
+    notes: '回填条目：成片随 v0.74.0 发布（textWarp 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧 WARP 拱形完整、涟漪行清晰可读 / 75 帧拱形呼吸、涟漪反向倾斜）通过；首版涟漪参数 amp 16 / wl 6 在静帧上被抓到字母互叠，改 amp 10 / wl 10 后重验通过；成片 mp4 抽帧（30 / 120 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 72 卡、textWarp 卡在动、0 控制台报错。',
+  },
+  {
     id: 'chroma',
     title: 'Chroma — The Cheap-Lens Grade',
     blurb: 'A big word takes two RGB-fringe spikes — first horizontal, then vertical — while a second line wears the sustain grade for the whole film, proving both modes of one primitive.',
