@@ -250,6 +250,10 @@ interface FrostOpts {
   html: string; at?: number; dur?: number; from?: number; to?: number;
   fn?: EasingName;
 }
+interface EdgeBoilOpts {
+  html: string; at?: number; dur?: number; amp?: number; freq?: number;
+  octaves?: number; step?: number; seed?: number;
+}
 interface DominoRevealOpts {
   html: string; at?: number; dur?: number; count?: number; fall?: number;
   fade?: number; angle?: number; dir?: 'left' | 'right'; color?: string;
@@ -2503,6 +2507,59 @@ __root.Motion = (function () {
     return '<div style="position:absolute;inset:0;filter:blur(' + r.toFixed(2) + 'px);">' + html + '</div>';
   }
 
+  // Edge boil: the hand-drawn "boiling line" wobble — the organic
+  // outline movement that makes animation feel alive (AE Roughen
+  // Edges + Turbulent Displace with a re-rolled random seed). An SVG
+  // feTurbulence + feDisplacementMap filter displaces the wrapped
+  // HTML by `amp` px on a noise field of `freq`; the turbulence
+  // seed re-rolls every `step` frames on a hash step (default 4 —
+  // about 8 swaps a second at 30 fps, the old-cartoon rate
+  // @jejestudios quotes for line boil), so the outline shivers
+  // instead of sliding smoothly. Sustained when no `dur` is given
+  // (a standing hand-drawn grade); with a window the boil ramps in
+  // and out over 4 frames so it never pops on or off. Outside the
+  // window the html passes through untouched. Distinct from `wiggle`
+  // (shakes the whole element, no outline deformation) and from
+  // `smear` (motion blur, not a wobble). From the 2026-11-16 sweep
+  // (Chris Moran's edge-boil tutorial), corroborated 2026-11-17 by
+  // @jejestudios' line-boil breakdown, @sewellkillingstad's
+  // hand-traced type boil, and the Vox hand-drawn jitter tutorial.
+  function edgeBoil(frame: number, o: EdgeBoilOpts): string {
+    o = o || ({} as EdgeBoilOpts);
+    const html = o.html || '';
+    if (!html) return '';
+    const at = o.at || 0;
+    const windowed = o.dur != null;
+    const dur = windowed ? Math.max(1, o.dur as number) : Number.POSITIVE_INFINITY;
+    if (frame < at || frame >= at + dur) return html;
+    const t = frame - at;
+    // Window edges ramp the boil in/out over 4 frames (clamped to
+    // half the window); a sustained boil runs at full amp from
+    // frame 0 — the look is a texture, not an entrance.
+    const ramp = windowed ? Math.min(4, dur / 2) : 0;
+    const ss = (x: number): number => { x = clamp01(x); return x * x * (3 - 2 * x); };
+    const env = ramp > 0 ? Math.min(ss(t / ramp), ss((dur - 1 - t) / ramp)) : 1;
+    const amp = (o.amp == null ? 4 : Math.max(0, o.amp)) * env;
+    const freq = o.freq == null ? 0.02 : Math.max(0.001, o.freq);
+    const octaves = Math.max(1, Math.round(o.octaves == null ? 2 : o.octaves));
+    const step = Math.max(1, Math.round(o.step == null ? 4 : o.step));
+    const seed = o.seed || 0;
+    // The turbulence seed re-rolls once per step-block on a hash
+    // step, so the displacement field jumps to a new shape instead
+    // of drifting — the redrawn-outline boil, not a smooth warp.
+    const block = Math.floor(t / step);
+    const seedVal = Math.floor(hash(seed * 131 + block * 17.3) * 997);
+    const id = 'eb' + seedVal + '_' + Math.round(amp * 10) + '_' + Math.round(freq * 1000) + '_' + octaves;
+    return '<div style="position:absolute;inset:0;">' +
+      '<svg width="0" height="0" style="position:absolute;"><defs>' +
+      '<filter id="' + id + '" x="-10%" y="-10%" width="120%" height="120%">' +
+      '<feTurbulence type="fractalNoise" baseFrequency="' + freq + '" numOctaves="' + octaves +
+      '" seed="' + seedVal + '" result="n"/>' +
+      '<feDisplacementMap in="SourceGraphic" in2="n" scale="' + amp.toFixed(2) +
+      '" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>' +
+      '<div style="position:absolute;inset:0;filter:url(#' + id + ');">' + html + '</div></div>';
+  }
+
   // Domino topple-chain reveal: a row of standing tiles covers the
   // content and falls one after another, each tile rotating ~90°
   // around its base edge on a gravity ease (quadIn default: the fall
@@ -3237,7 +3294,7 @@ __root.Motion = (function () {
 
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
-    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost, dominoReveal, iris, clockWipe,
+    paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost, edgeBoil, dominoReveal, iris, clockWipe,
     beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, dotText,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,

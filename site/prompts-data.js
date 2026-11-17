@@ -385,6 +385,22 @@ window.PROMPT_GALLERY = [
     notes: '回填条目：成片随 v0.74.0 发布（textWarp 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧 WARP 拱形完整、涟漪行清晰可读 / 75 帧拱形呼吸、涟漪反向倾斜）通过；首版涟漪参数 amp 16 / wl 6 在静帧上被抓到字母互叠，改 amp 10 / wl 10 后重验通过；成片 mp4 抽帧（30 / 120 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 72 卡、textWarp 卡在动、0 控制台报错。',
   },
   {
+    id: 'edgeBoil',
+    title: 'Edge Boil — The Hand-Drawn Wobble',
+    blurb: 'The hero word shivers on a sustained turbulence boil while the sub-line boils only inside a window, against a title that stays perfectly still — the contrast proves the wobble is the filter, not a camera move.',
+    video: 'videos/edge-boil.mp4',
+    tags: ['fx', 'boil', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.75',
+    prompt:
+`用 motion-primitives 做一条 5 秒的手绘沸腾线展示片，composition 名 edge-boil，核心只用一个新原语 M.edgeBoil。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。深墨底 #26221F、奶油字 #FBF6EC、珊瑚字 #FF6B81；画面上方一行大字「EDGE BOIL」（64px，800 字重）全程静止、始终干净；中央一行大字「BOIL」（150px，800 字重，珊瑚色，居中于 640,330），全程挂持续沸腾（amp 5、freq 0.025、step 4）；下方一行小字「outlines redrawn 8× a second」（36px，500 字重，奶油色，居中于 640,500），只在 45–105 帧吃窗口沸腾（amp 6、freq 0.03，窗口边缘 4 帧平滑淡入淡出）；左下角一行等宽小字「M.edgeBoil(frame, { amp: 5, step: 4 })」（22px，奶油 55% 透明）全程静止；右上角一颗奶油圆点（#FBF6EC，18px）点缀。
+
+纪律：沸腾是 SVG 湍流位移滤镜——字形边缘要有手绘抖动、不是整字平移也不是缩放呼吸；湍流种子每 4 帧重 roll 一次（30fps 下约每秒换 8 次形），相邻静帧的字形抖动形状必须不同；标题始终干净、与沸腾的字形成对照，证明抖动是滤镜不是相机运动；窗口外的小字原样返回、干净无抖动；除标题、两行字、左下角代码行、右上角圆点外不许加别的元素；不许渐变背景、相机运动、颗粒噪点、音效。
+`,
+    notes: '回填条目：成片随 v0.75.0 发布（edgeBoil 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧 hero 沸腾、小字干净 / 75 帧 hero 与小字双沸腾、种子形状与 0 帧不同 / 105 帧窗口关闭小字干净、hero 仍沸腾 / 149 帧 hero 沸腾、小字干净）通过；成片 mp4 抽帧（30 / 120 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 73 卡、edgeBoil 卡在动、0 控制台报错。',
+  },
+  {
     id: 'chroma',
     title: 'Chroma — The Cheap-Lens Grade',
     blurb: 'A big word takes two RGB-fringe spikes — first horizontal, then vertical — while a second line wears the sustain grade for the whole film, proving both modes of one primitive.',

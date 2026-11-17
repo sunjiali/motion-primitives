@@ -183,6 +183,8 @@ export function chroma(frame: number, o: { html: string; at?: number; dur?: numb
 export function shine(frame: number, o: { html: string; at?: number; dur?: number; angle?: number; width?: number; amount?: number; color?: string; blend?: string; fn?: string }): string;
 /** Frosted-glass blur over wrapped HTML: the blur radius animates from `from` (default 12 px) to `to` (default 0) on `fn` (cubicOut default) — content clears out of frosted glass, or sinks behind it when reversed. Returns the input HTML untouched outside the window. */
 export function frost(frame: number, o: { html: string; at?: number; dur?: number; from?: number; to?: number; fn?: string }): string;
+/** Hand-drawn "boiling line" wobble over wrapped HTML: an SVG feTurbulence + feDisplacementMap filter displaces the content by `amp` px (default 4) on a noise field of `freq` (default 0.02), and the turbulence seed re-rolls every `step` frames (default 4 — about 8 swaps a second at 30 fps) on a hash step, so the outline shivers like redrawn cartoon lines instead of sliding smoothly. Sustained when no `dur` is given (a standing hand-drawn grade); with a window the boil ramps in and out over 4 frames. Returns the input HTML untouched outside the window. */
+export function edgeBoil(frame: number, o: { html: string; at?: number; dur?: number; amp?: number; freq?: number; octaves?: number; step?: number; seed?: number }): string;
 /** Domino topple-chain reveal: a row of standing tiles covers the content and falls one after another — each tile rotates ~90° around its base edge on a gravity ease, then fades out once flat — so the wave uncovers the content as it passes. `count` tiles (default 8), `fall` frames per tile (default 10), `fade` frames to clear a fallen tile (default 8); `dir` picks the wave direction; `x/y/w/h` confines the tiles to a band, otherwise they cover the whole stage. Before `at` the tiles stand (content hidden); after `at + dur` the input HTML passes through untouched. */
 export function dominoReveal(frame: number, o: { html: string; at?: number; dur?: number; count?: number; fall?: number; fade?: number; angle?: number; dir?: 'left' | 'right'; color?: string; gap?: number; fn?: string; x?: number; y?: number; w?: number; h?: number }): string;
 /** Circular-aperture (iris) reveal: the wrapped content is clipped to a circle centred at (`x`, `y`) whose radius animates 0 → the farthest stage corner, so the scene arrives through an opening camera iris. `mode:'close'` runs it backwards (the content sinks into a dot and vanishes); `mode:'blink'` closes, holds as a dot for `hold` frames, then reopens. `feather` softens the rim (a mask gradient instead of a hard clip-path). Before `at` an opening iris shows nothing; after `at + dur` it passes the input HTML through untouched. */
@@ -268,6 +270,7 @@ declare const Motion: {
   chroma: typeof chroma;
   shine: typeof shine;
   frost: typeof frost;
+  edgeBoil: typeof edgeBoil;
   dominoReveal: typeof dominoReveal;
   iris: typeof iris;
   clockWipe: typeof clockWipe;

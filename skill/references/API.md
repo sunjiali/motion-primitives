@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (104 functions)
+# motion-primitives API — the full catalog (105 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -625,6 +625,14 @@ M.frost(frame: number, o: { html: string; at?: number; dur?: number; from?: numb
 ```
 
 Frosted-glass blur over wrapped HTML: the blur radius animates from `from` (default 12 px) to `to` (default 0) on `fn` (cubicOut default) — content clears out of frosted glass, or sinks behind it when reversed. Returns the input HTML untouched outside the window.
+
+### `edgeBoil`
+
+```ts
+M.edgeBoil(frame: number, o: { html: string; at?: number; dur?: number; amp?: number; freq?: number; octaves?: number; step?: number; seed?: number }): string
+```
+
+Hand-drawn "boiling line" wobble over wrapped HTML: an SVG feTurbulence + feDisplacementMap filter displaces the content by `amp` px (default 4) on a noise field of `freq` (default 0.02), and the turbulence seed re-rolls every `step` frames (default 4 — about 8 swaps a second at 30 fps) on a hash step, so the outline shivers like redrawn cartoon lines instead of sliding smoothly. Sustained when no `dur` is given (a standing hand-drawn grade); with a window the boil ramps in and out over 4 frames. Returns the input HTML untouched outside the window.
 
 ### `fx`
 

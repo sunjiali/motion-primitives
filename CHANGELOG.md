@@ -2,6 +2,58 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.75.0] — 2026-11-17
+
+### Added — `edgeBoil` primitive + `edge-boil` composition
+
+- **`edgeBoil(frame, { html, at?, dur?, amp?, freq?, octaves?, step?, seed? })`** —
+  hand-drawn "boiling line" wobble over wrapped HTML: an SVG
+  feTurbulence + feDisplacementMap filter displaces the content by
+  `amp` px (default 4) on a noise field of `freq` (default 0.02,
+  `octaves` 2), and the turbulence seed re-rolls every `step`
+  frames (default 4 — about 8 swaps a second at 30 fps, the
+  old-cartoon rate @jejestudios quotes for line boil) on a hash
+  step, so the outline shivers like redrawn cartoon lines instead
+  of sliding smoothly. Sustained when no `dur` is given (a standing
+  hand-drawn grade); with a window the boil ramps in and out over
+  4 frames so it never pops on or off. Outside the window the html
+  passes through untouched. Source: Chris Moran's edge-boil
+  tutorial (AE Roughen Edges + Turbulent Displace with a re-rolled
+  random seed, https://www.instagram.com/reel/DZdCD2YNk4d/),
+  corroborated 2026-11-17 by @jejestudios' line-boil breakdown
+  (every outline redrawn three ways, swapped eight times per
+  second, https://www.instagram.com/reel/DemHJJmNEb5/),
+  @sewellkillingstad's hand-traced line-boil type
+  (https://www.instagram.com/reel/DVwRHnAjh0g/) and the Vox
+  hand-drawn jitter/boil tutorial
+  (https://www.instagram.com/reel/Dez2EqWorHx/). Distinct from
+  `wiggle` (shakes the whole element, no outline deformation) and
+  from `smear` (motion blur, not a wobble). Composition note: the
+  filter id is derived from the seed block, amp, freq and octaves,
+  so two edgeBoil calls with different knobs never share — and
+  overwrite — each other's filter.
+- **Composition `edge-boil`** (150 f, silent, house style): dark ink
+  stage, "EDGE BOIL" title staying perfectly still, coral "BOIL"
+  boiling sustained (amp 5, freq 0.025) and cream "outlines
+  redrawn 8× a second" boiling only inside a 45–105 window
+  (amp 6, freq 0.03) — the still title against the boiling words
+  proves the wobble is the filter, not a camera move.
+- Site: new `edgeBoil` demo card (73 cards; the editorial header
+  line now reads "Seventy-three motions" and the meta line "73 live
+  demos") showing the sustained boil, and Docs row; skill bundle
+  synced (API catalog now 105 functions).
+- X sweep 2026-11-17 (rotated social.search queries: boiling-line /
+  hand-drawn wobble / variable-font kinetic type / SVG turbulence
+  displacement / grain overlay + seamless loops / kinetic
+  typography / logo reveal / isometric animation, ~100 results
+  across 2 calls): 0 new backlog items filed — the sweep
+  corroborated the already-filed `edgeBoil` (and fixed its default
+  step at 4 frames from the 8-swaps-a-second rate) instead of
+  finding a new primitive; the rest deduped against the shipped
+  API or out of scope (trippy-loop pattern combining, letter-spacing
+  steps, 4-drawing loops, logo reveals, 3-D tooling, footage).
+  Full notes in research/x-motion-sweep-log.md.
+
 ## [0.74.0] — 2026-11-16
 
 ### Added — `textWarp` primitive + `text-warp` composition

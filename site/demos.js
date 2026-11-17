@@ -558,6 +558,16 @@
       },
     },
     {
+      name: 'edgeBoil', desc: 'Hand-drawn boiling-line wobble — an SVG turbulence filter displaces the wrapped content while its seed re-rolls every few frames, so outlines shiver like redrawn cartoon lines; `amp` sets the wobble, `step` the redraw rate.',
+      code: 'M.edgeBoil(frame, { html, amp, step })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        const word = '<div style="position:absolute;left:280px;top:157px;transform:translate(-50%,-50%);font:800 46px system-ui;color:#FF6B81;white-space:nowrap;">BOIL</div>';
+        return '<div style="position:absolute;inset:0;background:#26221F;"></div>' +
+          M.edgeBoil(lf, { html: word, amp: 3, step: 4 });
+      },
+    },
+    {
       name: 'dominoReveal', desc: 'Domino topple-chain reveal — a row of standing tiles falls one after another, each rotating ~90° around its base edge and fading once flat, uncovering the content as the wave passes.',
       code: 'M.dominoReveal(frame, { html, count, fall, dir })', cycle: 150,
       draw(f) {

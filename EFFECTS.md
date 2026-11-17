@@ -6,6 +6,34 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### FX (v0.75)
+- `edgeBoil` — hand-drawn "boiling line" wobble: an SVG
+  feTurbulence + feDisplacementMap filter displaces wrapped HTML
+  by `amp` px (default 4) on a noise field of `freq` (default
+  0.02, 2 octaves), and the turbulence seed re-rolls every `step`
+  frames (default 4 — about 8 swaps a second at 30 fps, the
+  old-cartoon rate) on a hash step, so the outline shivers like
+  redrawn cartoon lines instead of sliding smoothly. Sustained
+  when no `dur` is given (a standing hand-drawn grade); with a
+  window the boil ramps in and out over 4 frames so it never pops
+  on or off; outside the window the html passes through untouched.
+  The filter id is derived from the seed block, amp, freq and
+  octaves, so different knobs never share a filter. Source: Chris
+  Moran's edge-boil tutorial
+  (https://www.instagram.com/reel/DZdCD2YNk4d/), corroborated
+  2026-11-17 by @jejestudios' line-boil breakdown — every outline
+  redrawn three ways, swapped eight times per second
+  (https://www.instagram.com/reel/DemHJJmNEb5/) — plus
+  @sewellkillingstad's hand-traced type boil
+  (https://www.instagram.com/reel/DVwRHnAjh0g/) and the Vox
+  hand-drawn jitter/boil tutorial
+  (https://www.instagram.com/reel/Dez2EqWorHx/). Distinct from
+  `wiggle` (shakes the whole element, no outline deformation) and
+  from `smear` (motion blur, not a wobble). Demo card (sustained
+  boil) + `edge-boil` composition (150 f, still title vs boiling
+  hero + windowed sub-line) + Prompt Gallery entry. With this, the
+  remaining backlog is `varFont` only (2026-11-16 sweep).
+
 ### Text (v0.74)
 - `textWarp` — field-warped kinetic type: a whole string typeset
   along a 2-D deformation field (concentric arches, mirrored
@@ -997,14 +1025,11 @@ sweep (social.search rotated queries, 100 results across 2 calls) filed
 two buildable primitives. Sources and dedup notes in
 research/x-motion-sweep-log.md.
 
-- `edgeBoil` — organic "boiling" outline wobble: the hand-drawn line
-  movement that makes animation feel alive — AE Roughen Edges +
-  Turbulent Displace with a re-rolled random seed. Transferable as an
-  SVG feTurbulence + feDisplacementMap filter over wrapped HTML with a
-  hash-stepped seed. Source: Chris Moran's edge-boil tutorial
-  (https://www.instagram.com/reel/DZdCD2YNk4d/). Distinct from `wiggle`
-  (shakes the whole element, no outline deformation) and from `smear`
-  (motion blur, not a wobble).
+- ~~`edgeBoil`~~ — shipped in v0.75.0: organic "boiling" outline
+  wobble (see Implemented above). The 2026-11-17 sweep corroborated
+  it (see below) and fixed the default step at 4 frames from
+  @jejestudios' 8-swaps-a-second rate. With this, the remaining
+  backlog is `varFont` only.
 - `varFont` — variable-font kinetic type: per-letter
   font-variation-settings (Weight / Width / Italic) driven by a
   travelling sine across textIndex, no keyframes. Source: @joshschaub.ch
@@ -1025,3 +1050,59 @@ research/x-motion-sweep-log.md.
   out of scope; @sophuia's 10 UX animations are component recipes;
   @matt_penny_applied_ai's skill-level reel re-appears (domino panel
   already shipped, the rest are recipes / 3-D).
+
+## Backlog — 2026-11-17 sweep (boiling line / hand-drawn wobble / variable font / SVG turbulence / grain + seamless loops / kinetic typography / logo reveal / isometric)
+
+Backlog was `edgeBoil` / `varFont` after textWarp shipped (v0.74.0);
+this round's fresh sweep (social.search rotated queries, ~100
+results across 2 calls) filed 0 new buildable primitives — it
+corroborated the already-filed `edgeBoil` instead of finding a new
+one. Sources and dedup notes in research/x-motion-sweep-log.md.
+
+- `edgeBoil` corroboration (shipped this round, v0.75.0):
+  @jejestudios' "line boil" — every outline redrawn three ways and
+  swapped eight times per second, mimicking old cartoons
+  (https://www.instagram.com/reel/DemHJJmNEb5/) — the 8-swaps/sec
+  rate sets the default `step` at 4 frames (30 fps);
+  @sewellkillingstad's hand-traced line-boil type animation
+  (https://www.instagram.com/reel/DVwRHnAjh0g/); the AE Turbulent
+  Displace ×2 hand-drawn look
+  (https://www.instagram.com/reel/DFYLGJsNmm_/); the Vox
+  hand-drawn jitter/boil tutorial
+  (https://www.instagram.com/reel/Dez2EqWorHx/); @osweltos'
+  "SQUIGGLY LINE EFFECT" three-methods graphic
+  (https://www.instagram.com/reel/Ddf1JqKhYXq/); Blender Grease
+  Pencil Noise modifier as the same idea in 3-D
+  (https://www.facebook.com/reel/1781056572604889/); the "on twos"
+  12-fps fake-hand-drawn look
+  (https://www.instagram.com/reel/DfrzCfrjq0u/) restates the
+  shipped `onTwos`.
+- Not taken this round: "How to make TRIPPY LOOPS vol.2"
+  (https://www.instagram.com/reel/DbvAHTdNSwa/) pattern-combining
+  dedupes against `patternField`; the letter-spacing three-step
+  tutorial (MINNESOTA spreading apart,
+  https://www.instagram.com/reel/DcOiUieJf8S/) dedupes against the
+  shipped `letterTrack`; the 4-drawing seamless loop
+  (https://www.instagram.com/reel/DYr4W5tuNPw/) and the ceiling-panel
+  loop tutorial (https://www.instagram.com/reel/DdcD6qqgVEL/) are
+  loop craft, not a primitive; LottieFiles' 5 rules
+  (https://www.instagram.com/p/DQwZNBQD9y5/) re-appear, deduped;
+  @yune75's Wave Warp showcase
+  (https://www.facebook.com/reel/969024968876400/) overlaps
+  `sliceWave` / `waveText`; the 'liquid appear' logo reveal
+  (https://www.facebook.com/reel/1785101602799720/) dedupes against
+  `liquidMetal` / `maskReveal`; @motiongraphictv's 'BALANCE'
+  warping (https://www.instagram.com/reel/DDXbHHDIzyx/) is a further
+  textWarp corroboration; logo-reveal breakdowns (Beyond Pictures,
+  https://www.instagram.com/reel/DctDAgYzZVH/; vasilskakun,
+  https://www.instagram.com/reel/Dd_dsCfB2k-/; the ST monogram,
+  https://www.instagram.com/reel/DMXdObHSuOV/) dedupe against
+  `spotlight` / `assembleText`; the isometric eStrude build
+  (https://www.instagram.com/p/DQMa7E4kQiE/) and the isometric
+  message-box loader (https://www.instagram.com/reel/DbBMsAgt7uT/)
+  dedupe against the shipped iso kit; @holke79's kinetic-type
+  carousel (https://www.instagram.com/p/DFIxZzhtW3e/) is textWarp /
+  waveText territory; the A4 Kinetic Grid System
+  (https://www.instagram.com/reel/DbdhuwlJ1Wg/) is layout craft;
+  3-D loops, claymation, puppet and Blender breakdowns are footage /
+  3-D tooling, out of scope.

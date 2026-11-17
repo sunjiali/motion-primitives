@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'chroma', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet', 'waveText', 'shine', 'frost', 'dominoReveal'];
+  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'chroma', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet', 'waveText', 'shine', 'frost', 'edgeBoil', 'dominoReveal'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -286,6 +286,55 @@ test('frost: passthrough outside the window, blur radius clears from `from` to `
   assert.ok(Math.abs(radius(lin) - 6) < 0.01, 'custom fn respected (linear mid = 6)');
   const deep = M.frost(20, { ...o, from: 24 });
   assert.ok(Math.abs(radius(deep) - 3) < 0.05, 'custom from respected (24 * 0.125)');
+});
+
+test('edgeBoil: hand-drawn boil — SVG turbulence displaces the wrapped HTML, seed re-rolls every step frames, window ramps in/out', () => {
+  const o = { at: 10, dur: 20, html: '<b>X</b>' };
+  assert.equal(M.edgeBoil(9, o), '<b>X</b>');
+  assert.equal(M.edgeBoil(30, o), '<b>X</b>');
+  assert.equal(M.edgeBoil(10, { html: '' }), '');
+  const scale = (h) => {
+    const m = h.match(/scale="([-\d.]+)"/);
+    assert.ok(m, 'displacement scale present, got: ' + h);
+    return parseFloat(m[1]);
+  };
+  const seedOf = (h) => {
+    const m = h.match(/seed="(\d+)"/);
+    assert.ok(m, 'turbulence seed present, got: ' + h);
+    return parseInt(m[1], 10);
+  };
+  const freqOf = (h) => {
+    const m = h.match(/baseFrequency="([-\d.]+)"/);
+    assert.ok(m, 'baseFrequency present, got: ' + h);
+    return parseFloat(m[1]);
+  };
+  const idOf = (h) => {
+    const m = h.match(/filter id="([^"]+)"/);
+    assert.ok(m, 'filter id present, got: ' + h);
+    return m[1];
+  };
+  // sustained (no dur): full amp from frame 0, default amp 4 / freq 0.02 / octaves 2
+  const s0 = M.edgeBoil(0, { html: '<b>X</b>' });
+  assert.ok(Math.abs(scale(s0) - 4) < 0.01, 'sustained boil runs at default amp 4');
+  assert.ok(Math.abs(freqOf(s0) - 0.02) < 1e-9, 'default baseFrequency 0.02');
+  assert.ok(s0.includes('numOctaves="2"'), 'default 2 octaves');
+  assert.ok(s0.includes('feDisplacementMap'), 'displacement map present');
+  assert.ok(s0.includes('filter:url(#'), 'wrapper carries the filter url');
+  // seed re-rolls every step (default 4): same block -> same seed, next block -> new seed
+  assert.equal(seedOf(M.edgeBoil(10, o)), seedOf(M.edgeBoil(13, o)), 'seed holds inside a step-block');
+  assert.notEqual(seedOf(M.edgeBoil(10, o)), seedOf(M.edgeBoil(14, o)), 'seed re-rolls at the block boundary');
+  assert.equal(M.edgeBoil(12, o), M.edgeBoil(12, o)); // determinism
+  // windowed ramp: 4-frame smooth in/out (dur 20, ramp 4)
+  assert.ok(Math.abs(scale(M.edgeBoil(10, o))) < 0.01, 'first window frame boils at 0 (ramp start)');
+  assert.ok(Math.abs(scale(M.edgeBoil(12, o)) - 2) < 0.01, 'halfway up the ramp the scale is half amp');
+  assert.ok(Math.abs(scale(M.edgeBoil(14, o)) - 4) < 0.01, 'ramp done by frame 14');
+  assert.ok(Math.abs(scale(M.edgeBoil(29, o))) < 0.01, 'last window frame boils back to 0');
+  // knobs respected
+  assert.ok(Math.abs(scale(M.edgeBoil(14, { ...o, amp: 8 })) - 8) < 0.01, 'custom amp respected');
+  assert.ok(Math.abs(freqOf(M.edgeBoil(14, { ...o, freq: 0.05 })) - 0.05) < 1e-9, 'custom freq respected');
+  assert.notEqual(seedOf(M.edgeBoil(11, { ...o, step: 2 })), seedOf(M.edgeBoil(12, { ...o, step: 2 })), 'step 2 re-rolls every 2 frames');
+  assert.notEqual(idOf(M.edgeBoil(14, { ...o, amp: 4 })), idOf(M.edgeBoil(14, { ...o, amp: 8 })), 'different amp -> different filter id');
+  assert.equal(idOf(M.edgeBoil(14, { ...o, amp: 4 })), idOf(M.edgeBoil(14, { ...o, amp: 4 })), 'same params -> same filter id');
 });
 
 test('dominoReveal: tiles stand before at, topple in a propagated wave, fade flat, passthrough after dur', () => {
