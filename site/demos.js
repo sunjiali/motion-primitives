@@ -597,6 +597,15 @@
       },
     },
     {
+      name: 'varFont', desc: 'Variable-font kinetic type — no keyframes, no transforms: each letter\'s weight and width ride a travelling sine, so the word itself breathes as the wave passes; heavy pairs with narrow, thin with wide.',
+      code: 'M.varFont(frame, { text, wght, wdth, wl, speed })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        return '<div style="position:absolute;inset:0;background:#26221F;"></div>' +
+          M.varFont(lf, { text: 'FLEX', x: 280, y: 157, size: 64, wght: [150, 1000], wdth: [60, 145], wl: 4, speed: 0.12, color: '#FF6B81' });
+      },
+    },
+    {
       name: 'dotText', desc: 'Halftone dot-filled text — the letterforms are a field of dots clipped by a text mask, so the word reads as a printed poster; `mode` grows the dots in on a hash stagger, breathes them on a pulse, or shrinks them away.',
       code: 'M.dotText(frame, { text, mode, gap, dot })', cycle: 150,
       draw(f) {

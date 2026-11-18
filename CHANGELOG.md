@@ -2,6 +2,43 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.76.0] — 2026-11-18
+
+### Added — `varFont` primitive + `var-font` composition
+
+- **`varFont(frame, { text, x?, y?, size?, color?, fontFamily?, wght?, wdth?, wl?, speed? })`** —
+  variable-font kinetic type with no keyframes and no transforms:
+  each glyph's `font-variation-settings` rides a travelling sine
+  (phase = 2π·i/wl − frame·speed, the same field convention as
+  `waveText`), so the word itself breathes weight and width as the
+  wave passes. `wght` is the weight range the wave sweeps (default
+  [100, 900]); `wdth` is the width range (default [75, 125]) and
+  rides the wave inverted — heavy pairs with narrow, thin with
+  wide, the pairing in Monotype's Weight/Width demo. Sustained and
+  looping, no window, no entrance. Source: @joshschaub.ch's
+  "kinetic type without keyframes" — an Expression Selector driving
+  the Variable Font Axes (Weight, Width, Italic) with
+  `Math.sin(time + textIndex) * 50 + 50`
+  (https://www.instagram.com/reel/DVN0yNWjTnW/), corroborated
+  2026-11-18 by Monotype's Weight/Width slider demo
+  (https://www.instagram.com/reel/DZXova8FHdd/). Distinct from
+  `waveText` (moves glyphs, never changes the letterforms) and from
+  `letterTrack` (spacing animation, no axis change).
+- **Vendored variable font** — Roboto Flex (OFL, latin subset,
+  wght 100–1000 / wdth 25–151, 195,612 bytes) at
+  `site/fonts/RobotoFlex-var.woff2`, @font-face'd by the site
+  stylesheet and by the `var-font` composition. The EFFECTS
+  caveat is closed: no variable font ships with the stock system
+  fonts (DejaVu / Liberation / static Noto instances only), so the
+  repo now carries its own. The caller must load a variable font
+  for `fontFamily` (default `'Roboto Flex'`); with a static font
+  the variation settings are silently ignored and the word renders
+  at its resting weight.
+- Demo card (FLEX on wght [150, 1000] / wdth [60, 145]) +
+  `var-font` composition (150 f, coral FLEX on the full-range wave
+  + cream sub-line on a gentler wave) + Prompt Gallery entry.
+  With this, the backlog is empty again.
+
 ## [0.75.0] — 2026-11-17
 
 ### Added — `edgeBoil` primitive + `edge-boil` composition

@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'chroma', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet', 'waveText', 'shine', 'frost', 'edgeBoil', 'dominoReveal'];
+  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'chroma', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet', 'waveText', 'shine', 'frost', 'edgeBoil', 'dominoReveal', 'varFont'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -971,6 +971,28 @@ test('waveText: one span per character, sine phase staggers across letters, fram
   assert.ok(/translateY\(/.test(yHtml) && !/translateX\(/.test(yHtml), 'axis y uses translateY only');
   assert.equal(M.waveText(10, { text: '' }), '');
   assert.ok(M.waveText(10, { text: 'A<B' }).includes('&lt;'), 'glyphs escaped');
+});
+
+test('varFont: one span per character, wght/wdth ride an inverted travelling sine, frame-pure', () => {
+  const o = { text: 'FLEX', x: 640, y: 360, wght: [100, 900], wdth: [75, 125], wl: 4, speed: 0.12 };
+  const html = M.varFont(10, o);
+  const spans = (html.match(/display:inline-block/g) || []).length;
+  assert.equal(spans, 4);
+  const axes = (s) => [...s.matchAll(/font-variation-settings:'wght' (\d+), 'wdth' (\d+)/g)]
+    .map((m) => [parseInt(m[1], 10), parseInt(m[2], 10)]);
+  const a0 = axes(M.varFont(10, o)), a1 = axes(M.varFont(11, o));
+  assert.equal(a0.length, 4);
+  assert.ok(a0.every(([w, d]) => w >= 100 && w <= 900 && d >= 75 && d <= 125), 'axes stay inside their ranges');
+  assert.ok(a0.some(([w], i) => w !== a0[(i + 1) % 4][0]), 'letters sit at different wave phases');
+  assert.ok(a0.some(([w], i) => w !== a1[i][0]), 'wave travels with the frame');
+  // width rides inverted: the heaviest letter is the narrowest
+  const heaviest = a0.reduce((bi, [w], i) => (w > a0[bi][0] ? i : bi), 0);
+  const narrowest = a0.reduce((bi, [, d], i) => (d < a0[bi][1] ? i : bi), 0);
+  assert.equal(heaviest, narrowest, 'wght max pairs with wdth min');
+  assert.equal(M.varFont(10, o), html); // frame-pure
+  assert.ok(M.varFont(10, o).includes("font-family:Roboto Flex"), 'default family is the vendored Roboto Flex');
+  assert.equal(M.varFont(10, { text: '' }), '');
+  assert.ok(M.varFont(10, { text: 'A<B' }).includes('&lt;'), 'glyphs escaped');
 });
 
 test('liquidMetal: canvas tag carries its params; draw is a safe no-op without a DOM', () => {

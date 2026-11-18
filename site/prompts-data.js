@@ -385,6 +385,17 @@ window.PROMPT_GALLERY = [
     notes: '回填条目：成片随 v0.74.0 发布（textWarp 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧 WARP 拱形完整、涟漪行清晰可读 / 75 帧拱形呼吸、涟漪反向倾斜）通过；首版涟漪参数 amp 16 / wl 6 在静帧上被抓到字母互叠，改 amp 10 / wl 10 后重验通过；成片 mp4 抽帧（30 / 120 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 72 卡、textWarp 卡在动、0 控制台报错。',
   },
   {
+    id: 'varFont',
+    title: 'Var Font — The Weight-and-Width Wave',
+    blurb: 'The hero word breathes weight and width on one travelling sine — no keyframes, no transforms — while the sub-line rides a gentler wave on the same field, proving the letterforms themselves are the animation.',
+    video: 'videos/var-font.mp4',
+    tags: ['text', 'variable-font', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.76',
+    prompt:
+`用 motion-primitives 做一条 5 秒的可变字体动效展示片，composition 名 var-font，核心只用一个新原语 M.varFont。\n\n规格：1280×720，30fps，150 帧，无声，全程硬切。深墨底 #26221F、奶油字 #FBF6EC、珊瑚字 #FF6B81；画面上方一行大字「VAR FONT」（64px，800 字重，系统字体）全程静止；中央一行大字「FLEX」（150px，珊瑚色，居中于 640,330），用 Roboto Flex 可变字体、字重在 150–1000、字宽在 60–145 之间随正弦波逐字流动（wl 4、speed 0.12），粗配窄、细配宽；下方一行小字「weight & width ride one wave」（36px，奶油色，居中于 640,500），同一原语、更温和的波幅（字重 300–800、字宽 80–125、wl 6、speed 0.1）；左下角一行等宽小字「M.varFont(frame, { wght: [100, 900] })」（22px，奶油 55% 透明）全程静止；右上角一颗奶油圆点（#FBF6EC，18px）点缀。\n\n纪律：动效只能来自 font-variation-settings 的 wght/wdth 轴——不许位移、不许缩放、不许旋转字母；同一帧里四个字母的字重必须各不相同、波峰处的字母最粗最窄、波谷处最细最宽；标题始终是静态系统字体、与可变字形成对照，证明变化来自字体轴不是字重切换；除标题、两行字、左下角代码行、右上角圆点外不许加别的元素；不许渐变背景、相机运动、颗粒噪点、音效。\n`,
+    notes: '回填条目：成片随 v0.76.0 发布（varFont 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧 F/L 粗、X 极细 / 37 帧波形移位、E 极细 / 75 帧 F/L 细、E/X 粗 / 149 帧波形再移）通过；成片 mp4 抽帧（30 / 120 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 74 卡、varFont 卡在动、0 控制台报错。',
+  },
+  {
     id: 'edgeBoil',
     title: 'Edge Boil — The Hand-Drawn Wobble',
     blurb: 'The hero word shivers on a sustained turbulence boil while the sub-line boils only inside a window, against a title that stays perfectly still — the contrast proves the wobble is the filter, not a camera move.',

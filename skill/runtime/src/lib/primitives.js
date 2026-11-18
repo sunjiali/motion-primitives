@@ -1112,6 +1112,52 @@ __root.Motion = (function () {
         return '<div style="position:absolute;left:0;top:0;font-family:' + fontFamily + ';font-size:' + size +
             'px;font-weight:' + weight + ';color:' + color + ';white-space:nowrap;">' + spans + '</div>';
     }
+    // varFont(): variable-font kinetic type — no keyframes, no transforms:
+    // each glyph's font-variation-settings ride a travelling sine, so the
+    // word itself breathes weight and width as the wave passes (phase =
+    // 2π·i/wl − frame·speed, the same field convention as waveText).
+    // `wght` is the weight range the wave sweeps (default [100, 900]);
+    // `wdth` is the width range (default [75, 125]) and it rides the wave
+    // inverted — heavy pairs with narrow, thin with wide, the pairing in
+    // the Monotype Weight/Width demo. Sustained and looping, no window,
+    // no entrance. Source: @joshschaub.ch's "kinetic type without
+    // keyframes" — an Expression Selector driving the Variable Font Axes
+    // (Weight, Width, Italic) with Math.sin(time + textIndex) * 50 + 50
+    // (https://www.instagram.com/reel/DVN0yNWjTnW/, 2026-11-16 sweep,
+    // corroborated 2026-11-18 by Monotype's Weight/Width slider demo,
+    // https://www.instagram.com/reel/DZXova8FHdd/). The caller must load
+    // a variable font for `fontFamily` (the repo vendors Roboto Flex at
+    // site/fonts/RobotoFlex-var.woff2, wght 100–1000 / wdth 25–151, and
+    // the demo card + var-font composition @font-face it in); with a
+    // static font the variation settings are silently ignored and the
+    // word renders at its resting weight. Distinct from waveText (moves
+    // glyphs, never changes the letterforms) and from letterTrack
+    // (spacing animation, no axis change). Frame-pure, no hash; empty
+    // text returns ''.
+    function varFont(frame, o) {
+        o = o || {};
+        const text = String(o.text || '');
+        if (!text)
+            return '';
+        const size = o.size == null ? 64 : o.size;
+        const color = o.color || '#26221F';
+        const fontFamily = o.fontFamily || 'Roboto Flex';
+        const wl = o.wl == null || o.wl === 0 ? 6 : Math.abs(o.wl);
+        const speed = o.speed == null ? 0.12 : o.speed;
+        const wght = o.wght || [100, 900];
+        const wdth = o.wdth || [75, 125];
+        const esc = (ch) => (ch === '&' ? '&amp;' : ch === '<' ? '&lt;' : ch === '>' ? '&gt;' : ch);
+        const spans = text.split('').map((ch, i) => {
+            const t = 0.5 + 0.5 * Math.sin(2 * Math.PI * i / wl - frame * speed);
+            const w = Math.round(wght[0] + (wght[1] - wght[0]) * t);
+            const d = Math.round(wdth[0] + (wdth[1] - wdth[0]) * (1 - t));
+            return '<span style="display:inline-block;white-space:pre;font-variation-settings:\'wght\' ' + w +
+                ', \'wdth\' ' + d + ';">' + esc(ch) + '</span>';
+        }).join('');
+        return '<div style="position:absolute;left:' + (o.x == null ? 640 : o.x) + 'px;top:' + (o.y == null ? 360 : o.y) +
+            'px;transform:translate(-50%,-50%);font-family:' + fontFamily + ';font-size:' + size +
+            'px;color:' + color + ';white-space:nowrap;">' + spans + '</div>';
+    }
     // portalWipe(): a circular portal transition — a flat disc blooms
     // from (x, y) with an easeOutCubic pop, swallows the outgoing
     // scene, holds, then contracts (cubicInOut) toward (x2, y2),
@@ -3068,7 +3114,7 @@ __root.Motion = (function () {
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
         paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost, edgeBoil, dominoReveal, iris, clockWipe,
-        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, dotText,
+        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, varFont, dotText,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
         scramble, splitFlap, kenBurns, breathe, fx, hash,

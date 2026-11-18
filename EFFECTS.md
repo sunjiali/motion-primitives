@@ -6,6 +6,31 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Text (v0.76)
+- `varFont` — variable-font kinetic type: no keyframes, no
+  transforms — each glyph's `font-variation-settings` rides a
+  travelling sine (phase = 2π·i/wl − frame·speed, the waveText
+  field convention), so the word itself breathes weight and width
+  as the wave passes. `wght` is the weight range the wave sweeps
+  (default [100, 900]); `wdth` is the width range (default
+  [75, 125]) and rides the wave inverted — heavy pairs with
+  narrow, thin with wide. Sustained and looping, no window. The
+  caller must load a variable font for `fontFamily` (default
+  'Roboto Flex'); the repo vendors Roboto Flex (OFL, latin
+  subset, wght 100–1000 / wdth 25–151) at
+  site/fonts/RobotoFlex-var.woff2, @font-face'd by the site and
+  the composition — the EFFECTS caveat is closed this way, since
+  the stock system fonts carry no variable font at all. Source:
+  @joshschaub.ch's "kinetic type without keyframes"
+  (https://www.instagram.com/reel/DVN0yNWjTnW/), corroborated
+  2026-11-18 by Monotype's Weight/Width slider demo
+  (https://www.instagram.com/reel/DZXova8FHdd/). Distinct from
+  `waveText` (transform drift, no font-axis change) and from
+  `splitText` (entrance, not a sustained wave). Demo card (full
+  range FLEX) + `var-font` composition (150 f, coral hero on the
+  full-range wave + cream sub-line on a gentler wave) + Prompt
+  Gallery entry. With this, the backlog is empty again.
+
 ### FX (v0.75)
 - `edgeBoil` — hand-drawn "boiling line" wobble: an SVG
   feTurbulence + feDisplacementMap filter displaces wrapped HTML
@@ -1030,14 +1055,12 @@ research/x-motion-sweep-log.md.
   it (see below) and fixed the default step at 4 frames from
   @jejestudios' 8-swaps-a-second rate. With this, the remaining
   backlog is `varFont` only.
-- `varFont` — variable-font kinetic type: per-letter
-  font-variation-settings (Weight / Width / Italic) driven by a
-  travelling sine across textIndex, no keyframes. Source: @joshschaub.ch
-  (https://www.instagram.com/reel/DVN0yNWjTnW/). Distinct from
-  `waveText` (transform drift, no font-axis change) and from
-  `splitText` (entrance, not a sustained wave). Caveat: needs a
-  variable font available at render time — check what the renderer
-  can load before building.
+- ~~`varFont`~~ — shipped in v0.76.0: variable-font kinetic type
+  (see Implemented above). The renderer caveat is closed by
+  vendoring Roboto Flex at site/fonts/RobotoFlex-var.woff2 — the
+  stock system fonts carry no variable font (verified 2026-11-18
+  with fc-list + fontTools: wght 100–1000 / wdth 25–151). With
+  this, the backlog is empty again.
 - Not taken this round: @ginyboi's top-5 transitions and @sonduckfilm's
   top five re-appear, all shipped; @antonin.work's Frutiger digit-grid
   kinetic type dedupes against charGrid; @motiongraphictv's 'BALANCE'
@@ -1106,3 +1129,37 @@ one. Sources and dedup notes in research/x-motion-sweep-log.md.
   (https://www.instagram.com/reel/DbdhuwlJ1Wg/) is layout craft;
   3-D loops, claymation, puppet and Blender breakdowns are footage /
   3-D tooling, out of scope.
+
+## Backlog — 2026-11-18 sweep (variable font animation / kinetic type + spring physics UI animation / GSAP tips / text animation breakdown / logo reveal)
+
+Backlog was `varFont` only after edgeBoil shipped (v0.75.0); this
+round's fresh sweep (social.search rotated queries, ~100 results
+across 2 calls) filed 0 new buildable primitives — it re-surfaced
+the already-filed `varFont` source itself plus fresh corroboration.
+Sources and dedup notes in research/x-motion-sweep-log.md.
+
+- `varFont` corroboration (shipped this round, v0.76.0):
+  @joshschaub.ch's "KineticType" — Variable Font Axes (Weight,
+  Width, Italic) driven by Math.sin(time + textIndex) * 50 + 50,
+  font 'lazer x compressed'
+  (https://www.instagram.com/reel/DVN0yNWjTnW/); Monotype's
+  Weight/Width slider demo cycling TIMELESS / VARIABLE / MODERN
+  (https://www.instagram.com/reel/DZXova8FHdd/); Google Design's
+  variable-fonts promo (ROBOT → ROBOTO); an Inter Variable
+  weight-slider screen recording; @antonin.work's Font Merge
+  variable-font tool (https://www.instagram.com/p/DerZbMtDHce/,
+  tooling, out of scope); Studio Feixen's MOV Variable specimen
+  (Cavalry-made typeface promo).
+- Not taken this round: Figma Motion physics springs + Lottie
+  export previews (https://www.instagram.com/reel/DfkZHadvRNw/,
+  tooling); @walaber_ent's Godot spring blend-shapes (game
+  engine, out of scope); LottieFiles Spring Curve / Physics
+  Simulator (tooling); react-spring promo (a library, not a
+  primitive); OriginOS 6 spring suite (OS UI, out of scope);
+  @jermy.builds' 'Motion, Explained' spring explainer (director
+  guidance, restates shipped pop / anticipate / springSheet);
+  @sophuia's 10 UX animations (component recipes); LottieFiles'
+  5 principles of ANIMATION TIMING (re-appears, deduped);
+  'Cheesy 80s Zooms' (re-appears, all shipped); Adhemas
+  'Do All Good' (the dotText source, re-appears). With this, the
+  backlog is empty again.
