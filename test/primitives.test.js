@@ -511,6 +511,59 @@ test('clockWipe: radial clock-hand sector reveal — open sweeps 0→360, close 
   assert.equal(M.clockWipe(25, o), M.clockWipe(25, o)); // determinism
 });
 
+test('tvOff: CRT power-off/on — vertical squash into a glowing line, horizontal pinch to a dot, then black; on mirrors it', () => {
+  const o = { at: 10, dur: 30, html: '<b>X</b>' };
+  const scales = (h) => {
+    const m = h.match(/transform:scaleX\(([\d.]+)\) scaleY\(([\d.]+)\)/);
+    assert.ok(m, 'wrapper scale present, got: ' + h);
+    return { sx: parseFloat(m[1]), sy: parseFloat(m[2]) };
+  };
+  const glowOp = (h) => {
+    const m = h.match(/opacity:([\d.]+)/);
+    assert.ok(m, 'glow line opacity present, got: ' + h);
+    return parseFloat(m[1]);
+  };
+  // off: content before at, gone after the window
+  assert.equal(M.tvOff(9, o), '<b>X</b>');
+  assert.equal(M.tvOff(40, o), '');
+  assert.equal(M.tvOff(10, { html: '' }), '');
+  // phase 1 (vertical collapse), linear: t=0.5, p1=0.5/0.6, sy = 1 - p1*(1 - 2/720), sx still 1
+  const mid = scales(M.tvOff(25, { ...o, fn: 'linear' }));
+  assert.ok(Math.abs(mid.sy - (1 - (0.5 / 0.6) * (1 - 2 / 720))) < 0.001, 'mid-collapse scaleY follows the linear phase');
+  assert.equal(mid.sx, 1, 'no horizontal pinch before the split');
+  // at the split the picture is exactly the line tall, glow fully on
+  const line = scales(M.tvOff(28, { ...o, fn: 'linear' }));
+  assert.ok(Math.abs(line.sy - 2 / 720) < 0.001, 'at the split the picture is the line tall');
+  assert.ok(Math.abs(glowOp(M.tvOff(28, { ...o, fn: 'linear' })) - 1) < 0.001, 'glow fully on at the line');
+  // phase 2 (horizontal pinch), linear: t=0.8, p2=0.5 -> sx 0.5, sy stays the line
+  const pinch = scales(M.tvOff(34, { ...o, fn: 'linear' }));
+  assert.ok(Math.abs(pinch.sx - 0.5) < 0.001, 'mid-pinch scaleX is half');
+  assert.ok(Math.abs(pinch.sy - 2 / 720) < 0.001, 'pinch keeps the line height');
+  // late pinch: the dot winks out — glow fades in the last quarter
+  assert.ok(Math.abs(glowOp(M.tvOff(38, { ...o, fn: 'linear' })) - (1 - (0.8333 - 0.75) / 0.25)) < 0.01, 'glow fades as the dot pinches out');
+  // custom fn respected: cubicIn(5/6)^3 on the collapse
+  const eased = scales(M.tvOff(25, o));
+  assert.ok(Math.abs(eased.sy - (1 - Math.pow(0.5 / 0.6, 3) * (1 - 2 / 720))) < 0.001, 'default cubicIn ease on the collapse');
+  // custom origin: collapse line and pinch point move together
+  const corner = M.tvOff(25, { ...o, fn: 'linear', x: 0, y: 0 });
+  assert.ok(corner.includes('transform-origin:0.0px 0.0px'), 'custom origin anchors the squash');
+  assert.ok(corner.includes('top:-1.0px'), 'glow line sits on the collapse line');
+  // custom line height: a 6 px line at the split
+  const thick = scales(M.tvOff(28, { ...o, fn: 'linear', line: 6 }));
+  assert.ok(Math.abs(thick.sy - 6 / 720) < 0.001, 'line option sets the collapsed height');
+  // on: nothing before at, content after; dot widens first, then the line grows tall
+  assert.equal(M.tvOff(9, { ...o, mode: 'on' }), '');
+  assert.equal(M.tvOff(40, { ...o, mode: 'on' }), '<b>X</b>');
+  const widen = scales(M.tvOff(25, { ...o, mode: 'on', fn: 'linear' }));
+  assert.ok(Math.abs(widen.sx - 0.5 / 0.6) < 0.001, 'on widens the dot to a line first');
+  assert.ok(Math.abs(widen.sy - 2 / 720) < 0.001, 'on stays line-tall while widening');
+  const grow = scales(M.tvOff(34, { ...o, mode: 'on', fn: 'linear' }));
+  assert.equal(grow.sx, 1, 'on is full width once the line grows');
+  assert.ok(Math.abs(grow.sy - (2 / 720 + (1 - 2 / 720) * 0.5)) < 0.001, 'on grows the line to half height mid-phase');
+  assert.ok(Math.abs(glowOp(M.tvOff(25, { ...o, mode: 'on', fn: 'linear' })) - (1 - 0.5 * (0.5 / 0.6))) < 0.001, 'on glow dims as the dot widens');
+  assert.equal(M.tvOff(25, o), M.tvOff(25, o)); // determinism
+});
+
 test('textWarp: field-warped kinetic type — arch bends the line and rotates letters to the tangent, ripple mirrors from the centre', () => {
   const spans = (h) => [...h.matchAll(/translate\((-?[\d.]+)px,(-?[\d.]+)px\) rotate\((-?[\d.]+)deg\)/g)]
     .map((m) => ({ x: parseFloat(m[1]), y: parseFloat(m[2]), a: parseFloat(m[3]) }));

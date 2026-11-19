@@ -6,6 +6,35 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Reveal (v0.77)
+- `tvOff` — CRT power-off/on: the picture squashes vertically
+  into a glowing horizontal line at (`x`, `y`), the line pinches
+  horizontally into a phosphor dot, and the frame dies to black;
+  `mode:'on'` runs the whole thing backwards (dot → line → full
+  picture, the CRT turn-on). Two phases split at `split`
+  (default 0.6) of `dur`: phase 1 is the vertical move (collapse
+  off / growth on), phase 2 the horizontal one (pinch off / widen
+  on), so the collapse order is tall → line → dot and the turn-on
+  is its exact mirror. A glow line div rides the collapse — its
+  opacity ramps in as the picture reaches the line, then it
+  pinches with the picture and winks out in the last quarter of
+  the pinch, so the death is a dot that fades, not a snap.
+  `line` is the collapsed line's height in px (default 2),
+  `glow` its phosphor colour (default white). The collapse eases
+  on `fn` (cubicIn off, cubicOut on unless overridden). Before
+  `at` an 'off' tvOff shows the content untouched and an 'on'
+  one shows nothing; after `at + dur` the 'off' returns '' (draw
+  black behind it) and the 'on' passes the html through.
+  Source: Remocn's "TV Power Off"
+  (https://remocn.dev/docs/effects). Distinct from `iris` (a
+  growing circle, no line/dot phases, no glow) and from
+  `wipeReveal` (a mask sweep, no squash). Demo card (hero word
+  off + sub-line on) + `tv-off` composition (150 f, coral hero
+  off + cream sub-line on + whole-stage off ending on the
+  phosphor dot one frame before black) + Prompt Gallery entry.
+  With this, the remaining backlog is `venetianBlinds` /
+  `shatter` / `flicker`.
+
 ### Text (v0.76)
 - `varFont` — variable-font kinetic type: no keyframes, no
   transforms — each glyph's `font-variation-settings` rides a
@@ -1163,3 +1192,61 @@ Sources and dedup notes in research/x-motion-sweep-log.md.
   'Cheesy 80s Zooms' (re-appears, all shipped); Adhemas
   'Do All Good' (the dotText source, re-appears). With this, the
   backlog is empty again.
+
+## Backlog — 2026-11-19 sweep (motion graphics techniques / kinetic typography / text reveal / logo reveal + Remotion / spring UI / isometric / easing + web + GitHub skills)
+
+Backlog was empty after varFont (v0.76.0); this round's fresh sweep
+(social.search rotated queries, ~95 results across 2 calls, + a
+Remotion @remotion/effects web sweep) filed four buildable
+primitives. Sources and dedup notes in
+research/x-motion-sweep-log.md.
+
+- ~~`tvOff`~~ — shipped in v0.77.0: CRT power-off/on (see
+  Implemented above). With this, the remaining backlog is
+  `venetianBlinds` / `shatter` / `flicker`.
+- `venetianBlinds` — the frame cut into equal slats, every slat
+  wiping at the same moment to reveal the content beneath (the
+  classic blinds transition). Remotion @remotion/effects
+  `venetianBlinds`, flagged as a possible future variant in the
+  2026-11-14 sweep; Lumit docs updated 2026-11-18
+  (https://docs.lumitlab.com/effects/transition/venetian-blinds/).
+  Distinct from `sliceWave` (a travelling wave displaces strips)
+  and from `wipeReveal` (one edge, not N slats).
+- `shatter` — the wrapped content breaks into tiles that fling
+  outward with rotation under gravity and fade (negative
+  strength implodes instead). Remotion v4.0.539, 2026-10-26
+  (https://www.thereelstack.com/lab/remotion-shatter-curves-hyperframes-gif-export-windows):
+  bricks / glass / hexagon / square / triangle patterns, pattern
+  origin and force centre separate. The 2-D HTML-string form
+  flings cropped tiles; distinct from `mosaic` (tiles flip in
+  place to scene B) and `pixelDissolve` (cells flip, no flight).
+- `flicker` — neon-sign flicker-on: the content stutters on/off
+  on a hash pattern with a decaying off-probability, then
+  settles on with a glow. @shyamx.mov's flicker-glow text
+  (https://www.instagram.com/reel/DbafRWxsiN9/), corroborated by
+  the neon signboard reveal
+  (https://www.instagram.com/reel/DanE-OTzZXg/) and @rize.style_'s
+  neon line-trace logo reveal
+  (https://www.instagram.com/reel/DZ45Hd7Sa32/). Distinct from
+  `flash` (one full-frame impact flash) and from `glitch`
+  (slices + RGB split).
+- Not taken this round: @ginyboi's top-5 transitions re-appear
+  (Hyperspace → speedLines, Gradient wipe → wipeReveal, the rest
+  shipped); @sonduckfilm's documentary 3-D camera + DOF →
+  camera/parallax; @yune75's Wave Warp / Bend →
+  sliceWave/waveText; @em0n33y puppet compositing is footage
+  craft; @sophuia's 10 UX animations re-appear (card flip →
+  flipIn, number ticker → counterRoll, the rest component
+  recipes); mirror-mask text reveals → maskReveal/wipeReveal; CC
+  Light Sweep text → shine; Remocn's Paper Wobble → edgeBoil,
+  Scribble Circle / Ink Arrow → drawOn/highlightBox, Glass Lens
+  needs pixel magnification (out of scope), Keystroke / Cursor
+  Gravity are component recipes; Remocn graphic looks — Riso
+  Print (chroma-adjacent), Long Shadow, Frosted Clear → frost,
+  LED Ticker → marquee, X-Ray Scan → wipeReveal+shine, Duotone
+  Beat → dotText; Circuitry's scanlines/crt/dither/led/heatHaze
+  are per-pixel grades, outside the HTML-string model; Remotion
+  `curves()` is a colour grade, not motion; easing-curve
+  explainers restate the shipped `fn` system; LottieFiles /
+  Figma Motion / Claude+Remotion workflow reels are workflow or
+  tooling.

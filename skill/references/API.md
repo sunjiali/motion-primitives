@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (106 functions)
+# motion-primitives API — the full catalog (107 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -681,6 +681,14 @@ M.clockWipe(frame: number, o: { html: string; at?: number; dur?: number; x?: num
 ```
 
 Radial clock-hand sector reveal: the wrapped content is revealed as a pie sector sweeping 0 → 360° around (`x`, `y`), like a clock hand — the angular counterpart to `iris` (radial) and `wipeReveal` (linear). `mode:'close'` winds it back 360 → 0; `dir:'ccw'` sweeps counter-clockwise; `start` moves the hand's home angle in degrees (0 = 12 o'clock, clockwise positive). Before `at` an opening wipe shows nothing; after `at + dur` it passes the input HTML through untouched.
+
+### `tvOff`
+
+```ts
+M.tvOff(frame: number, o: { html: string; at?: number; dur?: number; x?: number; y?: number; w?: number; h?: number; mode?: 'off' | 'on'; line?: number; glow?: string; split?: number; fn?: string }): string
+```
+
+CRT power-off/on: the picture squashes vertically into a glowing horizontal line at (`x`, `y`), the line pinches horizontally into a phosphor dot, and the frame dies to black; `mode:'on'` runs it backwards (dot → line → full picture). `line` is the collapsed line's height in px, `glow` its phosphor colour, `split` the fraction of `dur` spent on the vertical collapse. Before `at` an 'off' tvOff shows the content untouched and an 'on' one shows nothing; after `at + dur` the 'off' returns '' and the 'on' passes the input HTML through untouched.
 
 ### `spotlight`
 

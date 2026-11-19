@@ -427,4 +427,20 @@ window.PROMPT_GALLERY = [
 `,
     notes: '回填条目：成片随 v0.67.0 发布（chroma 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（10 帧大字干净 / 35 帧横向红青边缘清晰 / 75 帧大字干净、小字带常驻边缘 / 105 帧纵向边缘清晰 / 149 帧落定）通过；成片 mp4 抽帧（35 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 65 卡、chroma 卡在动、0 控制台报错。',
   },
+  {
+    id: 'tvOff',
+    title: 'TV Off — The CRT Sign-Off',
+    blurb: 'The hero word squashes into a glowing line and pinches to a phosphor dot, the sub-line powers back on dot → line → full, and the whole stage dies to black — the tube-TV sign-off in one primitive.',
+    video: 'videos/tv-off.mp4',
+    tags: ['reveal', 'tvOff', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.77',
+    prompt:
+`用 motion-primitives 做一条 5 秒的 CRT 关机展示片，composition 名 tv-off，核心只用一个新原语 M.tvOff。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。深墨底 #26221F、奶油字 #FBF6EC、珊瑚字 #FF6B81；画面上方一行大字「TV OFF」（64px，800 字重，奶油色）全程静止；中央一行大字「TV OFF」（120px，800 字重，珊瑚色，居中于 640,330），在 10–40 帧关机（mode 'off'、glow 珊瑚色）——先纵向压扁成一条发光横线、再横向收成一个荧光点、然后消失；下方一行小字「the tube dies to a dot」（36px，500 字重，奶油色，居中于 640,500），在 55–90 帧开机（mode 'on'）——从一个点张开成线、再长满全字；左下角一行等宽小字「M.tvOff(frame, { mode: 'off' })」（22px，奶油 55% 透明）全程静止；右上角一颗奶油圆点（#FBF6EC，18px）点缀；110–150 帧整屏再关一次机（mode 'off'），片尾落黑。
+
+纪律：关机是真压扁——字形纵向 scaleY 收缩、不是淡出也不是遮罩裁切；压到线时必须有一条横贯全屏的发光线（box-shadow 辉光），收点时光线随字形一起横向收缩、最后四分之一帧内熄灭成点；开机是关机的严格镜像（点→线→满字）；窗口外内容原样返回；除标题、两行字、左下角代码行、右上角圆点外不许加别的元素；不许渐变背景、相机运动、颗粒噪点、音效。
+`,
+    notes: '回填条目：成片随 v0.77.0 发布（tvOff 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧 hero 完整 / 20 帧 hero 纵向压扁约 17% / 25 帧 hero 压成珊瑚辉光线 / 40 帧 hero 已消失、标题干净 / 70 帧小字开机中、一条白色辉光线横贯 500 像素线 / 90 帧小字完整 / 125 帧整屏压扁约 24% / 149 帧整屏收成中心荧光短线、下一帧落黑）通过；成片 mp4 抽帧（25 / 70 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 75 卡、tvOff 卡在动、0 控制台报错。',
+  },
 ];

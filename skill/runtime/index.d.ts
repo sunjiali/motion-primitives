@@ -193,6 +193,8 @@ export function dominoReveal(frame: number, o: { html: string; at?: number; dur?
 export function iris(frame: number, o: { html: string; at?: number; dur?: number; x?: number; y?: number; w?: number; h?: number; mode?: 'open' | 'close' | 'blink'; hold?: number; dot?: number; feather?: number; fn?: string }): string;
 /** Radial clock-hand sector reveal: the wrapped content is revealed as a pie sector sweeping 0 → 360° around (`x`, `y`), like a clock hand — the angular counterpart to `iris` (radial) and `wipeReveal` (linear). `mode:'close'` winds it back 360 → 0; `dir:'ccw'` sweeps counter-clockwise; `start` moves the hand's home angle in degrees (0 = 12 o'clock, clockwise positive). Before `at` an opening wipe shows nothing; after `at + dur` it passes the input HTML through untouched. */
 export function clockWipe(frame: number, o: { html: string; at?: number; dur?: number; x?: number; y?: number; w?: number; h?: number; mode?: 'open' | 'close'; dir?: 'cw' | 'ccw'; start?: number; fn?: string }): string;
+/** CRT power-off/on: the picture squashes vertically into a glowing horizontal line at (`x`, `y`), the line pinches horizontally into a phosphor dot, and the frame dies to black; `mode:'on'` runs it backwards (dot → line → full picture). `line` is the collapsed line's height in px, `glow` its phosphor colour, `split` the fraction of `dur` spent on the vertical collapse. Before `at` an 'off' tvOff shows the content untouched and an 'on' one shows nothing; after `at + dur` the 'off' returns '' and the 'on' passes the input HTML through untouched. */
+export function tvOff(frame: number, o: { html: string; at?: number; dur?: number; x?: number; y?: number; w?: number; h?: number; mode?: 'off' | 'on'; line?: number; glow?: string; split?: number; fn?: string }): string;
 /** Where a frame sits in a BPM grid: beat index, phase, decay pulse, bar position. */
 export function beatGrid(frame: number, o: { bpm: number; at?: number; fps?: number; perBar?: number }): { beat: number; index: number; phase: number; pulse: number; bar: number; inBar: number };
 /** The BPM grid as frame numbers — SFX score events and cut points. */
@@ -276,6 +278,7 @@ declare const Motion: {
   dominoReveal: typeof dominoReveal;
   iris: typeof iris;
   clockWipe: typeof clockWipe;
+  tvOff: typeof tvOff;
   beatGrid: typeof beatGrid; beatFrames: typeof beatFrames; inertia: typeof inertia; anticipate: typeof anticipate; followThrough: typeof followThrough; velocitySkew: typeof velocitySkew;
   morphPoly: typeof morphPoly;
   splitText: typeof splitText;

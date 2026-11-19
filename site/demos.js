@@ -606,6 +606,18 @@
       },
     },
     {
+      name: 'tvOff', desc: 'CRT power-off/on — the picture squashes vertically into a glowing horizontal line, pinches to a phosphor dot, and dies to black; `mode` runs it backwards, dot → line → full picture.',
+      code: 'M.tvOff(frame, { html, mode, glow })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        const word = '<div style="position:absolute;left:280px;top:140px;transform:translate(-50%,-50%);font:800 46px system-ui;color:#FF6B81;white-space:nowrap;">TV OFF</div>';
+        const sub = '<div style="position:absolute;left:280px;top:220px;transform:translate(-50%,-50%);font:500 20px system-ui;color:#FBF6EC;white-space:nowrap;">the tube dies to a dot</div>';
+        return '<div style="position:absolute;inset:0;background:#26221F;"></div>' +
+          M.tvOff(lf, { html: word, at: 35, dur: 55, glow: '#FF6B81', x: 280, y: 140, w: 560, h: 315 }) +
+          M.tvOff(lf, { html: sub, at: 100, dur: 45, mode: 'on', x: 280, y: 220, w: 560, h: 315 });
+      },
+    },
+    {
       name: 'dotText', desc: 'Halftone dot-filled text — the letterforms are a field of dots clipped by a text mask, so the word reads as a printed poster; `mode` grows the dots in on a hash stagger, breathes them on a pulse, or shrinks them away.',
       code: 'M.dotText(frame, { text, mode, gap, dot })', cycle: 150,
       draw(f) {

@@ -2,6 +2,38 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.77.0] — 2026-11-19
+
+### Added — `tvOff` primitive + `tv-off` composition
+
+- **`tvOff(frame, { html, at?, dur?, x?, y?, w?, h?, mode?, line?, glow?, split?, fn? })`** —
+  CRT power-off/on: the picture squashes vertically into a glowing
+  horizontal line at (`x`, `y`), the line pinches horizontally into
+  a phosphor dot, and the frame dies to black; `mode:'on'` runs the
+  whole thing backwards (dot → line → full picture, the CRT
+  turn-on). The two phases split at `split` (default 0.6) of `dur`:
+  phase 1 is the vertical move (collapse off / growth on), phase 2
+  the horizontal one (pinch off / widen on), so the collapse order
+  is tall → line → dot and the turn-on is its exact mirror. A glow
+  line div rides the collapse — its opacity ramps in as the picture
+  reaches the line, then it pinches with the picture and winks out
+  in the last quarter of the pinch, so the death is a dot that
+  fades, not a snap. `line` is the collapsed line's height in px
+  (default 2), `glow` its phosphor colour (default white). Before
+  `at` an 'off' tvOff shows the content untouched and an 'on' one
+  shows nothing; after `at + dur` the 'off' returns '' (draw black
+  behind it) and the 'on' passes the html through. Source: Remocn's
+  "TV Power Off" — "the picture collapses into a glowing line,
+  pinches to a phosphor dot, and the frame is left dead black"
+  (https://remocn.dev/docs/effects). Distinct from `iris` (a
+  growing circle, no line/dot phases, no glow) and from
+  `wipeReveal` (a mask sweep, no squash).
+- Demo card (hero word off at 35–90, sub-line on at 100–145) +
+  `tv-off` composition (150 f, coral hero off 10–40, cream sub-line
+  on 55–90, whole-stage off 110–150 ending on the phosphor dot one
+  frame before black) + Prompt Gallery entry. With this, the
+  remaining backlog is `venetianBlinds` / `shatter` / `flicker`.
+
 ## [0.76.0] — 2026-11-18
 
 ### Added — `varFont` primitive + `var-font` composition

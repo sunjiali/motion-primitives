@@ -2544,6 +2544,66 @@ __root.Motion = (function () {
             'px,#000 0deg,#000 ' + sweep.toFixed(2) + 'deg,transparent ' + sweep.toFixed(2) + 'deg)';
         return '<div style="position:absolute;inset:0;-webkit-mask-image:' + g + ';mask-image:' + g + ';">' + html + '</div>';
     }
+    // tvOff — CRT power-off/on: the picture squashes vertically into a
+    // glowing horizontal line at (x, y), the line pinches horizontally
+    // into a phosphor dot, and the frame dies to black; `mode:'on'`
+    // runs it backwards (dot → line → full picture, the CRT turn-on).
+    // Two phases split at `split` (default 0.6) of `dur`: phase 1 is
+    // the vertical move (collapse off / growth on), phase 2 the
+    // horizontal one (pinch off / widen on), so the collapse order is
+    // tall → line → dot and the turn-on is its exact mirror. A glow
+    // line div rides the collapse — its opacity ramps in as the picture
+    // reaches the line, then it pinches with the picture and winks out
+    // in the last quarter of the pinch, so the death is a dot that
+    // fades, not a snap. Before `at` an 'off' tvOff shows the content
+    // untouched and an 'on' one shows nothing; after `at + dur` the
+    // 'off' returns '' (draw black behind it) and the 'on' passes the
+    // html through. Distinct from `iris` (a growing circle, no
+    // line/dot phases, no glow) and from `wipeReveal` (a mask sweep,
+    // no squash). From the 2026-11-19 sweep (Remocn's "TV Power
+    // Off" — "the picture collapses into a glowing line, pinches to a
+    // phosphor dot, and the frame is left dead black").
+    function tvOff(frame, o) {
+        o = o || {};
+        const html = o.html || '';
+        if (!html)
+            return '';
+        const at = o.at || 0, dur = Math.max(1, o.dur || 30);
+        const mode = o.mode || 'off';
+        const w = o.w || 1280, h = o.h || 720;
+        const x = o.x == null ? w / 2 : o.x, y = o.y == null ? h / 2 : o.y;
+        if (frame < at)
+            return mode === 'off' ? html : '';
+        if (frame >= at + dur)
+            return mode === 'off' ? '' : html;
+        const split = Math.min(0.9, Math.max(0.1, o.split == null ? 0.6 : o.split));
+        const lineH = Math.max(1, o.line == null ? 2 : o.line);
+        const glow = o.glow || '#FFFFFF';
+        const defaultFn = mode === 'off' ? 'cubicIn' : 'cubicOut';
+        const ease = Easing[o.fn || defaultFn] || Easing.cubicIn;
+        const t = (frame - at) / dur;
+        const p1 = clamp01(t / split);
+        const p2 = clamp01((t - split) / (1 - split));
+        let sy, sx, glowOp;
+        if (mode === 'off') {
+            sy = 1 - ease(p1) * (1 - lineH / h);
+            sx = 1 - ease(p2);
+            glowOp = p2 <= 0 ? clamp01((p1 - 0.7) / 0.3) : 1 - clamp01((p2 - 0.75) / 0.25);
+        }
+        else {
+            sx = ease(p1);
+            sy = lineH / h + (1 - lineH / h) * ease(p2);
+            glowOp = p2 <= 0 ? 1 - 0.5 * ease(p1) : 0.5 * (1 - ease(p2));
+        }
+        const origin = x.toFixed(1) + 'px ' + y.toFixed(1) + 'px';
+        const wrap = '<div style="position:absolute;inset:0;transform-origin:' + origin +
+            ';transform:scaleX(' + sx.toFixed(4) + ') scaleY(' + sy.toFixed(4) + ');">' + html + '</div>';
+        const line = '<div style="position:absolute;left:0;top:' + (y - lineH / 2).toFixed(1) +
+            'px;width:100%;height:' + lineH.toFixed(1) + 'px;background:' + glow +
+            ';box-shadow:0 0 12px 2px ' + glow + ';transform-origin:' + x.toFixed(1) + 'px 50%;' +
+            'transform:scaleX(' + sx.toFixed(4) + ');opacity:' + glowOp.toFixed(3) + ';"></div>';
+        return wrap + line;
+    }
     // dotText — halftone dot-filled text: the letterforms are a field of
     // dots, not a solid fill. An SVG dot grid over the stage is clipped
     // by a text mask, so the word reads as a printed halftone poster.
@@ -3114,7 +3174,7 @@ __root.Motion = (function () {
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
         paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost, edgeBoil, dominoReveal, iris, clockWipe,
-        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, varFont, dotText,
+        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, varFont, dotText, tvOff,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
         scramble, splitFlap, kenBurns, breathe, fx, hash,
