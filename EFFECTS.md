@@ -6,6 +6,36 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Reveal (v0.78)
+- `venetianBlinds` — classic blinds transition: the frame is cut
+  into `slats` (default 8) equal horizontal bands and every slat
+  wipes at the same moment to reveal the content beneath, so the
+  scene arrives in N simultaneous strips instead of behind one
+  edge. Each slat is a cropped window of the html (the mosaic crop
+  trick: an inner div offset back to stage origin inside an
+  overflow-hidden band), and the wipe inside the slat is a
+  clip-path inset — `dir:'center'` (default) opens from the slat's
+  middle line outward, the true blinds-opening look, `'down'`
+  grows from the top edge, `'up'` from the bottom edge.
+  `mode:'out'` closes the slats over the content instead;
+  `feather` softens each slat's wipe edge with a mask gradient
+  (the iris feather pattern, stops clamped so a feather wider
+  than the visible band degrades to a soft peak). The wipe eases
+  on `fn` (cubicOut opening, cubicIn closing unless overridden).
+  Before `at` an 'in' blinds shows nothing; after `at + dur` it
+  passes the html through. Source: Remotion @remotion/effects
+  `venetianBlinds`, Lumit docs — "The frame is cut into slats of
+  equal width and every slat begins wiping at the same moment"
+  (https://docs.lumitlab.com/effects/transition/venetian-blinds/).
+  Distinct from `sliceWave` (a travelling wave displaces strips)
+  and from `wipeReveal` (one edge, not N slats). Demo card (hero
+  word in + out, sub-line top-down) + `venetian-blinds`
+  composition (150 f, coral hero in 10–40 on 8 slats, cream
+  sub-line in 55–85 on 12 slats top-down, whole-stage close
+  110–150 ending on thin slivers one frame before black) + Prompt
+  Gallery entry. With this, the remaining backlog is `shatter` /
+  `flicker`.
+
 ### Reveal (v0.77)
 - `tvOff` — CRT power-off/on: the picture squashes vertically
   into a glowing horizontal line at (`x`, `y`), the line pinches
@@ -32,8 +62,7 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
   off + sub-line on) + `tv-off` composition (150 f, coral hero
   off + cream sub-line on + whole-stage off ending on the
   phosphor dot one frame before black) + Prompt Gallery entry.
-  With this, the remaining backlog is `venetianBlinds` /
-  `shatter` / `flicker`.
+  With this, the remaining backlog is `shatter` / `flicker`.
 
 ### Text (v0.76)
 - `varFont` — variable-font kinetic type: no keyframes, no
@@ -1203,15 +1232,10 @@ research/x-motion-sweep-log.md.
 
 - ~~`tvOff`~~ — shipped in v0.77.0: CRT power-off/on (see
   Implemented above). With this, the remaining backlog is
-  `venetianBlinds` / `shatter` / `flicker`.
-- `venetianBlinds` — the frame cut into equal slats, every slat
-  wiping at the same moment to reveal the content beneath (the
-  classic blinds transition). Remotion @remotion/effects
-  `venetianBlinds`, flagged as a possible future variant in the
-  2026-11-14 sweep; Lumit docs updated 2026-11-18
-  (https://docs.lumitlab.com/effects/transition/venetian-blinds/).
-  Distinct from `sliceWave` (a travelling wave displaces strips)
-  and from `wipeReveal` (one edge, not N slats).
+  `shatter` / `flicker`.
+- ~~`venetianBlinds`~~ — shipped in v0.78.0: classic blinds
+  transition (see Implemented above). With this, the remaining
+  backlog is `shatter` / `flicker`.
 - `shatter` — the wrapped content breaks into tiles that fling
   outward with rotation under gravity and fade (negative
   strength implodes instead). Remotion v4.0.539, 2026-10-26

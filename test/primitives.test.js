@@ -564,6 +564,61 @@ test('tvOff: CRT power-off/on — vertical squash into a glowing line, horizonta
   assert.equal(M.tvOff(25, o), M.tvOff(25, o)); // determinism
 });
 
+test('venetianBlinds: N equal slats wipe at the same moment — centre-out by default, down/up origins, feather softens the edge', () => {
+  const o = { at: 10, dur: 30, html: '<b>X</b>' };
+  const insets = (h) => [...h.matchAll(/clip-path:inset\(([\d.]+)px 0px ([\d.]+)px 0px\)/g)]
+    .map((m) => ({ top: parseFloat(m[1]), bottom: parseFloat(m[2]) }));
+  const tops = (h) => [...h.matchAll(/top:([\d.]+)px;width:[\d.]+px;height:([\d.]+)px;overflow:hidden/g)]
+    .map((m) => ({ top: parseFloat(m[1]), h: parseFloat(m[2]) }));
+  // in: nothing before at, content after the window; out mirrors it
+  assert.equal(M.venetianBlinds(9, o), '');
+  assert.equal(M.venetianBlinds(40, o), '<b>X</b>');
+  assert.equal(M.venetianBlinds(9, { ...o, mode: 'out' }), '<b>X</b>');
+  assert.equal(M.venetianBlinds(40, { ...o, mode: 'out' }), '');
+  assert.equal(M.venetianBlinds(10, { html: '' }), '');
+  // default 8 slats over the 720 stage: 90 px bands, all starting at once
+  const mid = M.venetianBlinds(25, { ...o, fn: 'linear' });
+  const slats = tops(mid);
+  assert.equal(slats.length, 8, '8 slats by default');
+  assert.deepEqual(slats.map((s) => s.top), [0, 90, 180, 270, 360, 450, 540, 630]);
+  assert.ok(slats.every((s) => s.h === 90), 'equal 90 px bands');
+  // centre-out, linear, t=0.5: each slat shows its middle 45 px (22.5–67.5)
+  const ins = insets(mid);
+  assert.equal(ins.length, 8, 'one clip per slat');
+  assert.ok(ins.every((s) => Math.abs(s.top - 22.5) < 0.01 && Math.abs(s.bottom - 22.5) < 0.01),
+    'centre-out insets are symmetric at mid-wipe, got: ' + JSON.stringify(ins[0]));
+  // down: the wipe grows from the top edge (top inset 0, bottom 45 at p=0.5)
+  const down = insets(M.venetianBlinds(25, { ...o, fn: 'linear', dir: 'down' }));
+  assert.ok(down.every((s) => s.top === 0 && Math.abs(s.bottom - 45) < 0.01), 'down wipes from the top edge');
+  // up: the wipe grows from the bottom edge
+  const up = insets(M.venetianBlinds(25, { ...o, fn: 'linear', dir: 'up' }));
+  assert.ok(up.every((s) => Math.abs(s.top - 45) < 0.01 && s.bottom === 0), 'up wipes from the bottom edge');
+  // every slat shows the same moment: all insets identical (simultaneous, not staggered)
+  assert.ok(new Set(ins.map((s) => s.top + '/' + s.bottom)).size === 1, 'all slats wipe together');
+  // custom slat count + region: 4 slats over a 200 px band at (100, 50)
+  const band = M.venetianBlinds(25, { ...o, fn: 'linear', slats: 4, x: 100, y: 50, w: 400, h: 200 });
+  const bt = tops(band);
+  assert.equal(bt.length, 4, 'slats option sets the count');
+  assert.deepEqual(bt.map((s) => s.top), [50, 100, 150, 200]);
+  assert.ok(bt.every((s) => s.h === 50), 'region height splits evenly');
+  assert.ok(band.includes('left:100.0px'), 'slats sit at the region x');
+  assert.ok(band.includes('left:-100.0px;top:-50.0px'), 'first inner crop offsets back to stage origin');
+  assert.ok(band.includes('top:-100.0px'), 'second inner crop offsets to its band');
+  // out: at mid-window the visible fraction is the same 0.5 (1 - p)
+  const outMid = insets(M.venetianBlinds(25, { ...o, fn: 'linear', mode: 'out' }));
+  assert.ok(outMid.every((s) => Math.abs(s.top - 22.5) < 0.01), 'out closes symmetrically from the same centre');
+  assert.equal(M.venetianBlinds(10, { ...o, mode: 'out' }), '<b>X</b>', 'out starts fully visible');
+  // feather: mask gradient instead of a hard clip-path, edge stops ordered
+  const f = M.venetianBlinds(25, { ...o, fn: 'linear', feather: 12 });
+  assert.ok(!f.includes('clip-path'), 'feather drops the hard clip');
+  assert.ok(f.includes('mask-image:linear-gradient(to bottom,transparent 0px,transparent 22.5px,#000 34.5px,#000 55.5px,transparent 67.5px'),
+    'feather gradient spans the visible band, got: ' + f.slice(0, 400));
+  // default ease is cubicOut on the open: p = 1-(1-0.5)^3 = 0.875, centre band 90*0.875 wide
+  const eased = insets(M.venetianBlinds(25, o));
+  assert.ok(Math.abs(eased[0].top - parseFloat((45 - 0.875 * 45).toFixed(1))) < 0.01, 'default cubicOut ease on the open');
+  assert.equal(M.venetianBlinds(25, o), M.venetianBlinds(25, o)); // determinism
+});
+
 test('textWarp: field-warped kinetic type — arch bends the line and rotates letters to the tangent, ripple mirrors from the centre', () => {
   const spans = (h) => [...h.matchAll(/translate\((-?[\d.]+)px,(-?[\d.]+)px\) rotate\((-?[\d.]+)deg\)/g)]
     .map((m) => ({ x: parseFloat(m[1]), y: parseFloat(m[2]), a: parseFloat(m[3]) }));

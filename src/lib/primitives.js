@@ -2604,6 +2604,91 @@ __root.Motion = (function () {
             'transform:scaleX(' + sx.toFixed(4) + ');opacity:' + glowOp.toFixed(3) + ';"></div>';
         return wrap + line;
     }
+    // venetianBlinds — the classic blinds transition: the frame is cut
+    // into `slats` equal horizontal bands and every slat wipes at the
+    // same moment to reveal the content beneath, so the scene arrives
+    // in N simultaneous strips instead of behind one edge. Each slat
+    // is a cropped window of the html (the mosaic crop trick: an inner
+    // div offset back to stage origin inside an overflow-hidden band),
+    // and the wipe inside the slat is a clip-path inset — 'center'
+    // (default) opens from the slat's middle line outward, 'down'
+    // grows from the top edge, 'up' from the bottom edge. `mode:'out'`
+    // closes the slats over the content instead. `feather` softens
+    // each slat's wipe edge with a mask gradient (the iris feather
+    // pattern); the stops are clamped so a feather wider than the
+    // visible band degrades to a soft peak, never an inverted gradient.
+    // The wipe eases on `fn` (cubicOut opening, cubicIn closing unless
+    // overridden). Before `at` an 'in' blinds shows nothing and an
+    // 'out' one shows the content untouched; after `at + dur` the 'in'
+    // passes the html through and the 'out' returns ''. Distinct from
+    // `sliceWave` (a travelling wave displaces strips — the strips move,
+    // nothing is revealed) and from `wipeReveal` (one edge, not N
+    // slats). From the 2026-11-19 sweep (Remotion @remotion/effects
+    // `venetianBlinds`, Lumit docs — "The frame is cut into slats of
+    // equal width and every slat begins wiping at the same moment").
+    function venetianBlinds(frame, o) {
+        o = o || {};
+        const html = o.html || '';
+        if (!html)
+            return '';
+        const at = o.at || 0, dur = Math.max(1, o.dur || 30);
+        const mode = o.mode || 'in';
+        const x = o.x || 0, y = o.y || 0;
+        const w = o.w || 1280, h = o.h || 720;
+        const slats = Math.max(1, Math.round(o.slats == null ? 8 : o.slats));
+        if (frame < at)
+            return mode === 'in' ? '' : html;
+        if (frame >= at + dur)
+            return mode === 'out' ? '' : html;
+        const defaultFn = mode === 'out' ? 'cubicIn' : 'cubicOut';
+        const ease = Easing[o.fn || defaultFn] || Easing.cubicOut;
+        let p = ease(clamp01((frame - at) / dur));
+        if (mode === 'out')
+            p = 1 - p;
+        if (p <= 0)
+            return '';
+        if (p >= 1)
+            return html;
+        const dir = o.dir || 'center';
+        const feather = Math.max(0, o.feather || 0);
+        const slatH = h / slats;
+        let out = '';
+        for (let i = 0; i < slats; i++) {
+            const top = y + i * slatH;
+            // Visible interval inside this slat, in px from its top edge.
+            let v0, v1;
+            if (dir === 'down') {
+                v0 = 0;
+                v1 = p * slatH;
+            }
+            else if (dir === 'up') {
+                v0 = (1 - p) * slatH;
+                v1 = slatH;
+            }
+            else {
+                v0 = slatH / 2 - p * slatH / 2;
+                v1 = slatH / 2 + p * slatH / 2;
+            }
+            let clip;
+            if (feather <= 0) {
+                clip = 'clip-path:inset(' + v0.toFixed(1) + 'px 0px ' + (slatH - v1).toFixed(1) + 'px 0px);';
+            }
+            else {
+                const lo = Math.min(v0 + feather, v1);
+                const hi = Math.max(v1 - feather, v0);
+                const a = Math.min(lo, hi), b = Math.max(lo, hi);
+                const g = 'linear-gradient(to bottom,transparent 0px,transparent ' + v0.toFixed(1) +
+                    'px,#000 ' + a.toFixed(1) + 'px,#000 ' + b.toFixed(1) + 'px,transparent ' +
+                    v1.toFixed(1) + 'px,transparent 100%)';
+                clip = '-webkit-mask-image:' + g + ';mask-image:' + g + ';';
+            }
+            out += '<div style="position:absolute;left:' + x.toFixed(1) + 'px;top:' + top.toFixed(1) +
+                'px;width:' + w.toFixed(1) + 'px;height:' + slatH.toFixed(1) + 'px;overflow:hidden;' + clip + '">' +
+                '<div style="position:absolute;left:' + (-x).toFixed(1) + 'px;top:' + (-top).toFixed(1) +
+                'px;width:' + w.toFixed(1) + 'px;height:' + h.toFixed(1) + 'px;">' + html + '</div></div>';
+        }
+        return '<div style="position:absolute;inset:0;overflow:hidden;">' + out + '</div>';
+    }
     // dotText — halftone dot-filled text: the letterforms are a field of
     // dots, not a solid fill. An SVG dot grid over the stage is clipped
     // by a text mask, so the word reads as a printed halftone poster.
@@ -3174,7 +3259,7 @@ __root.Motion = (function () {
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
         paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost, edgeBoil, dominoReveal, iris, clockWipe,
-        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, varFont, dotText, tvOff,
+        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, varFont, dotText, tvOff, venetianBlinds,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
         scramble, splitFlap, kenBurns, breathe, fx, hash,

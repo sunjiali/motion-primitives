@@ -195,6 +195,8 @@ export function iris(frame: number, o: { html: string; at?: number; dur?: number
 export function clockWipe(frame: number, o: { html: string; at?: number; dur?: number; x?: number; y?: number; w?: number; h?: number; mode?: 'open' | 'close'; dir?: 'cw' | 'ccw'; start?: number; fn?: string }): string;
 /** CRT power-off/on: the picture squashes vertically into a glowing horizontal line at (`x`, `y`), the line pinches horizontally into a phosphor dot, and the frame dies to black; `mode:'on'` runs it backwards (dot → line → full picture). `line` is the collapsed line's height in px, `glow` its phosphor colour, `split` the fraction of `dur` spent on the vertical collapse. Before `at` an 'off' tvOff shows the content untouched and an 'on' one shows nothing; after `at + dur` the 'off' returns '' and the 'on' passes the input HTML through untouched. */
 export function tvOff(frame: number, o: { html: string; at?: number; dur?: number; x?: number; y?: number; w?: number; h?: number; mode?: 'off' | 'on'; line?: number; glow?: string; split?: number; fn?: string }): string;
+/** Classic blinds transition: the frame is cut into `slats` (default 8) equal horizontal bands and every slat wipes at the same moment to reveal the content beneath — the scene arrives in N simultaneous strips instead of behind one edge. `dir` picks the wipe origin inside each slat: 'center' (default) opens from the slat's middle line outward, 'down' grows from the top edge, 'up' from the bottom edge. `mode:'out'` closes the slats over the content instead. `feather` softens each slat's wipe edge with a mask gradient. Before `at` an 'in' blinds shows nothing; after `at + dur` it passes the input HTML through untouched. */
+export function venetianBlinds(frame: number, o: { html: string; at?: number; dur?: number; x?: number; y?: number; w?: number; h?: number; mode?: 'in' | 'out'; slats?: number; dir?: 'down' | 'up' | 'center'; feather?: number; fn?: string }): string;
 /** Where a frame sits in a BPM grid: beat index, phase, decay pulse, bar position. */
 export function beatGrid(frame: number, o: { bpm: number; at?: number; fps?: number; perBar?: number }): { beat: number; index: number; phase: number; pulse: number; bar: number; inBar: number };
 /** The BPM grid as frame numbers — SFX score events and cut points. */
@@ -279,6 +281,7 @@ declare const Motion: {
   iris: typeof iris;
   clockWipe: typeof clockWipe;
   tvOff: typeof tvOff;
+  venetianBlinds: typeof venetianBlinds;
   beatGrid: typeof beatGrid; beatFrames: typeof beatFrames; inertia: typeof inertia; anticipate: typeof anticipate; followThrough: typeof followThrough; velocitySkew: typeof velocitySkew;
   morphPoly: typeof morphPoly;
   splitText: typeof splitText;

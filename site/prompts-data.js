@@ -443,4 +443,20 @@ window.PROMPT_GALLERY = [
 `,
     notes: '回填条目：成片随 v0.77.0 发布（tvOff 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧 hero 完整 / 20 帧 hero 纵向压扁约 17% / 25 帧 hero 压成珊瑚辉光线 / 40 帧 hero 已消失、标题干净 / 70 帧小字开机中、一条白色辉光线横贯 500 像素线 / 90 帧小字完整 / 125 帧整屏压扁约 24% / 149 帧整屏收成中心荧光短线、下一帧落黑）通过；成片 mp4 抽帧（25 / 70 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 75 卡、tvOff 卡在动、0 控制台报错。',
   },
+  {
+    id: 'venetianBlinds',
+    title: 'Venetian Blinds — Eight Slats, One Wipe',
+    blurb: 'The hero word arrives in eight simultaneous slats, the sub-line wipes in top-down on twelve, and the whole stage closes behind blinds at the end — one primitive, both directions.',
+    video: 'videos/venetian-blinds.mp4',
+    tags: ['reveal', 'venetianBlinds', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.78',
+    prompt:
+`用 motion-primitives 做一条 5 秒的百叶窗转场展示片，composition 名 venetian-blinds，核心只用一个新原语 M.venetianBlinds。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。深墨底 #26221F、奶油字 #FBF6EC、珊瑚字 #FF6B81；画面上方一行大字「VENETIAN BLINDS」（64px，800 字重，奶油色）全程静止；中央一行大字「BLINDS」（120px，800 字重，珊瑚色，居中于 640,330），在 10–40 帧以百叶窗方式入场（slats 8、默认 centre 方向）——画面被切成 8 条等高横条，每条同时从中线向上下张开、字从条缝里长出来；下方一行小字「eight slats, one wipe」（36px，500 字重，奶油色，居中于 640,500），在 55–85 帧入场（slats 12、dir 'down'）——每条从顶边向下展开；左下角一行等宽小字「M.venetianBlinds(frame, { slats: 8 })」（22px，奶油 55% 透明）全程静止；右上角一颗奶油圆点（#FBF6EC，18px）点缀；110–150 帧整屏再以百叶窗关一次（mode 'out'、slats 8），片尾只剩条缝、落黑。
+
+纪律：百叶窗是真分条——每条是内容的裁切窗口、不是遮罩色块；8 条同时开合、不许逐条错峰（错峰是 dominoReveal 的活）；centre 方向每条从中线向两边张开、down 方向从顶边向下长；窗口外内容原样返回；除标题、两行字、左下角代码行、右上角圆点外不许加别的元素；不许渐变背景、相机运动、颗粒噪点、音效。
+`,
+    notes: '回填条目：成片随 v0.78.0 发布（venetianBlinds 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧只有标题、hero 未入场 / 25 帧 hero 开合中、8 条缝清晰可见 / 40 帧 hero 完整 / 70 帧小字已完整（cubicOut 快、12 条缝内已长满）/ 100 帧全部落定 / 125 帧整屏关合中、标题与 hero 都带条缝 / 149 帧只剩 hero、小字、代码行与圆点的细缝、下一帧落黑）通过；成片 mp4 抽帧（25 / 70 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 76 卡、venetianBlinds 卡在动、0 控制台报错。',
+  },
 ];

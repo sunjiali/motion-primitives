@@ -618,6 +618,25 @@
       },
     },
     {
+      name: 'venetianBlinds', desc: 'Classic blinds transition — the frame is cut into equal horizontal slats and every slat wipes at the same moment, so the scene arrives in N simultaneous strips; `dir` opens each slat from its centre line, its top edge, or its bottom edge, `mode` closes them back over the content.',
+      code: 'M.venetianBlinds(frame, { html, slats, dir })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        const word = '<div style="position:absolute;left:280px;top:140px;transform:translate(-50%,-50%);font:800 46px system-ui;color:#FF6B81;white-space:nowrap;">BLINDS</div>';
+        const sub = '<div style="position:absolute;left:280px;top:220px;transform:translate(-50%,-50%);font:500 20px system-ui;color:#FBF6EC;white-space:nowrap;">eight slats, one wipe</div>';
+        // One word, two windows: 'in' opens it, 'out' closes it — the
+        // branch swaps calls at frame 100 so the two never render the
+        // same word at once (the 'out' opens fully visible at 100,
+        // exactly where the 'in' left it).
+        const hero = lf < 100
+          ? M.venetianBlinds(lf, { html: word, at: 10, dur: 35, slats: 8, x: 0, y: 80, w: 560, h: 120 })
+          : M.venetianBlinds(lf, { html: word, at: 100, dur: 40, mode: 'out', slats: 8, x: 0, y: 80, w: 560, h: 120 });
+        return '<div style="position:absolute;inset:0;background:#26221F;"></div>' +
+          hero +
+          M.venetianBlinds(lf, { html: sub, at: 55, dur: 30, slats: 12, dir: 'down', x: 0, y: 195, w: 560, h: 50 });
+      },
+    },
+    {
       name: 'dotText', desc: 'Halftone dot-filled text — the letterforms are a field of dots clipped by a text mask, so the word reads as a printed poster; `mode` grows the dots in on a hash stagger, breathes them on a pulse, or shrinks them away.',
       code: 'M.dotText(frame, { text, mode, gap, dot })', cycle: 150,
       draw(f) {
