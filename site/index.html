@@ -140,8 +140,8 @@ stage.innerHTML =
     <p class="section-lede">Every demo below is running <em>right now in your browser</em> on the exact
     library that renders the videos — driven by a virtual frame counter instead of a screenshot camera.</p>
     <div class="demo-hed">
-      <p class="hed-line">Seventy-five motions, one idea: every move in this library is a single named call.</p>
-      <p class="hed-meta">75 live demos · running on the shipped library · hover any card to replay it from the start</p>
+      <p class="hed-line">Seventy-seven motions, one idea: every move in this library is a single named call.</p>
+      <p class="hed-meta">77 live demos · running on the shipped library · hover any card to replay it from the start</p>
     </div>
     <div class="grid" id="demo-grid"></div>
   </section>
@@ -302,6 +302,7 @@ node src/render.js --comp showcase \
           <tr><td><code>clockWipe</code></td><td>Radial clock-hand sector reveal — the wrapped content is revealed as a pie sector sweeping 0 → 360° around (<code>x</code>, <code>y</code>), like a clock hand; <code>mode</code> opens or winds it back, <code>dir</code> sweeps clockwise or counter-clockwise, <code>start</code> moves the hand's home angle (0 = 12 o'clock)</td></tr>
           <tr><td><code>tvOff</code></td><td>CRT power-off/on — the picture squashes vertically into a glowing horizontal line at (<code>x</code>, <code>y</code>), the line pinches horizontally into a phosphor dot, and the frame dies to black; <code>mode</code> runs it backwards (dot → line → full picture), <code>line</code> sets the collapsed line's height, <code>glow</code> its phosphor colour</td></tr>
           <tr><td><code>venetianBlinds</code></td><td>Classic blinds transition — the frame is cut into <code>slats</code> (default 8) equal horizontal bands and every slat wipes at the same moment to reveal the content beneath; <code>dir</code> opens each slat from its centre line, its top edge, or its bottom edge, <code>mode</code> closes the slats back over the content, <code>feather</code> softens each slat's wipe edge</td></tr>
+          <tr><td><code>shatter</code></td><td>Shatter — the wrapped content breaks into tiles that fling outward from a force centre (<code>fx</code>/<code>fy</code>) with rotation under gravity and fade, so a title or a whole scene bursts apart and is gone by <code>at + dur</code>; <code>pattern</code> picks square, brickwork, or diagonal triangles, <code>strength</code> sets the fling distance (negative implodes), <code>gravity</code> the downward fall</td></tr>
         </table>
         <p>Full signatures and defaults live in <code>src/lib/primitives.ts</code> in the repo —
         it is heavily commented and doubles as the manual.</p>

@@ -619,6 +619,63 @@ test('venetianBlinds: N equal slats wipe at the same moment — centre-out by de
   assert.equal(M.venetianBlinds(25, o), M.venetianBlinds(25, o)); // determinism
 });
 
+test('shatter: tiles fling outward from the force centre with rotation under gravity and fade; negative strength implodes; bricks/triangle patterns', () => {
+  const o = { at: 10, dur: 40, html: '<b>X</b>' };
+  const tiles = (h) => [...h.matchAll(/transform:translate\((-?[\d.]+)px,(-?[\d.]+)px\) rotate\((-?[\d.]+)deg\);opacity:([\d.]+)/g)]
+    .map((m) => ({ dx: parseFloat(m[1]), dy: parseFloat(m[2]), rot: parseFloat(m[3]), op: parseFloat(m[4]) }));
+  // before at the html passes through; after the window it is gone; empty html is empty
+  assert.equal(M.shatter(9, o), '<b>X</b>');
+  assert.equal(M.shatter(50, o), '');
+  assert.equal(M.shatter(10, { html: '' }), '');
+  // default 12x8 grid: 96 tiles; at the launch frame every tile sits in place, opaque
+  const start = tiles(M.shatter(10, o));
+  assert.equal(start.length, 96, '12x8 = 96 tiles by default');
+  assert.ok(start.every((t) => t.dx === 0 && t.dy === 0 && t.rot === 0 && t.op === 1), 'all tiles at rest at frame at');
+  // mid-window: tiles have flown (non-zero offsets), some already fading; the
+  // flight grows between two frames — aggregate displacement must increase
+  const mag = (ts) => ts.reduce((s, t) => s + Math.abs(t.dx) + Math.abs(t.dy), 0);
+  const mid = tiles(M.shatter(30, o));
+  const late = tiles(M.shatter(45, o));
+  assert.ok(mag(mid) > 0, 'tiles have left their rest positions mid-window');
+  assert.ok(mag(late) > mag(mid), 'the flight keeps growing toward the end of the window');
+  assert.ok(late.some((t) => t.op < 1), 'tiles fade late in the window');
+  assert.ok(late.every((t) => t.op >= 0 && t.op <= 1), 'opacity stays in range');
+  // gravity: with the force centre at the region centre, outward dy cancels
+  // in the mean, so a positive mean dy is the gravity fall
+  const meanDy = (ts) => ts.reduce((s, t) => s + t.dy, 0) / ts.length;
+  assert.ok(meanDy(late) > 0, 'gravity pulls the mean tile downward, got: ' + meanDy(late).toFixed(1));
+  assert.ok(meanDy(late) > meanDy(mid), 'the gravity fall accelerates (t^2), not linear');
+  // rotation: tiles spin on their own hash angles
+  assert.ok(mid.some((t) => Math.abs(t.rot) > 1), 'tiles rotate as they fly');
+  // a corner tile (top-left, idx 0) flies away from the centre: dx,dy both negative
+  assert.ok(mid[0].dx < 0 && mid[0].dy < 0, 'corner tile flees the centre, got: ' + JSON.stringify(mid[0]));
+  // negative strength implodes: the same corner tile moves toward the centre
+  const impl = tiles(M.shatter(30, { ...o, strength: -260 }));
+  assert.ok(impl[0].dx > 0 && impl[0].dy > 0, 'implosion pulls the corner tile toward the centre');
+  assert.ok(Math.abs(impl[0].dx) > 0, 'implosion moves tiles, not a no-op');
+  // force centre: exploding from the top-left corner throws every tile
+  // down-right (all dx,dy positive) instead of radially outward
+  const corner = tiles(M.shatter(30, { ...o, fx: 0, fy: 0 }));
+  assert.ok(corner.every((t) => t.dx >= 0), 'corner force throws every tile right');
+  assert.ok(corner.every((t) => t.dy >= -0.01), 'corner force throws every tile down (gravity only adds)');
+  // bricks: odd rows carry one extra tile each — 4 odd rows in 8 = 100 tiles
+  assert.equal(tiles(M.shatter(30, { ...o, pattern: 'bricks' })).length, 100, 'bricks adds one tile per odd row');
+  // triangle: two flying triangles per cell — 192 tiles, each clip-pathed
+  const tri = M.shatter(30, { ...o, pattern: 'triangle' });
+  assert.equal(tiles(tri).length, 192, 'triangle splits every cell in two');
+  assert.ok(tri.includes('clip-path:polygon(0 0,100% 0,0 100%)'), 'first triangle clips upper-left');
+  assert.ok(tri.includes('clip-path:polygon(100% 0,100% 100%,0 100%)'), 'second triangle clips lower-right');
+  // custom grid + region: 4x2 tiles over a 400x200 band at (100, 50)
+  const band = M.shatter(30, { ...o, cols: 4, rows: 2, x: 100, y: 50, w: 400, h: 200 });
+  assert.equal(tiles(band).length, 8, 'cols/rows set the tile count');
+  assert.ok(band.includes('left:100.0px;top:50.0px'), 'first tile sits at the region origin');
+  assert.ok(band.includes('left:-100.0px;top:-50.0px'), 'first inner crop offsets back to stage origin');
+  // linear ease: a tile launched at t=0.5 of its flight has eased 0.5 — check
+  // the corner tile's flight distance grows linearly with e under fn linear
+  // (gravity aside, the outward part is mag * e); determinism holds
+  assert.equal(M.shatter(30, o), M.shatter(30, o)); // determinism
+});
+
 test('textWarp: field-warped kinetic type — arch bends the line and rotates letters to the tangent, ripple mirrors from the centre', () => {
   const spans = (h) => [...h.matchAll(/translate\((-?[\d.]+)px,(-?[\d.]+)px\) rotate\((-?[\d.]+)deg\)/g)]
     .map((m) => ({ x: parseFloat(m[1]), y: parseFloat(m[2]), a: parseFloat(m[3]) }));

@@ -2689,6 +2689,103 @@ __root.Motion = (function () {
         }
         return '<div style="position:absolute;inset:0;overflow:hidden;">' + out + '</div>';
     }
+    // shatter — the wrapped content breaks into tiles that fling
+    // outward from a force centre with rotation under gravity and
+    // fade, so a title or a whole scene bursts apart and is gone by
+    // `at + dur` (draw black or the next scene behind it). Before
+    // `at` the html passes through untouched. Each tile is a cropped
+    // window of the html (the mosaic crop trick: an inner div offset
+    // back to stage origin inside an overflow-hidden tile), launched
+    // at a hash-staggered moment inside the first 35% of the window
+    // so the break reads as one impact. The flight eases on `fn`
+    // (cubicOut default) and gravity adds a t^2 fall, so tiles arc;
+    // each tile spins on its own hash angle and fades over the last
+    // 30% of its flight. Negative `strength` implodes: tiles fly
+    // toward the force centre instead of away from it. Distinct from
+    // `mosaic` (tiles flip in place to scene B, no flight) and from
+    // `pixelDissolve` (cells flip away, no flight, no gravity).
+    // From the 2026-11-19 sweep (Remotion v4.0.539 `shatter`,
+    // https://www.thereelstack.com/lab/remotion-shatter-curves-hyperframes-gif-export-windows
+    // — bricks / glass / hexagon / square / triangle patterns,
+    // pattern origin and force centre separate).
+    function shatter(frame, o) {
+        o = o || {};
+        const html = o.html || '';
+        if (!html)
+            return '';
+        const at = o.at || 0, dur = Math.max(1, o.dur || 40);
+        const seed = o.seed || 1;
+        const x = o.x || 0, y = o.y || 0;
+        const w = o.w || 1280, h = o.h || 720;
+        const cols = Math.max(1, Math.round(o.cols == null ? 12 : o.cols));
+        const rows = Math.max(1, Math.round(o.rows == null ? 8 : o.rows));
+        const strength = o.strength == null ? 260 : o.strength;
+        const gravity = o.gravity == null ? 240 : o.gravity;
+        const fx = o.fx == null ? x + w / 2 : o.fx;
+        const fy = o.fy == null ? y + h / 2 : o.fy;
+        const pattern = o.pattern || 'square';
+        if (frame < at)
+            return html;
+        if (frame >= at + dur)
+            return '';
+        const ease = Easing[o.fn || 'cubicOut'] || Easing.cubicOut;
+        const cw = w / cols, ch = h / rows;
+        const sgn = strength < 0 ? -1 : 1;
+        const mag = Math.abs(strength);
+        let out = '';
+        // One tile = one cropped window of the html. `idx` is the
+        // tile's hash index (triangle cells count double).
+        const tile = (tx, ty, idx, clip) => {
+            const cx = tx + cw / 2, cy = ty + ch / 2;
+            const launch = at + hash(seed * 57 + idx * 3.7) * dur * 0.35;
+            const t = clamp01((frame - launch) / (at + dur - launch));
+            const e = ease(t);
+            let dx = cx - fx, dy = cy - fy;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 0.5) {
+                const a = hash(seed * 91 + idx * 2.9) * Math.PI * 2;
+                dx = Math.cos(a);
+                dy = Math.sin(a);
+            }
+            else {
+                dx /= dist;
+                dy /= dist;
+            }
+            const ox = sgn * dx * mag * e;
+            const oy = sgn * dy * mag * e + gravity * t * t;
+            const spin = (hash(seed * 31 + idx * 5.3) - 0.5) * 360;
+            const rot = spin * e;
+            const op = 1 - clamp01((t - 0.7) / 0.3);
+            out += '<div style="position:absolute;left:' + tx.toFixed(1) + 'px;top:' + ty.toFixed(1) +
+                'px;width:' + cw.toFixed(1) + 'px;height:' + ch.toFixed(1) + 'px;overflow:hidden;' + clip +
+                'transform:translate(' + ox.toFixed(1) + 'px,' + oy.toFixed(1) + 'px) rotate(' + rot.toFixed(1) +
+                'deg);opacity:' + op.toFixed(3) + ';">' +
+                '<div style="position:absolute;width:' + w + 'px;height:' + h + 'px;left:' + (-tx).toFixed(1) +
+                'px;top:' + (-ty).toFixed(1) + 'px;">' + html + '</div></div>';
+        };
+        for (let r = 0; r < rows; r++) {
+            const ty = y + r * ch;
+            if (pattern === 'bricks' && r % 2 === 1) {
+                for (let c = 0; c <= cols; c++) {
+                    tile(x + c * cw - cw / 2, ty, r * cols + c, '');
+                }
+            }
+            else if (pattern === 'triangle') {
+                for (let c = 0; c < cols; c++) {
+                    const tx = x + c * cw;
+                    const i = (r * cols + c) * 2;
+                    tile(tx, ty, i, 'clip-path:polygon(0 0,100% 0,0 100%);');
+                    tile(tx, ty, i + 1, 'clip-path:polygon(100% 0,100% 100%,0 100%);');
+                }
+            }
+            else {
+                for (let c = 0; c < cols; c++) {
+                    tile(x + c * cw, ty, r * cols + c, '');
+                }
+            }
+        }
+        return '<div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">' + out + '</div>';
+    }
     // dotText — halftone dot-filled text: the letterforms are a field of
     // dots, not a solid fill. An SVG dot grid over the stage is clipped
     // by a text mask, so the word reads as a printed halftone poster.
@@ -3259,7 +3356,7 @@ __root.Motion = (function () {
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
         paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost, edgeBoil, dominoReveal, iris, clockWipe,
-        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, varFont, dotText, tvOff, venetianBlinds,
+        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, varFont, dotText, tvOff, venetianBlinds, shatter,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
         scramble, splitFlap, kenBurns, breathe, fx, hash,

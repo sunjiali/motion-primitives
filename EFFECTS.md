@@ -6,6 +6,40 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### Transition (v0.79)
+- `shatter` — the wrapped content breaks into tiles that fling
+  outward from a force centre with rotation under gravity and
+  fade, so a title or a whole scene bursts apart and is gone by
+  `at + dur` (draw black or the next scene behind it). Each tile
+  is a cropped window of the html (the mosaic crop trick: an inner
+  div offset back to stage origin inside an overflow-hidden tile),
+  launched at a hash-staggered moment inside the first 35% of the
+  window so the break reads as one impact, not a wave. The flight
+  eases on `fn` (cubicOut default) and gravity adds a t² fall, so
+  tiles arc; each tile spins on its own hash angle and fades over
+  the last 30% of its flight. `pattern` picks the tile shape:
+  `'square'` (default, a plain grid), `'bricks'` (alternate rows
+  offset by half a cell — odd rows carry one extra tile),
+  `'triangle'` (every cell split diagonally into two flying
+  triangles). `strength` (default 260) is the fling distance in px
+  at full flight — negative implodes instead, tiles flying toward
+  the force centre. `gravity` (default 240) is the extra downward
+  fall in px by the end of the window. `fx`/`fy` is the force
+  centre (default the region centre), separate from the pattern
+  origin (`x`/`y`/`w`/`h`). Before `at` the html passes through
+  untouched. Source: Remotion v4.0.539 `shatter`
+  (https://www.thereelstack.com/lab/remotion-shatter-curves-hyperframes-gif-export-windows):
+  bricks / glass / hexagon / square / triangle patterns, pattern
+  origin and force centre separate — hexagon and glass stay a
+  future variant. Distinct from `mosaic` (tiles flip in place to
+  scene B, no flight) and from `pixelDissolve` (cells flip away,
+  no flight, no gravity). Demo card (hero word on square tiles +
+  sub-line on bricks) + `shatter` composition (150 f, coral hero
+  bursts 10–50 on square tiles, cream sub-line on bricks 60–100,
+  whole-stage triangle close 110–150 ending on scattered fading
+  tiles one frame before black) + Prompt Gallery entry. With this,
+  the remaining backlog is `flicker` only.
+
 ### Reveal (v0.78)
 - `venetianBlinds` — classic blinds transition: the frame is cut
   into `slats` (default 8) equal horizontal bands and every slat
@@ -1236,14 +1270,12 @@ research/x-motion-sweep-log.md.
 - ~~`venetianBlinds`~~ — shipped in v0.78.0: classic blinds
   transition (see Implemented above). With this, the remaining
   backlog is `shatter` / `flicker`.
-- `shatter` — the wrapped content breaks into tiles that fling
-  outward with rotation under gravity and fade (negative
-  strength implodes instead). Remotion v4.0.539, 2026-10-26
-  (https://www.thereelstack.com/lab/remotion-shatter-curves-hyperframes-gif-export-windows):
-  bricks / glass / hexagon / square / triangle patterns, pattern
-  origin and force centre separate. The 2-D HTML-string form
-  flings cropped tiles; distinct from `mosaic` (tiles flip in
-  place to scene B) and `pixelDissolve` (cells flip, no flight).
+- ~~`shatter`~~ — shipped in v0.79.0: the wrapped content breaks
+  into tiles that fling outward with rotation under gravity and
+  fade (negative strength implodes instead); square / bricks /
+  triangle patterns, pattern origin and force centre separate (see
+  Implemented above). With this, the remaining backlog is
+  `flicker` only.
 - `flicker` — neon-sign flicker-on: the content stutters on/off
   on a hash pattern with a decaying off-probability, then
   settles on with a glow. @shyamx.mov's flicker-glow text

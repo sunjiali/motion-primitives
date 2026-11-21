@@ -197,6 +197,8 @@ export function clockWipe(frame: number, o: { html: string; at?: number; dur?: n
 export function tvOff(frame: number, o: { html: string; at?: number; dur?: number; x?: number; y?: number; w?: number; h?: number; mode?: 'off' | 'on'; line?: number; glow?: string; split?: number; fn?: string }): string;
 /** Classic blinds transition: the frame is cut into `slats` (default 8) equal horizontal bands and every slat wipes at the same moment to reveal the content beneath — the scene arrives in N simultaneous strips instead of behind one edge. `dir` picks the wipe origin inside each slat: 'center' (default) opens from the slat's middle line outward, 'down' grows from the top edge, 'up' from the bottom edge. `mode:'out'` closes the slats over the content instead. `feather` softens each slat's wipe edge with a mask gradient. Before `at` an 'in' blinds shows nothing; after `at + dur` it passes the input HTML through untouched. */
 export function venetianBlinds(frame: number, o: { html: string; at?: number; dur?: number; x?: number; y?: number; w?: number; h?: number; mode?: 'in' | 'out'; slats?: number; dir?: 'down' | 'up' | 'center'; feather?: number; fn?: string }): string;
+/** Shatter: the wrapped content breaks into tiles that fling outward from a force centre (`fx`/`fy`, default the region centre) with rotation under gravity and fade, so a title or a whole scene bursts apart and is gone by `at + dur` — draw black or the next scene behind it. `pattern` picks the tile shape: 'square' (default) is a plain grid, 'bricks' offsets alternate rows by half a cell, 'triangle' splits every cell diagonally into two flying triangles. `strength` (default 260) is the fling distance in px at full flight — negative implodes instead, tiles flying toward the force centre. `gravity` (default 240) is the extra downward fall in px by the end of the window. Each tile launches at a hash-staggered moment inside the first 35% of the window and fades over the last 30% of its flight. Before `at` the input HTML passes through untouched; after `at + dur` it returns ''. */
+export function shatter(frame: number, o: { html: string; at?: number; dur?: number; x?: number; y?: number; w?: number; h?: number; cols?: number; rows?: number; pattern?: 'square' | 'bricks' | 'triangle'; strength?: number; gravity?: number; fx?: number; fy?: number; seed?: number; fn?: string }): string;
 /** Where a frame sits in a BPM grid: beat index, phase, decay pulse, bar position. */
 export function beatGrid(frame: number, o: { bpm: number; at?: number; fps?: number; perBar?: number }): { beat: number; index: number; phase: number; pulse: number; bar: number; inBar: number };
 /** The BPM grid as frame numbers — SFX score events and cut points. */
@@ -282,6 +284,7 @@ declare const Motion: {
   clockWipe: typeof clockWipe;
   tvOff: typeof tvOff;
   venetianBlinds: typeof venetianBlinds;
+  shatter: typeof shatter;
   beatGrid: typeof beatGrid; beatFrames: typeof beatFrames; inertia: typeof inertia; anticipate: typeof anticipate; followThrough: typeof followThrough; velocitySkew: typeof velocitySkew;
   morphPoly: typeof morphPoly;
   splitText: typeof splitText;

@@ -459,4 +459,20 @@ window.PROMPT_GALLERY = [
 `,
     notes: '回填条目：成片随 v0.78.0 发布（venetianBlinds 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧只有标题、hero 未入场 / 25 帧 hero 开合中、8 条缝清晰可见 / 40 帧 hero 完整 / 70 帧小字已完整（cubicOut 快、12 条缝内已长满）/ 100 帧全部落定 / 125 帧整屏关合中、标题与 hero 都带条缝 / 149 帧只剩 hero、小字、代码行与圆点的细缝、下一帧落黑）通过；成片 mp4 抽帧（25 / 70 帧）与静帧一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 76 卡、venetianBlinds 卡在动、0 控制台报错。',
   },
+  {
+    id: 'shatter',
+    title: 'Shatter — Tiles Fly, Gravity Wins',
+    blurb: 'The hero word bursts apart on square tiles, the sub-line shatters on brickwork, and the rest of the stage closes on triangles — one primitive, three patterns, gravity doing the cleanup.',
+    video: 'videos/shatter.mp4',
+    tags: ['transition', 'shatter', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.79',
+    prompt:
+`用 motion-primitives 做一条 5 秒的碎裂转场展示片，composition 名 shatter，核心只用一个新原语 M.shatter。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。深墨底 #26221F、奶油字 #FBF6EC、珊瑚字 #FF6B81；画面上方一行大字「SHATTER」（64px，800 字重，奶油色）全程静止；中央一行大字「SHATTER」（120px，800 字重，珊瑚色，居中于 640,330），在 10–50 帧碎裂消失（square、strength 300、gravity 300、力心在字中心 640,330）——字被切成 12×8 的瓦片、每片带旋转向外飞、下落加速、最后淡去；下方一行小字「tiles fly, gravity wins」（36px，500 字重，奶油色，居中于 640,500），在 60–100 帧碎裂（pattern 'bricks'、strength 260、gravity 260、力心 640,500）——奇数行错开半格、砖缝里飞出字块；左下角一行等宽小字「M.shatter(frame, { strength: 300 })」（22px，奶油 55% 透明）全程静止；右上角一颗奶油圆点（#FBF6EC，18px）点缀；110–150 帧整屏再碎一次（pattern 'triangle'、strength 380、gravity 320）——只碎当时还留在屏上的标题、代码行与圆点（hero 与小字已消失、不许复活），片尾只剩淡去的三角残片、落黑。
+
+纪律：碎裂是真分瓦——每片是内容的裁切窗口、不是色块；每片在窗口前 35% 内哈希错峰起飞、飞满整个窗口才淡去，读起来是一次冲击、不是波浪；飞行动画带旋转、重力是 t² 下落（直线下坠不算）；窗口外内容原样返回、窗口结束内容彻底消失；除标题、两行字、左下角代码行、右上角圆点外不许加别的元素；不许渐变背景、相机运动、颗粒噪点、音效。
+`,
+    notes: '回填条目：成片随 v0.79.0 发布（shatter 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧标题、hero、小字、代码行、圆点齐全 / 30 帧 hero 碎裂中、瓦片带旋转向外飞散、中间已空、小字完好 / 50 帧 hero 已消失、小字完整 / 80 帧小字砖缝碎裂中、字块旋转飞散 / 130 帧整屏三角碎片已飞散、只剩标题字母的细小残片 / 149 帧三角残片淡去中、下一帧落黑）通过；成片 mp4 抽帧（30 / 80 帧）与静帧逐像素一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 77 卡、shatter 卡在动（砖缝窗口内 100 片瓦片、两次采样 HTML 长度 42849→43383 在变）、0 控制台报错。',
+  },
 ];
