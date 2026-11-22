@@ -475,4 +475,20 @@ window.PROMPT_GALLERY = [
 `,
     notes: '回填条目：成片随 v0.79.0 发布（shatter 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧标题、hero、小字、代码行、圆点齐全 / 30 帧 hero 碎裂中、瓦片带旋转向外飞散、中间已空、小字完好 / 50 帧 hero 已消失、小字完整 / 80 帧小字砖缝碎裂中、字块旋转飞散 / 130 帧整屏三角碎片已飞散、只剩标题字母的细小残片 / 149 帧三角残片淡去中、下一帧落黑）通过；成片 mp4 抽帧（30 / 80 帧）与静帧逐像素一致，ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 77 卡、shatter 卡在动（砖缝窗口内 100 片瓦片、两次采样 HTML 长度 42849→43383 在变）、0 控制台报错。',
   },
+  {
+    id: 'flicker',
+    title: 'Flicker — Broken, Then Burning',
+    blurb: 'The hero word stutters on like a neon sign finding its current, the sub-line is a broken tube that never settles, and the corner dot blinks on a square wave — one primitive, three ways to misbehave.',
+    video: 'videos/flicker.mp4',
+    tags: ['fx', 'flicker', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.80',
+    prompt:
+`用 motion-primitives 做一条 5 秒的霓虹灯闪烁展示片，composition 名 flicker，核心只用一个新原语 M.flicker。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。深墨底 #26221F、奶油字 #FBF6EC、珊瑚字 #FF6B81；画面上方一行大字「FLICKER」（64px，800 字重，奶油色）全程静止；中央一行大字「NEON」（120px，800 字重，珊瑚色，居中于 640,330），在 10–55 帧以霓虹灯点亮方式入场（mode 'on'、dur 45、glow #FF2E88）——字先是短促闪烁、亮灭间隔逐渐拉长、最后稳定亮起并带粉色光晕；下方一行小字「broken, then burning」（36px，500 字重，奶油色，居中于 640,500），在 60 帧起以坏掉的霓虹灯方式闪烁（mode 'sustain'、glow #FFD166）——全程随机亮灭、永不稳定；左下角一行等宽小字「M.flicker(frame, { mode: 'on' })」（22px，奶油 55% 透明）全程静止；右上角一颗奶油圆点（#FBF6EC，18px）以方波闪烁（mode 'blink'、rate 12）全程点缀。
+
+纪律：闪烁是真亮灭——亮帧带双层光晕（紧贴的亮核 + 宽幅柔光）、灭帧只剩暗管或彻底消失，不许用透明度渐变冒充闪烁；'on' 模式的灭帧概率随窗口推进二次方衰减、窗口结束必须稳稳亮着；'sustain' 模式永不稳定、灭帧概率恒定；'blink' 模式是干净方波、6 帧亮 6 帧灭；除标题、两行字、左下角代码行、右上角圆点外不许加别的元素；不许渐变背景、相机运动、颗粒噪点、音效。
+`,
+    notes: '回填条目：成片随 v0.80.0 发布（flicker 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧标题、代码行、圆点亮、hero 与小字未亮 / 14 帧 hero 早闪亮起、圆点亮 / 20 帧 hero 灭帧、圆点灭 / 24 帧 hero 亮帧带粉色光晕、圆点亮 / 55 帧 hero 稳定亮起、小字未到、圆点灭 / 70 帧 hero 稳定、小字琥珀色亮起、圆点灭 / 80 与 149 帧小字恰逢灭帧、与 55 帧画面一致——节点核对 sub 在 60–149 帧亮 52 帧、hero 亮帧由稀疏短闪 10/11/14/15 渐变为 38 帧后全亮，确认为采样巧合非渲染故障）通过；成片 mp4 抽帧（24 / 70 帧）与静帧像素比对均值通道差 1.65/1.66（H.264 压缩噪声级），ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 78 卡、flicker 卡滚动入视后在动（两次采样 HTML 长度 227→509）、hover 重播复位（NEON 回到灭帧）、0 控制台报错。',
+  },
 ];

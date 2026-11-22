@@ -649,6 +649,18 @@
       },
     },
     {
+      name: 'flicker', desc: 'Neon-sign flicker — the content stutters on/off on a hash pattern with a decaying off-probability, then settles on with a glow; `mode` keeps it broken, breathes it on a sine pulse, or blinks it on a square wave, `glow` sets the neon colour.',
+      code: 'M.flicker(frame, { html, mode, glow })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        const word = '<div style="position:absolute;left:280px;top:140px;transform:translate(-50%,-50%);font:800 46px system-ui;color:#FF6B81;white-space:nowrap;">NEON</div>';
+        const sub = '<div style="position:absolute;left:280px;top:220px;transform:translate(-50%,-50%);font:500 20px system-ui;color:#FBF6EC;white-space:nowrap;">broken, then burning</div>';
+        return '<div style="position:absolute;inset:0;background:#26221F;"></div>' +
+          M.flicker(lf, { html: word, at: 30, dur: 45, glow: '#FF2E88' }) +
+          M.flicker(lf, { html: sub, at: 85, mode: 'sustain', glow: '#FFD166' });
+      },
+    },
+    {
       name: 'dotText', desc: 'Halftone dot-filled text — the letterforms are a field of dots clipped by a text mask, so the word reads as a printed poster; `mode` grows the dots in on a hash stagger, breathes them on a pulse, or shrinks them away.',
       code: 'M.dotText(frame, { text, mode, gap, dot })', cycle: 150,
       draw(f) {

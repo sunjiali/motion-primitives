@@ -2786,6 +2786,74 @@ __root.Motion = (function () {
         }
         return '<div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">' + out + '</div>';
     }
+    // flicker — neon-sign flicker-on: the content stutters on/off on a
+    // hash pattern with a decaying off-probability, then settles on
+    // with a glow. `mode:'on'` (default) is the startup: the sign
+    // flashes on in brief blips that lengthen as the off-probability
+    // decays quadratically over `dur`, then burns solid. `mode:
+    // 'sustain'` is the broken neon — the stutter never settles
+    // (starts at `at`, `dur` ignored). `mode:'pulse'` breathes the
+    // glow on a |sin| envelope with period `rate` (the ALARM register,
+    // default 60 frames ≈ 2 s) and `mode:'blink'` toggles on a square
+    // wave with period `rate` (default 12 frames, 6 on / 6 off); both
+    // are sustained and ignore `at`/`dur`. The halo is two stacked
+    // drop-shadows — a tight hot core and a wide soft halo, the
+    // @aniakubow layering — scaled by `amount` and by the current
+    // brightness, so a dim sign casts no light; `dim` leaves the faint
+    // tube visible when the sign is off (the Figma OPEN sign's Off
+    // State). On-frames inside the stutter still wobble a little (the
+    // wiggle(2, 50) SMOOTH register) instead of sitting at flat 1.
+    // Distinct from `flash` (one full-frame impact flash) and from
+    // `glitch` (slices + RGB split). From the 2026-11-19 sweep
+    // (@shyamx.mov's flicker-glow text, corroborated by the neon
+    // signboard reveal and @rize.style_'s neon line-trace logo
+    // reveal), re-corroborated 2026-11-22 by @rexadewa's six AE
+    // opacity expressions (SMOOTH / BROKEN NEON / GLITCHY /
+    // CANDLELIGHT / ALARM / BLINKING).
+    function flicker(frame, o) {
+        o = o || {};
+        const html = o.html || '';
+        if (!html)
+            return '';
+        const mode = o.mode || 'on';
+        const at = o.at || 0, dur = Math.max(1, o.dur || 30);
+        const seed = o.seed == null ? 1 : o.seed;
+        const step = Math.max(1, Math.round(o.step == null ? 2 : o.step));
+        const dim = Math.min(1, Math.max(0, o.dim == null ? 0 : o.dim));
+        const amount = Math.max(0, o.amount == null ? 1 : o.amount);
+        const glow = o.glow || '#FF2E88';
+        const halo = (b) => {
+            if (b <= 0 || amount <= 0)
+                return '';
+            return 'filter:drop-shadow(0 0 ' + (10 * amount * b).toFixed(1) + 'px ' + glow +
+                ') drop-shadow(0 0 ' + (34 * amount * b).toFixed(1) + 'px ' + glow + ');';
+        };
+        const wrap = (op, b) => '<div style="position:absolute;inset:0;opacity:' + op.toFixed(3) + ';' + halo(b) + '">' + html + '</div>';
+        const off = () => (dim <= 0 ? '' : wrap(dim, 0));
+        if (mode === 'pulse') {
+            const rate = Math.max(2, Math.round(o.rate == null ? 60 : o.rate));
+            const env = Math.abs(Math.sin(Math.PI * (frame % rate) / rate));
+            return wrap(dim + (1 - dim) * (0.25 + 0.75 * env), env);
+        }
+        if (mode === 'blink') {
+            const rate = Math.max(2, Math.round(o.rate == null ? 12 : o.rate));
+            const half = Math.max(1, Math.round(rate / 2));
+            return Math.floor((frame + seed) / half) % 2 === 0 ? wrap(1, 1) : off();
+        }
+        if (frame < at)
+            return off();
+        if (mode === 'on' && frame >= at + dur)
+            return wrap(1, 1);
+        const slot = Math.floor((frame - at) / step);
+        const roll = hash(seed * 131 + slot * 17.3);
+        const pOff = mode === 'sustain'
+            ? 0.35
+            : 0.85 * Math.pow(1 - clamp01((frame - at) / dur), 2);
+        if (roll <= pOff)
+            return off();
+        const wob = 0.85 + 0.15 * hash(seed * 733 + slot * 5.1);
+        return wrap(wob, wob);
+    }
     // dotText — halftone dot-filled text: the letterforms are a field of
     // dots, not a solid fill. An SVG dot grid over the stage is clipped
     // by a text mask, so the word reads as a printed halftone poster.
@@ -3356,7 +3424,7 @@ __root.Motion = (function () {
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
         paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost, edgeBoil, dominoReveal, iris, clockWipe,
-        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, varFont, dotText, tvOff, venetianBlinds, shatter,
+        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, varFont, dotText, tvOff, venetianBlinds, shatter, flicker,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
         scramble, splitFlap, kenBurns, breathe, fx, hash,

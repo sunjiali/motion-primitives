@@ -2,6 +2,51 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.80.0] — 2026-11-22
+
+### Added — `flicker` primitive + `flicker` composition
+
+- **`flicker(frame, { html, at?, dur?, mode?, glow?, amount?, dim?, seed?, step?, rate? })`** —
+  neon-sign flicker-on: the wrapped content stutters on/off on a
+  hash pattern with a decaying off-probability, then settles on
+  with a glow. The startup (`mode:'on'`, default) flashes the
+  content on in brief blips that lengthen as the off-probability
+  decays quadratically over `dur`, then burns solid; on-frames
+  inside the stutter still wobble a little (the wiggle(2, 50)
+  SMOOTH register) instead of sitting at flat 1. `mode:'sustain'`
+  is the broken neon that keeps misfiring (starts at `at`, never
+  settles); `mode:'pulse'` breathes the glow on a |sin| envelope
+  with period `rate` (default 60 frames, the ALARM register);
+  `mode:'blink'` toggles on a square wave with period `rate`
+  (default 12 frames, 6 on / 6 off). The halo is two stacked
+  drop-shadows — a tight hot core and a wide soft halo, the
+  @aniakubow layering — scaled by `amount` and by the current
+  brightness, so a dim sign casts no light. `glow` is the neon
+  colour (default #FF2E88); `dim` leaves the faint tube visible
+  when the sign is off (default 0, fully dark); `step` is the
+  flicker slot length in frames (default 2 — the 60/90/60 ms
+  startup beats of @thestudiodsign's OPEN sign). The stutter
+  quantizes time into `step`-frame slots hashed on `seed`, so
+  each on/off run lasts at least one slot and the pattern is
+  frame-pure. Before `at` an 'on'/'sustain' flicker shows only
+  the dim ghost. Source: @shyamx.mov's flicker-glow text,
+  corroborated by the neon signboard reveal and @rize.style_'s
+  neon line-trace logo reveal (2026-11-19 sweep), re-corroborated
+  2026-11-22 by @rexadewa's six AE opacity expressions
+  (https://www.instagram.com/reel/DZei5e-sReB/) — SMOOTH /
+  BROKEN NEON / GLITCHY / CANDLELIGHT / ALARM / BLINKING — plus
+  @aniakubow's white-hot-core neon
+  (https://www.instagram.com/reel/DePTsnVKv3I/) and
+  @thestudiodsign's Figma OPEN sign startup
+  (https://www.instagram.com/reel/DemfPXOhkH/). Distinct from
+  `flash` (one full-frame impact flash) and from `glitch`
+  (slices + RGB split).
+- Demo card (hero word flickering on + sub-line on a broken
+  neon) + `flicker` composition (150 f, coral hero flickers on
+  10–55 in pink, cream sub-line misfires from 60 on in amber,
+  corner dot blinking on a square wave throughout) + Prompt
+  Gallery entry. With this, the backlog is empty again.
+
 ## [0.79.0] — 2026-11-21
 
 ### Added — `shatter` primitive + `shatter` composition

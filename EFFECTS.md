@@ -6,6 +6,50 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### FX (v0.80)
+- `flicker` — neon-sign flicker-on: the content stutters on/off
+  on a hash pattern with a decaying off-probability, then settles
+  on with a glow. `mode:'on'` (default) is the startup — the sign
+  flashes on in brief blips that lengthen as the off-probability
+  decays quadratically over `dur`, then burns solid; on-frames
+  inside the stutter still wobble a little (the wiggle(2, 50)
+  SMOOTH register) instead of sitting at flat 1.
+  `mode:'sustain'` is the broken neon that keeps misfiring
+  (starts at `at`, never settles); `mode:'pulse'` breathes the
+  glow on a |sin| envelope with period `rate` (default 60 frames,
+  the ALARM register); `mode:'blink'` toggles on a square wave
+  with period `rate` (default 12 frames, 6 on / 6 off). The halo
+  is two stacked drop-shadows — a tight hot core and a wide soft
+  halo, the @aniakubow layering — scaled by `amount` and by the
+  current brightness, so a dim sign casts no light. `glow` is the
+  neon colour (default #FF2E88); `dim` leaves the faint tube
+  visible when the sign is off (default 0, fully dark); `step` is
+  the flicker slot length in frames (default 2 — the 60/90/60 ms
+  startup beats of @thestudiodsign's OPEN sign). The stutter
+  quantizes time into `step`-frame slots hashed on `seed`, so
+  each on/off run lasts at least one slot. Before `at` an
+  'on'/'sustain' flicker shows only the dim ghost. Source:
+  @shyamx.mov's flicker-glow text
+  (https://www.instagram.com/reel/DbafRWxsiN9/), corroborated by
+  the neon signboard reveal
+  (https://www.instagram.com/reel/DanE-OTzZXg/) and @rize.style_'s
+  neon line-trace logo reveal
+  (https://www.instagram.com/reel/DZ45Hd7Sa32/), re-corroborated
+  2026-11-22 by @rexadewa's six AE opacity expressions
+  (https://www.instagram.com/reel/DZei5e-sReB/) — SMOOTH / BROKEN
+  NEON / GLITCHY / CANDLELIGHT / ALARM / BLINKING — plus
+  @aniakubow's white-hot-core neon
+  (https://www.instagram.com/reel/DePTsnVKv3I/) and
+  @thestudiodsign's Figma OPEN sign startup
+  (https://www.instagram.com/reel/DemfPXOhkH/). Distinct from
+  `flash` (one full-frame impact flash) and from `glitch`
+  (slices + RGB split). Demo card (hero word flickering on +
+  sub-line on a broken neon) + `flicker` composition (150 f,
+  coral hero flickers on 10–55 in pink, cream sub-line misfires
+  from 60 on in amber, corner dot blinking on a square wave
+  throughout) + Prompt Gallery entry. With this, the backlog is
+  empty again.
+
 ### Transition (v0.79)
 - `shatter` — the wrapped content breaks into tiles that fling
   outward from a force centre with rotation under gravity and
@@ -1276,16 +1320,8 @@ research/x-motion-sweep-log.md.
   triangle patterns, pattern origin and force centre separate (see
   Implemented above). With this, the remaining backlog is
   `flicker` only.
-- `flicker` — neon-sign flicker-on: the content stutters on/off
-  on a hash pattern with a decaying off-probability, then
-  settles on with a glow. @shyamx.mov's flicker-glow text
-  (https://www.instagram.com/reel/DbafRWxsiN9/), corroborated by
-  the neon signboard reveal
-  (https://www.instagram.com/reel/DanE-OTzZXg/) and @rize.style_'s
-  neon line-trace logo reveal
-  (https://www.instagram.com/reel/DZ45Hd7Sa32/). Distinct from
-  `flash` (one full-frame impact flash) and from `glitch`
-  (slices + RGB split).
+- ~~`flicker`~~ — shipped in v0.80.0: neon-sign flicker-on (see
+  Implemented above). With this, the backlog is empty again.
 - Not taken this round: @ginyboi's top-5 transitions re-appear
   (Hyperspace → speedLines, Gradient wipe → wipeReveal, the rest
   shipped); @sonduckfilm's documentary 3-D camera + DOF →
@@ -1306,3 +1342,48 @@ research/x-motion-sweep-log.md.
   explainers restate the shipped `fn` system; LottieFiles /
   Figma Motion / Claude+Remotion workflow reels are workflow or
   tooling.
+
+## Backlog — 2026-11-22 sweep (neon flicker / kinetic typography / GSAP tips / Lottie + spring UI / isometric / motion graphics / Remotion)
+
+Backlog was `flicker` only after shatter shipped (v0.79.0); this
+round's fresh sweep (social.search rotated queries, ~91 results
+across 2 calls) filed 0 new buildable primitives — it
+re-corroborated the already-filed `flicker` instead of finding a
+new one. Sources and dedup notes in
+research/x-motion-sweep-log.md.
+
+- `flicker` corroboration (shipped this round, v0.80.0):
+  @rexadewa's six AE opacity expressions for neon flicker
+  (https://www.instagram.com/reel/DZei5e-sReB/) — SMOOTH
+  wiggle(2,50), BROKEN NEON wiggle(10,50,4,0.8), GLITCHY
+  wiggle(5,20,2,1.2), CANDLELIGHT wiggle(5,15,3,0.2), ALARM
+  |sin(time*3)|, BLINKING cos(time*8)>0.5 — the six-register
+  taxonomy behind flicker's modes; @aniakubow's white-hot-core
+  neon (https://www.instagram.com/reel/DePTsnVKv3I/ — white text
+  + 4/12/28/60px layered text-shadows in #ff2e88) sets the glow
+  rendering; @thestudiodsign's Figma OPEN sign
+  (https://www.instagram.com/reel/DemfPXOhkH/ — Off→On→Off→On
+  at 60/90/60ms, one tired letter looping) sets the startup slot
+  length; @manueldoesmotion's posterizeTime(8)+seedRandom
+  flicker (https://www.instagram.com/reel/DO_BGVyjOhJ/),
+  @Noyse's wiggle(15,100) outer-glow flicker
+  (https://www.facebook.com/reel/1323083419357180/), @ketutedit's
+  FLICKER NEON expression
+  (https://www.instagram.com/reel/Dc_PAiUTZMf/), @graffinity3d's
+  Blender Noise F-Curve neon
+  (https://www.instagram.com/reel/DD2H0tYJQMs/), @RaiyanShuv0's
+  "Flicker Loop" AE preset
+  (https://www.facebook.com/reel/1397401482513874/).
+- Not taken this round: Canva neon tutorials (tooling); 3ds
+  Max / Unreal / Blender neon (3-D tooling); spring/UI
+  roundups — Figma Motion spring updates, @jermy.builds'
+  'Motion, Explained' spring cheat sheet (Snappy 400/30, Smooth
+  170/26, Playful 180/9), @kabarza elastic toggles, OriginOS 6
+  spring suite, @codewithayansh spring pagination — all tooling /
+  component recipes or director guidance restating shipped
+  pop / springSheet / anticipate; @josephhaddad's 'Hidden Math'
+  fluids explainer (animate physics not time, squircle,
+  rubber-banding) is director guidance; @settigation's
+  liquid-metal login split dedupes against liquidMetal; library
+  roundups (GSAP / Anime / Motion / React-Spring) are tooling.
+  With this, the backlog is empty again.

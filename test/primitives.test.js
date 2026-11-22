@@ -676,6 +676,47 @@ test('shatter: tiles fling outward from the force centre with rotation under gra
   assert.equal(M.shatter(30, o), M.shatter(30, o)); // determinism
 });
 
+test('flicker: neon-sign flicker-on — hash stutter with decaying off-probability, then solid with glow; sustain/pulse/blink modes', () => {
+  const o = { at: 10, dur: 30, html: '<b>X</b>' };
+  const op = (h) => { const m = /opacity:([\d.]+)/.exec(h); return m ? parseFloat(m[1]) : null; };
+  assert.equal(M.flicker(10, { html: '' }), '');
+  // before at the sign is dark (dim 0); after the window it is solid, glowing
+  assert.equal(M.flicker(9, o), '');
+  const settled = M.flicker(40, o);
+  assert.equal(op(settled), 1, 'settled at full opacity');
+  assert.ok(settled.includes('drop-shadow(0 0 10.0px #FF2E88)'), 'settled with the pink halo, got: ' + settled.slice(0, 200));
+  assert.ok(settled.includes('drop-shadow(0 0 34.0px #FF2E88)'), 'settled with the wide halo layer');
+  // the stutter: early window mostly off, late window mostly on (decaying off-probability)
+  const onIn = (a, b) => { let n = 0; for (let f = a; f < b; f++) if (M.flicker(f, o) !== '') n++; return n; };
+  const early = onIn(10, 20), late = onIn(30, 40);
+  assert.ok(early < late, 'off-probability decays: early on-frames ' + early + ' < late ' + late);
+  assert.ok(early > 0, 'some early frames do flash on');
+  // an on-frame inside the stutter wobbles below 1 (the SMOOTH register)
+  assert.ok(Math.abs(op(M.flicker(20, o)) - 0.877) < 0.001, 'stutter on-frame wobbles, got: ' + op(M.flicker(20, o)));
+  // dim: the off-state leaves a faint tube with no glow
+  const ghost = M.flicker(9, { ...o, dim: 0.15 });
+  assert.ok(ghost.includes('opacity:0.150'), 'dim ghost before at, got: ' + ghost.slice(0, 120));
+  assert.ok(!ghost.includes('drop-shadow'), 'a dead sign casts no glow');
+  // sustain: still flickering long after dur — both states occur in a 60-frame span
+  let onN = 0, offN = 0;
+  for (let f = 10; f < 70; f++) (M.flicker(f, { ...o, mode: 'sustain' }) === '' ? offN++ : onN++);
+  assert.ok(onN > 10 && offN > 10, 'broken neon keeps misfiring: on ' + onN + ' off ' + offN);
+  // pulse: |sin| envelope, period `rate` — frame f and f+rate identical, brightest at the half-period
+  const p = (f) => op(M.flicker(f, { html: '<b>X</b>', mode: 'pulse', rate: 60 }));
+  assert.equal(p(0), p(60), 'pulse period is exact');
+  assert.ok(p(0) === 0.25 && Math.abs(p(15) - 0.78) < 0.01 && p(30) === 1, 'pulse brightens toward the half-period, got: ' + [p(0), p(15), p(30)].join('/'));
+  // blink: square wave, 6 on / 6 off at rate 12 (seed 0 for a clean phase)
+  const b = (f) => M.flicker(f, { html: '<b>X</b>', mode: 'blink', rate: 12, seed: 0 });
+  assert.ok(b(0) !== '' && b(5) !== '', 'blink on in the first half');
+  assert.equal(b(6), '', 'blink off in the second half');
+  assert.equal(b(11), '', 'blink stays off to the end of the half');
+  assert.equal(b(12), b(0), 'blink period is exact');
+  // glow colour + amount scale the halo; amount 0 removes it
+  assert.ok(M.flicker(40, { ...o, glow: '#00FFCC' }).includes('#00FFCC'), 'glow colour is honoured');
+  assert.ok(!M.flicker(40, { ...o, amount: 0 }).includes('drop-shadow'), 'amount 0 kills the halo');
+  assert.equal(M.flicker(25, o), M.flicker(25, o)); // determinism
+});
+
 test('textWarp: field-warped kinetic type — arch bends the line and rotates letters to the tangent, ripple mirrors from the centre', () => {
   const spans = (h) => [...h.matchAll(/translate\((-?[\d.]+)px,(-?[\d.]+)px\) rotate\((-?[\d.]+)deg\)/g)]
     .map((m) => ({ x: parseFloat(m[1]), y: parseFloat(m[2]), a: parseFloat(m[3]) }));

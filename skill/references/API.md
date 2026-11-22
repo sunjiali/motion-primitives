@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (109 functions)
+# motion-primitives API — the full catalog (110 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -705,6 +705,14 @@ M.shatter(frame: number, o: { html: string; at?: number; dur?: number; x?: numbe
 ```
 
 Shatter: the wrapped content breaks into tiles that fling outward from a force centre (`fx`/`fy`, default the region centre) with rotation under gravity and fade, so a title or a whole scene bursts apart and is gone by `at + dur` — draw black or the next scene behind it. `pattern` picks the tile shape: 'square' (default) is a plain grid, 'bricks' offsets alternate rows by half a cell, 'triangle' splits every cell diagonally into two flying triangles. `strength` (default 260) is the fling distance in px at full flight — negative implodes instead, tiles flying toward the force centre. `gravity` (default 240) is the extra downward fall in px by the end of the window. Each tile launches at a hash-staggered moment inside the first 35% of the window and fades over the last 30% of its flight. Before `at` the input HTML passes through untouched; after `at + dur` it returns ''.
+
+### `flicker`
+
+```ts
+M.flicker(frame: number, o: { html: string; at?: number; dur?: number; mode?: 'on' | 'sustain' | 'pulse' | 'blink'; glow?: string; amount?: number; dim?: number; seed?: number; step?: number; rate?: number }): string
+```
+
+Neon-sign flicker: the wrapped content stutters on/off on a hash pattern with a decaying off-probability, then settles on with a glow. `mode:'on'` (default) is the flicker-on startup over `dur`; `mode:'sustain'` is the broken neon that keeps misfiring (starts at `at`, never settles); `mode:'pulse'` breathes the glow on a |sin| envelope with period `rate` (default 60 frames); `mode:'blink'` toggles on a square wave with period `rate` (default 12 frames). `glow` (default #FF2E88) is the neon colour, `amount` scales the halo, `dim` the faint off-state tube (default 0, fully dark), `step` the flicker slot length in frames (default 2). Before `at` an 'on'/'sustain' flicker shows only the dim ghost; after `at + dur` 'on' is solid with full glow.
 
 ### `spotlight`
 
