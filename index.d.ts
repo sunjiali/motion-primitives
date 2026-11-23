@@ -201,6 +201,8 @@ export function venetianBlinds(frame: number, o: { html: string; at?: number; du
 export function shatter(frame: number, o: { html: string; at?: number; dur?: number; x?: number; y?: number; w?: number; h?: number; cols?: number; rows?: number; pattern?: 'square' | 'bricks' | 'triangle'; strength?: number; gravity?: number; fx?: number; fy?: number; seed?: number; fn?: string }): string;
 /** Neon-sign flicker: the wrapped content stutters on/off on a hash pattern with a decaying off-probability, then settles on with a glow. `mode:'on'` (default) is the flicker-on startup over `dur`; `mode:'sustain'` is the broken neon that keeps misfiring (starts at `at`, never settles); `mode:'pulse'` breathes the glow on a |sin| envelope with period `rate` (default 60 frames); `mode:'blink'` toggles on a square wave with period `rate` (default 12 frames). `glow` (default #FF2E88) is the neon colour, `amount` scales the halo, `dim` the faint off-state tube (default 0, fully dark), `step` the flicker slot length in frames (default 2). Before `at` an 'on'/'sustain' flicker shows only the dim ghost; after `at + dur` 'on' is solid with full glow. */
 export function flicker(frame: number, o: { html: string; at?: number; dur?: number; mode?: 'on' | 'sustain' | 'pulse' | 'blink'; glow?: string; amount?: number; dim?: number; seed?: number; step?: number; rate?: number }): string;
+/** AE Echo-style ghost stack: the wrapped content is repeated as `echoes` (default 8) copies at fixed offsets along `angle` (default 0, +x; 90 = +y), each fainter than the last — echo i sits at `decay`^i opacity (`decay` default 0.8) and i * `step` px (default 12) away. `mode:'in'` (default) stretches the train out from the content over `dur`, eased on `fn`; `mode:'out'` collapses a standing train back into the content; `mode:'sustain'` holds the full train permanently (`at`/`dur` ignored). The original is drawn last, on top, at full opacity. Before `at` an 'in' echo passes the input HTML through untouched; after `at + dur` an 'out' echo does the same. */
+export function echo(frame: number, o: { html: string; at?: number; dur?: number; mode?: 'in' | 'out' | 'sustain'; echoes?: number; step?: number; angle?: number; decay?: number; fn?: string }): string;
 /** Where a frame sits in a BPM grid: beat index, phase, decay pulse, bar position. */
 export function beatGrid(frame: number, o: { bpm: number; at?: number; fps?: number; perBar?: number }): { beat: number; index: number; phase: number; pulse: number; bar: number; inBar: number };
 /** The BPM grid as frame numbers — SFX score events and cut points. */
@@ -288,6 +290,7 @@ declare const Motion: {
   venetianBlinds: typeof venetianBlinds;
   shatter: typeof shatter;
   flicker: typeof flicker;
+  echo: typeof echo;
   beatGrid: typeof beatGrid; beatFrames: typeof beatFrames; inertia: typeof inertia; anticipate: typeof anticipate; followThrough: typeof followThrough; velocitySkew: typeof velocitySkew;
   morphPoly: typeof morphPoly;
   splitText: typeof splitText;

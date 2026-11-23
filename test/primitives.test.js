@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'chroma', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet', 'waveText', 'shine', 'frost', 'edgeBoil', 'dominoReveal', 'varFont'];
+  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'chroma', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet', 'waveText', 'shine', 'frost', 'edgeBoil', 'dominoReveal', 'varFont', 'tvOff', 'venetianBlinds', 'shatter', 'flicker', 'echo'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -715,6 +715,38 @@ test('flicker: neon-sign flicker-on — hash stutter with decaying off-probabili
   assert.ok(M.flicker(40, { ...o, glow: '#00FFCC' }).includes('#00FFCC'), 'glow colour is honoured');
   assert.ok(!M.flicker(40, { ...o, amount: 0 }).includes('drop-shadow'), 'amount 0 kills the halo');
   assert.equal(M.flicker(25, o), M.flicker(25, o)); // determinism
+});
+
+test('echo: AE Echo-style ghost stack — N copies at fixed offsets along an angle, opacity decaying per copy; in stretches out, out collapses, sustain stands', () => {
+  const o = { at: 10, dur: 30, html: '<b>X</b>', echoes: 3, step: 10, angle: 0, decay: 0.5 };
+  const count = (h, s) => (h.match(new RegExp(s, 'g')) || []).length;
+  assert.equal(M.echo(10, { html: '' }), '');
+  // before at the html passes through untouched — no ghost divs at all
+  assert.equal(M.echo(10, o), '<b>X</b>');
+  assert.equal(M.echo(0, o), '<b>X</b>');
+  // settled (frame 40, past the window): 3 ghosts + the original on top
+  const settled = M.echo(40, o);
+  assert.equal(count(settled, 'translate\\('), 3, 'three echo copies, got: ' + settled.slice(0, 300));
+  assert.ok(settled.includes('translate(30.00px,0.00px);opacity:0.125'), 'farthest echo at 3*step, decay^3, got: ' + settled.slice(0, 300));
+  assert.ok(settled.includes('translate(20.00px,0.00px);opacity:0.250'), 'middle echo at 2*step, decay^2');
+  assert.ok(settled.includes('translate(10.00px,0.00px);opacity:0.500'), 'nearest echo at 1*step, decay^1');
+  assert.equal(M.echo(41, o), settled, 'settled exactly at at + dur');
+  // mid-window the train is stretched by the cubicOut ease: frame 25 is
+  // p=0.5 -> ease 0.875, so the farthest echo sits at 3*10*0.875 = 26.25px
+  assert.ok(M.echo(25, o).includes('translate(26.25px,0.00px)'), 'mid-window train stretched by the ease, got: ' + M.echo(25, o).slice(0, 200));
+  // angle 90 trails downward: +y, no x
+  const down = M.echo(40, { ...o, angle: 90 });
+  assert.ok(down.includes('translate(0.00px,30.00px);opacity:0.125'), 'angle 90 is straight down, got: ' + down.slice(0, 200));
+  // out: full train before at, collapsed (clean html) after the window
+  assert.equal(M.echo(9, { ...o, mode: 'out' }), settled, 'out starts with the full train');
+  assert.equal(M.echo(40, { ...o, mode: 'out' }), '<b>X</b>', 'out ends clean');
+  assert.ok(M.echo(25, { ...o, mode: 'out' }).includes('translate(3.75px,0.00px)'), 'out mid-window collapsed to 1-0.875 of the train');
+  // sustain: full train at every frame, at/dur ignored
+  assert.equal(M.echo(0, { ...o, mode: 'sustain' }), settled, 'sustain ignores at');
+  assert.equal(M.echo(100, { ...o, mode: 'sustain' }), settled, 'sustain never settles away');
+  // echoes 0 is a no-op passthrough
+  assert.equal(M.echo(40, { ...o, echoes: 0 }), '<b>X</b>');
+  assert.equal(M.echo(25, o), M.echo(25, o)); // determinism
 });
 
 test('textWarp: field-warped kinetic type — arch bends the line and rotates letters to the tangent, ripple mirrors from the centre', () => {

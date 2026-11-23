@@ -491,4 +491,20 @@ window.PROMPT_GALLERY = [
 `,
     notes: '回填条目：成片随 v0.80.0 发布（flicker 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧标题、代码行、圆点亮、hero 与小字未亮 / 14 帧 hero 早闪亮起、圆点亮 / 20 帧 hero 灭帧、圆点灭 / 24 帧 hero 亮帧带粉色光晕、圆点亮 / 55 帧 hero 稳定亮起、小字未到、圆点灭 / 70 帧 hero 稳定、小字琥珀色亮起、圆点灭 / 80 与 149 帧小字恰逢灭帧、与 55 帧画面一致——节点核对 sub 在 60–149 帧亮 52 帧、hero 亮帧由稀疏短闪 10/11/14/15 渐变为 38 帧后全亮，确认为采样巧合非渲染故障）通过；成片 mp4 抽帧（24 / 70 帧）与静帧像素比对均值通道差 1.65/1.66（H.264 压缩噪声级），ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 78 卡、flicker 卡滚动入视后在动（两次采样 HTML 长度 227→509）、hover 重播复位（NEON 回到灭帧）、0 控制台报错。',
   },
+  {
+    id: 'echo',
+    title: 'Echo — One Voice, Many Ghosts',
+    blurb: 'The hero word stretches a train of fading ghosts out to the right, the sub-line trails its copies downward, and the title collapses its own echoes back into itself at the end — one primitive, three modes.',
+    video: 'videos/echo.mp4',
+    tags: ['fx', 'echo', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.81',
+    prompt:
+`用 motion-primitives 做一条 5 秒的回声残影展示片，composition 名 echo，核心只用一个新原语 M.echo。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。深墨底 #26221F、奶油字 #FBF6EC、珊瑚字 #FF6B81；画面上方一行大字「ECHO」（64px，800 字重，奶油色）全程在位，110–150 帧以 'out' 模式把自己的残影收回（echoes 6、step 10、angle 0、decay 0.8）——开场标题带一串向右的残影、结尾收回成干净的字；中央一行大字「ECHO」（120px，800 字重，珊瑚色，居中于 640,330），在 10–55 帧以 'in' 模式向右伸出残影列（echoes 10、step 16、angle 0、decay 0.82）——残影从字身里滑出、越远越淡、最远一枚只剩约 14% 透明度；下方一行小字「one voice, many ghosts」（36px，500 字重，奶油色，居中于 640,500），在 60–100 帧以 'in' 模式向下拖出残影（echoes 8、step 10、angle 90、decay 0.78）——字向下叠出 8 枚渐淡的影子；左下角一行等宽小字「M.echo(frame, { echoes: 10 })」（22px，奶油 55% 透明）全程静止。
+
+纪律：残影是真复制——每枚残影是原内容的完整拷贝、沿同一角度等距排布、透明度按 decay 的幂次衰减，原字永远在最上层满透明度；'in' 模式窗口前内容原样返回、窗口结束残影列完整站立；'out' 模式窗口前残影列完整站立、窗口结束内容干净；除标题、两行字、左下角代码行外不许加别的元素；不许渐变背景、相机运动、颗粒噪点、音效。
+`,
+    notes: '回填条目：成片随 v0.81.0 发布（echo 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧标题带完整残影列、hero 与小字干净、代码行在位 / 20 帧 hero 残影列伸出一半、向右渐淡 / 55 帧 hero 残影列完整、10 枚向右、最远一枚约 14% / 80 帧小字向下拖出 8 枚渐淡残影 / 130 帧标题残影收回过半、只剩淡淡重影 / 149 帧标题干净、hero 与小字残影列完整站立）通过；成片 mp4 抽帧（20 / 80 帧）与静帧像素比对均值通道差 1.77/1.83（H.264 压缩噪声级），ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 79 卡、echo 卡滚动入视后在动（两次采样 HTML 长度 549→4306、字符串变化）、hover 重播复位（回到干净开场、无残影、长度 549）、0 控制台报错。',
+  },
 ];

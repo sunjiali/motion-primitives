@@ -352,6 +352,26 @@ interface FlickerOpts {
   glow?: string; amount?: number; dim?: number;
   seed?: number; step?: number; rate?: number;
 }
+// EchoOpts: AE Echo-style ghost stack. `mode` picks the behaviour:
+// 'in' (default) stretches the echo train out from the content over
+// `dur` — the ghosts slide away from the original, eased on `fn` —
+// then holds the full train; 'out' starts with the full train and
+// collapses it back into the content over the window; 'sustain' holds
+// the full train permanently (`at`/`dur` ignored, the dotText pulse
+// convention). `echoes` is the ghost count (default 8 — the AE Echo
+// default is 20, but 8 reads clean at title sizes); `step` is the
+// offset in px per echo along `angle` (default 12; 0 = +x, 90 = +y,
+// so a positive angle trails down-right); `decay` is the opacity
+// multiplier per echo (default 0.8 — echo i sits at decay^i, so the
+// train fades as it recedes). The original is always drawn last, on
+// top, at full opacity; the ghosts are copies of the same html, so
+// the stack is frame-pure with no extra assets.
+interface EchoOpts {
+  html: string; at?: number; dur?: number;
+  mode?: 'in' | 'out' | 'sustain';
+  echoes?: number; step?: number; angle?: number; decay?: number;
+  fn?: EasingName;
+}
 interface DotTextOpts {
   text?: string; x?: number; y?: number; w?: number; h?: number;
   size?: number; weight?: number; fontFamily?: string;
@@ -3136,6 +3156,59 @@ __root.Motion = (function () {
     return wrap(wob, wob);
   }
 
+  // echo — AE Echo-style ghost stack: the wrapped content is repeated
+  // as N copies at fixed offsets along `angle`, each fainter than the
+  // last (opacity decay^i), so the content trails ghosts behind it
+  // like the Echo effect's time-offset copies — the retro-typography
+  // look of @asyaleksee's Echo + Displacement Map breakdown (the
+  // Displacement Map half is pixel-based and stays out of scope).
+  // `mode:'in'` (default) stretches the train out from the content
+  // over the window, eased on `fn` (cubicOut default): before `at`
+  // the html passes through untouched, after `at + dur` the full
+  // train stands. `mode:'out'` is the mirror — the full train stands
+  // before `at` and collapses back into the content, so after the
+  // window the html is clean again. `mode:'sustain'` holds the full
+  // train permanently (`at`/`dur` ignored). The original is drawn
+  // last, on top, at full opacity; the ghosts are copies of the same
+  // html at i·step px along the angle. Distinct from `trail` (ghosts
+  // at earlier frames along a motion path — echo needs no motion at
+  // all), from `smear` (velocity ghosts) and from `chroma` (RGB
+  // channel ghosts). From the 2026-11-23 sweep.
+  function echo(frame: number, o: EchoOpts): string {
+    o = o || ({} as EchoOpts);
+    const html = o.html || '';
+    if (!html) return '';
+    const mode = o.mode || 'in';
+    const at = o.at || 0, dur = Math.max(1, o.dur || 30);
+    const n = Math.max(0, Math.round(o.echoes == null ? 8 : o.echoes));
+    if (n === 0) return html;
+    const step = Math.max(0, o.step == null ? 12 : o.step);
+    const angle = ((o.angle == null ? 0 : o.angle) * Math.PI) / 180;
+    const decay = Math.min(1, Math.max(0, o.decay == null ? 0.8 : o.decay));
+    const ease = Easing[o.fn || 'cubicOut'] || Easing.cubicOut;
+    let len: number;
+    if (mode === 'sustain') {
+      len = 1;
+    } else if (mode === 'out') {
+      if (frame >= at + dur) return html;
+      len = frame <= at ? 1 : 1 - ease(clamp01((frame - at) / dur));
+    } else {
+      if (frame <= at) return html;
+      len = frame >= at + dur ? 1 : ease(clamp01((frame - at) / dur));
+    }
+    if (len <= 0) return html;
+    const dx = Math.cos(angle), dy = Math.sin(angle);
+    let out = '<div style="position:absolute;inset:0;">';
+    for (let i = n; i >= 1; i--) {
+      const dist = i * step * len;
+      out += '<div style="position:absolute;inset:0;transform:translate(' +
+        (dx * dist).toFixed(2) + 'px,' + (dy * dist).toFixed(2) + 'px);opacity:' +
+        Math.pow(decay, i).toFixed(3) + ';">' + html + '</div>';
+    }
+    out += '<div style="position:absolute;inset:0;">' + html + '</div></div>';
+    return out;
+  }
+
   // dotText — halftone dot-filled text: the letterforms are a field of
   // dots, not a solid fill. An SVG dot grid over the stage is clipped
   // by a text mask, so the word reads as a printed halftone poster.
@@ -3704,7 +3777,7 @@ __root.Motion = (function () {
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
     paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost, edgeBoil, dominoReveal, iris, clockWipe,
-    beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, varFont, dotText, tvOff, venetianBlinds, shatter, flicker,
+    beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, varFont, dotText, tvOff, venetianBlinds, shatter, flicker, echo,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
     scramble, splitFlap, kenBurns, breathe, fx, hash,

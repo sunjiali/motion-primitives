@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (110 functions)
+# motion-primitives API — the full catalog (111 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -713,6 +713,14 @@ M.flicker(frame: number, o: { html: string; at?: number; dur?: number; mode?: 'o
 ```
 
 Neon-sign flicker: the wrapped content stutters on/off on a hash pattern with a decaying off-probability, then settles on with a glow. `mode:'on'` (default) is the flicker-on startup over `dur`; `mode:'sustain'` is the broken neon that keeps misfiring (starts at `at`, never settles); `mode:'pulse'` breathes the glow on a |sin| envelope with period `rate` (default 60 frames); `mode:'blink'` toggles on a square wave with period `rate` (default 12 frames). `glow` (default #FF2E88) is the neon colour, `amount` scales the halo, `dim` the faint off-state tube (default 0, fully dark), `step` the flicker slot length in frames (default 2). Before `at` an 'on'/'sustain' flicker shows only the dim ghost; after `at + dur` 'on' is solid with full glow.
+
+### `echo`
+
+```ts
+M.echo(frame: number, o: { html: string; at?: number; dur?: number; mode?: 'in' | 'out' | 'sustain'; echoes?: number; step?: number; angle?: number; decay?: number; fn?: string }): string
+```
+
+AE Echo-style ghost stack: the wrapped content is repeated as `echoes` (default 8) copies at fixed offsets along `angle` (default 0, +x; 90 = +y), each fainter than the last — echo i sits at `decay`^i opacity (`decay` default 0.8) and i * `step` px (default 12) away. `mode:'in'` (default) stretches the train out from the content over `dur`, eased on `fn`; `mode:'out'` collapses a standing train back into the content; `mode:'sustain'` holds the full train permanently (`at`/`dur` ignored). The original is drawn last, on top, at full opacity. Before `at` an 'in' echo passes the input HTML through untouched; after `at + dur` an 'out' echo does the same.
 
 ### `spotlight`
 

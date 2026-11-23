@@ -6,6 +6,33 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### FX (v0.81)
+- `echo` — AE Echo-style ghost stack over wrapped HTML: the content
+  is repeated as `echoes` (default 8) copies at fixed offsets along
+  `angle` (default 0, +x; 90 = +y), each fainter than the last — echo
+  i sits at `decay`^i opacity (`decay` default 0.8) and i·`step` px
+  away (`step` default 12) — so the content trails ghosts behind it
+  like the Echo effect's time-offset copies. `mode:'in'` (default)
+  stretches the train out from the content over the window, eased on
+  `fn` (cubicOut default); `mode:'out'` collapses a standing train
+  back into the content; `mode:'sustain'` holds the full train
+  permanently (`at`/`dur` ignored). The original is drawn last, on
+  top, at full opacity; the ghosts are copies of the same html, so
+  the stack is frame-pure with no extra assets. Before `at` an 'in'
+  echo passes the html through untouched; after `at + dur` an 'out'
+  echo does the same. Source: @asyaleksee's Echo + Displacement Map
+  retro-text breakdown
+  (https://www.instagram.com/reel/DVEEAofjG5v/ — Echo, 20 echoes at
+  -0.003s, over retro typography; the Displacement Map half is
+  pixel-based, out of scope). Distinct from `trail` (ghosts at
+  earlier frames along a motion path — echo needs no motion at all),
+  from `smear` (velocity ghosts) and from `chroma` (RGB channel
+  ghosts). Demo card (hero word echoing right + sub-line trailing
+  down) + `echo` composition (150 f, coral hero stretches its train
+  out 10–55, cream sub-line trails downward 60–100, the title's own
+  echoes collapse back in 110–150) + Prompt Gallery entry. With
+  this, the remaining backlog is `fisheye` only.
+
 ### FX (v0.80)
 - `flicker` — neon-sign flicker-on: the content stutters on/off
   on a hash pattern with a decaying off-probability, then settles
@@ -1387,3 +1414,48 @@ research/x-motion-sweep-log.md.
   liquid-metal login split dedupes against liquidMetal; library
   roundups (GSAP / Anime / Motion / React-Spring) are tooling.
   With this, the backlog is empty again.
+
+## Backlog — 2026-11-23 sweep (motion graphics techniques / logo reveal / kinetic typography / text reveal + Remotion / spring UI / isometric / easing + web + GitHub skills)
+
+Backlog was empty after flicker (v0.80.0); this round's fresh sweep
+(social.search rotated queries, ~100 results across 2 calls, + a web
+sweep of the Hyperautomation Labs 20-repo Claude motion roundup +
+GitHub skills sweep) filed two buildable primitives. Sources and
+dedup notes in research/x-motion-sweep-log.md.
+
+- ~~`echo`~~ — shipped in v0.81.0: AE Echo-style ghost stack over
+  wrapped HTML (see Implemented above). With this, the remaining
+  backlog is `fisheye` only.
+- `fisheye` — radial lens distortion over wrapped HTML, spring-eased
+  in the Remotion effects reel
+  (https://www.instagram.com/reel/DZ47wmCinCV/) — the one effect in
+  that reel with no shipped counterpart (noise → fx, vignette → fx,
+  blur → frost, chromaticAberration → chroma, shine → shine,
+  gridlines → patternField, duotone is a colour grade, colorKey is
+  footage work, burlap is a texture). The 2-D HTML-string form needs
+  an SVG feDisplacementMap with a procedurally generated radial map —
+  a research spike before building, not a first-round build.
+- Not taken this round: @sonduckfilm's top-5 techniques re-appear
+  (CC Ball Action dots → pixelDissolve/mosaic, trim-path strokes →
+  drawOn, DOF focus distance → frost, orbiting ring → orbit,
+  auto-orient → pathFly heading); Quentin Belluc's town breakdown
+  re-appears (anchor-bottom rise / offset timing / Bend-Bulge, the
+  jelly deformation is pixel warp, out of scope); @motionbydk's grid
+  text-reveal (converging grid squares as a track matte →
+  maskReveal/wipeReveal/pixelDissolve); @cheersjack's squeezy-type
+  carousel (variable-metric type play → varFont, the cycling central
+  word is a splitText/marquee recipe); Chris Moran's Vox layered
+  textured backgrounds (composition craft, meshBg/patternField
+  territory); @tsgoodlaz's Moho breakdown (rigging/hold-frame craft,
+  out of scope); @matt_penny_applied_ai's '9 Claude Animation styles'
+  re-appears (style prompts, not primitives; domino already shipped);
+  easing explainers (@farees.shaikh, @kujma.9, @studio.baseline,
+  Adobe 'Niche Easing Curves', DaVinci spline) restate the shipped
+  `fn` system; Omni Flash / Google Flow logo reveals are AI video-gen
+  workflows; LottieFiles' 5 principles re-appear, deduped;
+  Claude/Remotion workflow reels are workflow, not techniques.
+  Skill leads, not implemented: Hyperautomation Labs' 20-repo Claude
+  motion roundup (tested 2026-11-14 — anatomy-reveal, three.quarks,
+  react-postprocessing, librosa, WhisperX; no new frame-pure
+  primitive), getkeyframes' 6 video skills, vanja.io's motion-graphics
+  craft article (Remotion/HyperFrames/claude-motion already noted).

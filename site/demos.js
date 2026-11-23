@@ -661,6 +661,18 @@
       },
     },
     {
+      name: 'echo', desc: 'AE Echo-style ghost stack — the wrapped content is repeated as fading copies at fixed offsets along an angle; `mode` stretches the train out, collapses it back in, or holds it standing, `decay` fades each ghost.',
+      code: 'M.echo(frame, { html, echoes, step, angle })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        const word = '<div style="position:absolute;left:280px;top:140px;transform:translate(-50%,-50%);font:800 46px system-ui;color:#FF6B81;white-space:nowrap;">ECHO</div>';
+        const sub = '<div style="position:absolute;left:280px;top:220px;transform:translate(-50%,-50%);font:500 20px system-ui;color:#FBF6EC;white-space:nowrap;">ghosts that trail behind</div>';
+        return '<div style="position:absolute;inset:0;background:#26221F;"></div>' +
+          M.echo(lf, { html: word, at: 30, dur: 45, echoes: 8, step: 12, angle: 0, decay: 0.8 }) +
+          M.echo(lf, { html: sub, at: 85, dur: 40, echoes: 6, step: 8, angle: 90, decay: 0.75 });
+      },
+    },
+    {
       name: 'dotText', desc: 'Halftone dot-filled text — the letterforms are a field of dots clipped by a text mask, so the word reads as a printed poster; `mode` grows the dots in on a hash stagger, breathes them on a pulse, or shrinks them away.',
       code: 'M.dotText(frame, { text, mode, gap, dot })', cycle: 150,
       draw(f) {

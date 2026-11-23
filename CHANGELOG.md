@@ -2,6 +2,39 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.81.0] — 2026-11-23
+
+### Added — `echo` primitive + `echo` composition
+
+- **`echo(frame, { html, at?, dur?, mode?, echoes?, step?, angle?, decay?, fn? })`** —
+  AE Echo-style ghost stack over wrapped HTML: the content is repeated
+  as `echoes` (default 8) copies at fixed offsets along `angle`
+  (default 0, +x; 90 = +y), each fainter than the last — echo i sits
+  at `decay`^i opacity (`decay` default 0.8) and i · `step` px away
+  (`step` default 12) — so the content trails ghosts behind it like
+  the Echo effect's time-offset copies. `mode:'in'` (default)
+  stretches the train out from the content over `dur`, eased on `fn`
+  (cubicOut default): before `at` the html passes through untouched,
+  after `at + dur` the full train stands. `mode:'out'` is the mirror
+  — the full train stands before `at` and collapses back into the
+  content, so after the window the html is clean again.
+  `mode:'sustain'` holds the full train permanently (`at`/`dur`
+  ignored). The original is always drawn last, on top, at full
+  opacity; the ghosts are copies of the same html, so the stack is
+  frame-pure with no extra assets. Source: @asyaleksee's Echo +
+  Displacement Map retro-text breakdown
+  (https://www.instagram.com/reel/DVEEAofjG5v/ — Echo, 20 echoes at
+  -0.003s, over retro typography; the Displacement Map half is
+  pixel-based, out of scope), from the 2026-11-23 sweep. Distinct
+  from `trail` (ghosts at earlier frames along a motion path — echo
+  needs no motion at all), from `smear` (velocity ghosts) and from
+  `chroma` (RGB channel ghosts).
+- Demo card (hero word echoing right + sub-line trailing down) +
+  `echo` composition (150 f, coral hero stretches its train out
+  10–55, cream sub-line trails downward 60–100, the title's own
+  echoes collapse back in 110–150) + Prompt Gallery entry. With
+  this, the remaining backlog is `fisheye` only.
+
 ## [0.80.0] — 2026-11-22
 
 ### Added — `flicker` primitive + `flicker` composition
