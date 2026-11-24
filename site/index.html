@@ -140,8 +140,8 @@ stage.innerHTML =
     <p class="section-lede">Every demo below is running <em>right now in your browser</em> on the exact
     library that renders the videos — driven by a virtual frame counter instead of a screenshot camera.</p>
     <div class="demo-hed">
-      <p class="hed-line">Seventy-nine motions, one idea: every move in this library is a single named call.</p>
-      <p class="hed-meta">79 live demos · running on the shipped library · hover any card to replay it from the start</p>
+      <p class="hed-line">Eighty motions, one idea: every move in this library is a single named call.</p>
+      <p class="hed-meta">80 live demos · running on the shipped library · hover any card to replay it from the start</p>
     </div>
     <div class="grid" id="demo-grid"></div>
   </section>
@@ -305,6 +305,7 @@ node src/render.js --comp showcase \
           <tr><td><code>shatter</code></td><td>Shatter — the wrapped content breaks into tiles that fling outward from a force centre (<code>fx</code>/<code>fy</code>) with rotation under gravity and fade, so a title or a whole scene bursts apart and is gone by <code>at + dur</code>; <code>pattern</code> picks square, brickwork, or diagonal triangles, <code>strength</code> sets the fling distance (negative implodes), <code>gravity</code> the downward fall</td></tr>
           <tr><td><code>flicker</code></td><td>Neon-sign flicker — the wrapped content stutters on/off on a hash pattern with a decaying off-probability, then settles on with a glow; <code>mode</code> keeps it broken (<code>sustain</code>), breathes it on a sine pulse (<code>pulse</code>), or blinks it on a square wave (<code>blink</code>); <code>glow</code> sets the neon colour, <code>dim</code> the faint off-state tube</td></tr>
           <tr><td><code>echo</code></td><td>AE Echo-style ghost stack — the wrapped content is repeated as <code>echoes</code> (default 8) copies at fixed offsets along <code>angle</code> (0 = +x, 90 = +y), each fainter than the last (echo i at <code>decay</code>^i opacity, <code>decay</code> default 0.8); <code>mode</code> stretches the train out (<code>in</code>), collapses it back in (<code>out</code>), or holds it standing (<code>sustain</code>)</td></tr>
+          <tr><td><code>fisheye</code></td><td>Radial lens distortion — the picture bends as if shot through a fisheye lens, the centre bulging toward the viewer while the edges hold; <code>mode</code> bends it in (<code>in</code>), unbends it back to flat (<code>out</code>), or holds the bend standing (<code>sustain</code>); <code>strength</code> (default 0.6, clamped to ±0.9) sets the lens power, negative is pincushion; <code>radius</code> / <code>cx</code> / <code>cy</code> place the lens, <code>x</code> / <code>y</code> / <code>w</code> / <code>h</code> confine it to a region</td></tr>
         </table>
         <p>Full signatures and defaults live in <code>src/lib/primitives.ts</code> in the repo —
         it is heavily commented and doubles as the manual.</p>

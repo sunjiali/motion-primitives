@@ -507,4 +507,20 @@ window.PROMPT_GALLERY = [
 `,
     notes: '回填条目：成片随 v0.81.0 发布（echo 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧标题带完整残影列、hero 与小字干净、代码行在位 / 20 帧 hero 残影列伸出一半、向右渐淡 / 55 帧 hero 残影列完整、10 枚向右、最远一枚约 14% / 80 帧小字向下拖出 8 枚渐淡残影 / 130 帧标题残影收回过半、只剩淡淡重影 / 149 帧标题干净、hero 与小字残影列完整站立）通过；成片 mp4 抽帧（20 / 80 帧）与静帧像素比对均值通道差 1.77/1.83（H.264 压缩噪声级），ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 79 卡、echo 卡滚动入视后在动（两次采样 HTML 长度 549→4306、字符串变化）、hover 重播复位（回到干净开场、无残影、长度 549）、0 控制台报错。',
   },
+  {
+    id: 'fisheye',
+    title: 'Fisheye — Bent Light, Flat Edges',
+    blurb: 'The hero word bends into the lens, the sub-line shows the pincushion mirror, and the title unbends back to flat at the end — one primitive, three modes.',
+    video: 'videos/fisheye.mp4',
+    tags: ['fx', 'fisheye', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.82',
+    prompt:
+`用 motion-primitives 做一条 5 秒的鱼眼镜头畸变展示片，composition 名 fisheye，核心只用一个新原语 M.fisheye。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。深墨底 #26221F、奶油字 #FBF6EC、珊瑚字 #FF6B81；画面上方一行大字「FISHEYE」（64px，800 字重，奶油色）全程在位，110–150 帧以 'out' 模式从弯曲中回正（strength 0.6）——开场标题是拱起的鱼眼字、结尾收回成干净平直的字；中央一行大字「LENS」（120px，800 字重，珊瑚色，居中于 640,330），在 10–55 帧以 'in' 模式弯进镜头（strength 0.6）——字从平直渐变为中央凸起、边缘收拢的鱼眼弯曲；下方一行小字「bent light, flat edges」（36px，500 字重，奶油色，居中于 640,500），在 60–100 帧以 'in' 模式展示反向的枕形畸变（strength -0.6）——字向中心收缩、呈枕形；左下角一行等宽小字「M.fisheye(frame, { strength: 0.6 })」（22px，奶油 55% 透明）全程静止。
+
+纪律：畸变是真径向位移——输出像素按半径采样源像素、中心凸起边缘收拢，不是缩放或斜切冒充；'in' 模式窗口前内容原样返回、窗口结束完整弯曲站立；'out' 模式窗口前完整弯曲、窗口结束内容平直；负 strength 是枕形收缩、不是反向模糊；除标题、两行字、左下角代码行外不许加别的元素；不许渐变背景、相机运动、颗粒噪点、音效。
+`,
+    notes: '回填条目：成片随 v0.82.0 发布（fisheye 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧标题全弯、hero 与小字平直、代码行在位 / 30 帧 hero 弯曲约 0.83 倍、标题仍弯 / 55 帧 hero 完整弯曲 / 80 帧小字枕形收缩过半 / 100 帧小字完整枕形 / 130 帧标题基本回正、只剩轻微拱起 / 149 帧标题平直、hero 弯曲、小字收缩）通过；成片 mp4 抽帧（30 / 80 帧）与静帧像素比对均值通道差 1.26/2.07 与 1.24/1.98（H.264 压缩噪声级），ffprobe 150 帧 = durationInFrames。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证为 80 卡、fisheye 卡滚动入视后在动（两次采样 HTML 长度 547→117653）、hover 重播复位（回到干净开场、长度 547）、0 控制台报错。研发手记：验证静帧曾抓到 filter id 碰撞——同几何不同弯曲量的两个 fisheye 共用一个 filter id，浏览器按首个定义解析，导致 30 帧按 55 帧的满弯曲渲染；已修为 id 内含当前 scale 并补回归单测。',
+  },
 ];

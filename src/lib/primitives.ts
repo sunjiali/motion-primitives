@@ -372,6 +372,30 @@ interface EchoOpts {
   echoes?: number; step?: number; angle?: number; decay?: number;
   fn?: EasingName;
 }
+// FisheyeOpts: radial lens distortion over wrapped HTML. `mode`
+// picks the behaviour: 'in' (default) bends the picture into the
+// lens over `dur`, eased on `fn`; 'out' unbends it back to flat;
+// 'sustain' holds the full bend permanently (`at`/`dur` ignored).
+// `strength` (default 0.6, clamped to ±0.9) is the lens power —
+// positive bulges the centre toward the viewer (barrel / fisheye),
+// negative shrinks it away (pincushion). `radius` is the lens
+// radius in px (default the distance from (`cx`, `cy`) to the
+// farthest region corner, so the bend fades to zero at the corners);
+// `cx`/`cy` is the lens centre (default the region centre).
+// `x`/`y`/`w`/`h` confines the lens to a region (default the whole
+// stage); the wrapped html keeps its stage coordinates. The warp is
+// a true radial displacement — output pixel at radius r samples the
+// source at r·(1 − strength·(1−(r/R)²)²) — driven by an SVG
+// feDisplacementMap whose map is a procedurally generated PNG (a
+// pure-TS encoder, no assets, cached per geometry); the animation
+// rides the filter's `scale` attribute, so the map never changes
+// with the frame.
+interface FisheyeOpts {
+  html: string; at?: number; dur?: number;
+  mode?: 'in' | 'out' | 'sustain';
+  strength?: number; radius?: number; cx?: number; cy?: number;
+  x?: number; y?: number; w?: number; h?: number; fn?: EasingName;
+}
 interface DotTextOpts {
   text?: string; x?: number; y?: number; w?: number; h?: number;
   size?: number; weight?: number; fontFamily?: string;
@@ -3209,6 +3233,197 @@ __root.Motion = (function () {
     return out;
   }
 
+  // --- fisheye support: a pure-TS PNG encoder (RGB8, filter 0 per
+  // row, DEFLATE stored blocks — no compression, no dependencies, so
+  // it runs identically in Node tests and in the browser player) and
+  // a base64 encoder, used to build the radial displacement map as a
+  // data-URI PNG for an SVG feDisplacementMap. The map is a function
+  // of the lens geometry only — never of the frame — so it is cached
+  // per geometry key; the animation rides the filter's `scale`.
+  const FISHEYE_CRC_TABLE: number[] = (function (): number[] {
+    const t: number[] = [];
+    for (let n = 0; n < 256; n++) {
+      let c = n;
+      for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      t.push(c >>> 0);
+    }
+    return t;
+  })();
+  function fisheyeCrc32(bytes: number[]): number {
+    let c = 0xFFFFFFFF;
+    for (let i = 0; i < bytes.length; i++) c = FISHEYE_CRC_TABLE[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8);
+    return (c ^ 0xFFFFFFFF) >>> 0;
+  }
+  function fisheyeAdler32(bytes: number[]): number {
+    let a = 1, b = 0;
+    for (let i = 0; i < bytes.length; i++) { a = (a + bytes[i]) % 65521; b = (b + a) % 65521; }
+    return ((b << 16) | a) >>> 0;
+  }
+  function fisheyeU32be(n: number): number[] {
+    return [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255];
+  }
+  function fisheyePngChunk(type: string, data: number[]): number[] {
+    const td: number[] = [];
+    for (let i = 0; i < 4; i++) td.push(type.charCodeAt(i));
+    for (let i = 0; i < data.length; i++) td.push(data[i]);
+    return fisheyeU32be(data.length).concat(td, fisheyeU32be(fisheyeCrc32(td)));
+  }
+  function fisheyePng(w: number, h: number, rgb: number[]): number[] {
+    const raw: number[] = [];
+    for (let y = 0; y < h; y++) {
+      raw.push(0);
+      for (let i = 0; i < w * 3; i++) raw.push(rgb[y * w * 3 + i]);
+    }
+    const z: number[] = [0x78, 0x01];
+    let off = 0;
+    while (off < raw.length) {
+      const n = Math.min(65535, raw.length - off);
+      const last = off + n >= raw.length ? 1 : 0;
+      z.push(last, n & 255, (n >>> 8) & 255, (~n) & 255, ((~n) >>> 8) & 255);
+      for (let i = 0; i < n; i++) z.push(raw[off + i]);
+      off += n;
+    }
+    const ad = fisheyeAdler32(raw);
+    z.push((ad >>> 24) & 255, (ad >>> 16) & 255, (ad >>> 8) & 255, ad & 255);
+    const ihdr: number[] = fisheyeU32be(w).concat(fisheyeU32be(h), [8, 2, 0, 0, 0]);
+    return [137, 80, 78, 71, 13, 10, 26, 10]
+      .concat(fisheyePngChunk('IHDR', ihdr), fisheyePngChunk('IDAT', z), fisheyePngChunk('IEND', []));
+  }
+  function fisheyeB64(bytes: number[]): string {
+    const A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+    let s = '';
+    for (let i = 0; i < bytes.length; i += 3) {
+      const a = bytes[i], b = i + 1 < bytes.length ? bytes[i + 1] : 0, c = i + 2 < bytes.length ? bytes[i + 2] : 0;
+      s += A[a >> 2] + A[((a & 3) << 4) | (b >> 4)] +
+        (i + 1 < bytes.length ? A[((b & 15) << 2) | (c >> 6)] : '=') +
+        (i + 2 < bytes.length ? A[c & 63] : '=');
+    }
+    return s;
+  }
+  // Displacement-map cache: one entry per lens geometry (the map
+  // never depends on the frame). `uri` is the data-URI PNG, `s0` the
+  // reference scale — feDisplacementMap scale = amount · s0.
+  const fisheyeMapCache: { [key: string]: { uri: string; s0: number } } = {};
+  function fisheyeMap(w: number, h: number, cx: number, cy: number, R: number, strength: number): { uri: string; s0: number } {
+    const mw = Math.min(320, Math.max(8, Math.round(w / 8)));
+    const mh = Math.min(320, Math.max(8, Math.round(h / 8)));
+    const key = w + '|' + h + '|' + cx.toFixed(1) + '|' + cy.toFixed(1) + '|' + R.toFixed(1) + '|' + strength.toFixed(3);
+    const hit = fisheyeMapCache[key];
+    if (hit) return hit;
+    // Per-pixel displacement: output pixel at radius r samples the
+    // source at r·(1 − a·(1−u)²), u = (r/R)² — the squared falloff
+    // keeps the bend smooth at r = R (value and slope both 0 there),
+    // and outside R the displacement is exactly 0. The vector is
+    // (dx, dy) · s with s = −a·(1−u)², so the map channels encode
+    // the signed x/y displacement directly.
+    const dxs: number[] = [], dys: number[] = [];
+    let maxComp = 0;
+    for (let my = 0; my < mh; my++) {
+      for (let mx = 0; mx < mw; mx++) {
+        const x = (mx + 0.5) * (w / mw), y = (my + 0.5) * (h / mh);
+        const dx = x - cx, dy = y - cy;
+        const r = Math.sqrt(dx * dx + dy * dy);
+        let sx = 0, sy = 0;
+        if (r > 0 && r < R) {
+          const u = (r / R) * (r / R);
+          const s = -strength * (1 - u) * (1 - u);
+          sx = dx * s; sy = dy * s;
+        }
+        dxs.push(sx); dys.push(sy);
+        maxComp = Math.max(maxComp, Math.abs(sx), Math.abs(sy));
+      }
+    }
+    // s0 is the scale that expresses the full-strength map: channel
+    // values are d/s0 + 0.5, so |d| ≤ s0/2 never clips. Guard the
+    // strength-0 map (maxComp 0) with s0 = 1.
+    const s0 = maxComp > 0 ? 2 * maxComp : 1;
+    const rgb: number[] = [];
+    for (let i = 0; i < mw * mh; i++) {
+      rgb.push(Math.max(0, Math.min(255, Math.round((dxs[i] / s0 + 0.5) * 255))));
+      rgb.push(Math.max(0, Math.min(255, Math.round((dys[i] / s0 + 0.5) * 255))));
+      rgb.push(128);
+    }
+    const entry = { uri: 'data:image/png;base64,' + fisheyeB64(fisheyePng(mw, mh, rgb)), s0: s0 };
+    fisheyeMapCache[key] = entry;
+    return entry;
+  }
+
+  // fisheye — radial lens distortion over wrapped HTML: the picture
+  // bends as if shot through a fisheye lens, the centre bulging
+  // toward the viewer while the edges hold — the one effect in the
+  // Remotion effects reel with no shipped counterpart (noise →
+  // fx, vignette → fx, blur → frost, chromaticAberration → chroma,
+  // shine → shine, gridlines → patternField). `mode:'in'` (default)
+  // bends the picture in over `dur`, eased on `fn` (cubicOut
+  // default); `mode:'out'` unbends it back to flat; `mode:'sustain'`
+  // holds the full bend permanently (`at`/`dur` ignored).
+  // `strength` (default 0.6, clamped to ±0.9) is the lens power —
+  // positive bulges (barrel), negative shrinks (pincushion).
+  // `radius` is the lens radius in px (default the distance from
+  // (`cx`, `cy`) to the farthest region corner); `cx`/`cy` is the
+  // lens centre (default the region centre). Before `at` an 'in'
+  // fisheye passes the html through untouched; after `at + dur` the
+  // full bend stands, and an 'out' fisheye is clean again. Caveat:
+  // like every SVG-filter primitive, the first filtered frame flips
+  // text antialiasing from subpixel to grayscale (Chrome disables
+  // subpixel AA under a filter) — geometry is pixel-identical at
+  // scale 0, verified in the research spike. Distinct from `iris`
+  // (a circular clip, no warp), `chroma` (channel ghosts, no warp)
+  // and `edgeBoil` (noise wobble, no radial field). From the
+  // 2026-11-23 sweep, corroborated 2026-11-24 by @motion.easyy's
+  // AE Fish Eye text (Warp FishEye + Optics Compensation FOV 100),
+  // @janek_crtv's fisheye text animation, @deyfilmit's Premiere
+  // Lens Distortion tutorial and @kirill.blokhin_'s UIKit fisheye
+  // lens experiment.
+  function fisheye(frame: number, o: FisheyeOpts): string {
+    o = o || ({} as FisheyeOpts);
+    const html = o.html || '';
+    if (!html) return '';
+    const mode = o.mode || 'in';
+    const at = o.at || 0, dur = Math.max(1, o.dur || 30);
+    const w = o.w || 1280, h = o.h || 720;
+    const x = o.x || 0, y = o.y || 0;
+    const cx = o.cx == null ? w / 2 : o.cx, cy = o.cy == null ? h / 2 : o.cy;
+    const strength = Math.max(-0.9, Math.min(0.9, o.strength == null ? 0.6 : o.strength));
+    const R = o.radius == null
+      ? Math.max(Math.hypot(cx, cy), Math.hypot(w - cx, cy), Math.hypot(cx, h - cy), Math.hypot(w - cx, h - cy))
+      : Math.max(1, o.radius);
+    const ease = Easing[o.fn || 'cubicOut'] || Easing.cubicOut;
+    let amount: number;
+    if (mode === 'sustain') {
+      amount = 1;
+    } else if (mode === 'out') {
+      if (frame >= at + dur) return html;
+      amount = frame <= at ? 1 : 1 - ease(clamp01((frame - at) / dur));
+    } else {
+      if (frame < at) return html;
+      amount = frame >= at + dur ? 1 : ease(clamp01((frame - at) / dur));
+    }
+    if (amount <= 0) return html;
+    const map = fisheyeMap(w, h, cx, cy, R, strength);
+    const scale = amount * map.s0;
+    // Filter id: deterministic from the lens geometry AND the current
+    // scale — the scale is animated, so two fisheyes with the same
+    // geometry but different amounts must not share a filter: the
+    // browser resolves url(#id) to the FIRST definition in the
+    // document, and a shared id would pin every lens on the stage to
+    // whichever scale was defined first (caught on the verification
+    // stills: frame 30 rendered at frame 55's full scale). Same
+    // geometry + same scale still shares one filter, as it should.
+    const key = w + '|' + h + '|' + cx.toFixed(1) + '|' + cy.toFixed(1) + '|' + R.toFixed(1) + '|' + strength.toFixed(3) + '|' + scale.toFixed(2);
+    let folded = 0;
+    for (let k = 0; k < key.length; k++) folded = (folded * 31 + key.charCodeAt(k)) >>> 0;
+    const id = 'fe' + Math.floor(hash(folded) * 1e9).toString(36);
+    return '<div style="position:absolute;left:' + x + 'px;top:' + y + 'px;width:' + w + 'px;height:' + h + 'px;overflow:hidden;">' +
+      '<svg width="0" height="0" style="position:absolute;"><defs>' +
+      '<filter id="' + id + '" x="0" y="0" width="' + w + '" height="' + h + '" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">' +
+      '<feImage href="' + map.uri + '" x="0" y="0" width="' + w + '" height="' + h + '" preserveAspectRatio="none" result="map"/>' +
+      '<feDisplacementMap in="SourceGraphic" in2="map" scale="' + scale.toFixed(2) + '" xChannelSelector="R" yChannelSelector="G"/>' +
+      '</filter></defs></svg>' +
+      '<div style="position:absolute;left:0;top:0;width:' + w + 'px;height:' + h + 'px;filter:url(#' + id + ');">' +
+      '<div style="position:absolute;width:' + w + 'px;height:' + h + 'px;left:' + (-x).toFixed(1) + 'px;top:' + (-y).toFixed(1) + 'px;">' + html + '</div></div></div>';
+  }
+
   // dotText — halftone dot-filled text: the letterforms are a field of
   // dots, not a solid fill. An SVG dot grid over the stage is clipped
   // by a text mask, so the word reads as a printed halftone poster.
@@ -3777,7 +3992,7 @@ __root.Motion = (function () {
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
     paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost, edgeBoil, dominoReveal, iris, clockWipe,
-    beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, varFont, dotText, tvOff, venetianBlinds, shatter, flicker, echo,
+    beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, varFont, dotText, tvOff, venetianBlinds, shatter, flicker, echo, fisheye,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
     scramble, splitFlap, kenBurns, breathe, fx, hash,

@@ -6,6 +6,58 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### FX (v0.82)
+- `fisheye` — radial lens distortion over wrapped HTML: the picture
+  bends as if shot through a fisheye lens, the centre bulging toward
+  the viewer while the edges hold — a true radial displacement
+  (output pixel at radius r samples the source at
+  r·(1 − strength·(1−(r/R)²)²), the squared falloff keeping the bend
+  smooth at the lens rim and exactly zero outside it), driven by an
+  SVG feDisplacementMap whose map is a procedurally generated PNG
+  (a pure-TS encoder — RGB8, filter 0 per row, DEFLATE stored
+  blocks, no assets, no dependencies — cached per lens geometry);
+  the animation rides the filter's `scale` attribute, so the map
+  itself never changes with the frame. `mode:'in'` (default) bends
+  the picture in over the window, eased on `fn` (cubicOut default);
+  `mode:'out'` unbends it back to flat; `mode:'sustain'` holds the
+  full bend permanently (`at`/`dur` ignored). `strength` (default
+  0.6, clamped to ±0.9) is the lens power — positive bulges
+  (barrel), negative shrinks (pincushion). `radius` is the lens
+  radius in px (default the distance from (`cx`, `cy`) to the
+  farthest region corner); `cx`/`cy` is the lens centre (default
+  the region centre); `x`/`y`/`w`/`h` confines the lens to a
+  region (default the whole stage) while the wrapped html keeps its
+  stage coordinates. The 2-D HTML-string form that the backlog
+  entry flagged as "a research spike before building" is closed by
+  the spike in this round: a low-res map (w/8 × h/8, 160×90 at
+  720p) stretched by feImage is smooth, `color-interpolation-filters
+  ="sRGB"` keeps the map values exact, and `primitiveUnits=
+  "userSpaceOnUse"` aligns the map to the region (verified with a
+  sub-region still: the warp stays inside the rect and the grid
+  continues seamlessly across its edge). Caveat, documented in the
+  code: like every SVG-filter primitive, the first filtered frame
+  flips text antialiasing from subpixel to grayscale — geometry is
+  pixel-identical at scale 0 (spike: grid delta 0, all >8 diffs
+  confined to one text row). Fixed during verification: the filter
+  id now carries the animated scale, after the stills caught two
+  same-geometry fisheyes sharing one id and rendering at the first
+  definition's scale. Source: the Remotion effects reel
+  (https://www.instagram.com/reel/DZ47wmCinCV/), corroborated
+  2026-11-24 by @motion.easyy's AE Fish Eye text
+  (https://www.instagram.com/reel/Dcdsbn4tmqs/), @janek_crtv's
+  fisheye text animation
+  (https://www.instagram.com/reel/DGTZcCTKhw4/), @deyfilmit's
+  Premiere Lens Distortion tutorial
+  (https://www.instagram.com/p/De8_QP8GRq0/) and
+  @kirill.blokhin_'s UIKit fisheye lens experiment
+  (https://www.threads.com/@kirill.blokhin_/post/DfX0pk7DdBo).
+  Distinct from `iris` (a circular clip, no warp), from `chroma`
+  (RGB channel ghosts) and from `edgeBoil` (noise wobble, no radial
+  field). Demo card (hero word bending in + sub-line pincushion) +
+  `fisheye` composition (150 f, coral hero bends in 10–55, cream
+  sub-line pincushions 60–100, the title unbends 110–150) + Prompt
+  Gallery entry. With this, the backlog is empty again.
+
 ### FX (v0.81)
 - `echo` — AE Echo-style ghost stack over wrapped HTML: the content
   is repeated as `echoes` (default 8) copies at fixed offsets along
@@ -1426,15 +1478,12 @@ dedup notes in research/x-motion-sweep-log.md.
 - ~~`echo`~~ — shipped in v0.81.0: AE Echo-style ghost stack over
   wrapped HTML (see Implemented above). With this, the remaining
   backlog is `fisheye` only.
-- `fisheye` — radial lens distortion over wrapped HTML, spring-eased
-  in the Remotion effects reel
-  (https://www.instagram.com/reel/DZ47wmCinCV/) — the one effect in
-  that reel with no shipped counterpart (noise → fx, vignette → fx,
-  blur → frost, chromaticAberration → chroma, shine → shine,
-  gridlines → patternField, duotone is a colour grade, colorKey is
-  footage work, burlap is a texture). The 2-D HTML-string form needs
-  an SVG feDisplacementMap with a procedurally generated radial map —
-  a research spike before building, not a first-round build.
+- ~~`fisheye`~~ — shipped in v0.82.0: radial lens distortion over
+  wrapped HTML (see Implemented above). The research spike the
+  entry called for is done in the same round — feDisplacementMap
+  with a procedurally generated radial PNG map, verified in
+  headless Chrome before building. With this, the backlog is empty
+  again.
 - Not taken this round: @sonduckfilm's top-5 techniques re-appear
   (CC Ball Action dots → pixelDissolve/mosaic, trim-path strokes →
   drawOn, DOF focus distance → frost, orbiting ring → orbit,
@@ -1459,3 +1508,45 @@ dedup notes in research/x-motion-sweep-log.md.
   react-postprocessing, librosa, WhisperX; no new frame-pure
   primitive), getkeyframes' 6 video skills, vanja.io's motion-graphics
   craft article (Remotion/HyperFrames/claude-motion already noted).
+
+## Backlog — 2026-11-24 sweep (fisheye lens distortion / radial distortion / SVG displacement map + text animation breakdown / isometric animation / spring physics UI animation)
+
+Backlog was `fisheye` only after echo shipped (v0.81.0); this
+round's fresh sweep (social.search rotated queries, ~96 results
+across 2 calls) filed 0 new buildable primitives — it
+corroborated the already-filed `fisheye` instead of finding a new
+one. Sources and dedup notes in research/x-motion-sweep-log.md.
+
+- `fisheye` corroboration (shipped this round, v0.82.0):
+  @motion.easyy's AE "Fish Eye" text effect — text warped onto a
+  rotating sphere via Warp set to FishEye (Horizontal Distortion
+  100) plus Optics Compensation at FOV 100
+  (https://www.instagram.com/reel/Dcdsbn4tmqs/); @janek_crtv's
+  fisheye text animation ("JUST DO IT" morphing into a phrase,
+  https://www.instagram.com/reel/DGTZcCTKhw4/); @deyfilmit's
+  Premiere Pro Lens Distortion fisheye tutorial
+  (https://www.instagram.com/p/De8_QP8GRq0/); @samivart1's
+  Paparazzi Animation Trend (IbisPaintX Transform > Fisheye Lens,
+  https://www.facebook.com/reel/1524732072177171/);
+  @kirill.blokhin_'s UIKit fisheye lens experiment — a translucent
+  distorting lens over an icon pattern
+  (https://www.threads.com/@kirill.blokhin_/post/DfX0pk7DdBo);
+  @paper.design's Lens Distortion shader showcase
+  (https://www.instagram.com/reel/Dcg80aYzYJt/).
+- Not taken this round: kinetic-typography re-appears — Mat Voyce's
+  16-loop retrospective and 2020 practice retrospective dedupe
+  piece by piece against the shipped text kit; @kiel.d.m's STG
+  V.EXPOGRID / V.BOOST against textWarp; @antonin.work's date-block
+  kinetic type against charGrid; @motiongraphictv's 'BALANCE'
+  warping against textWarp; Peter Quinn's 'Cheesy 80s Zooms'
+  re-appears, all shipped; @cheersjack's 'Find a why' scattered
+  words against splitText/marquee recipes; LottieFiles' typography
+  rules are design guidance, not motion; @isometricked's ISOMETRICK
+  line-work loop against the iso kit; CapCut kinetic-type tutorials
+  against splitText/pop; Figma Motion's pixel-dot letters
+  re-appear (the dotText source); the 'LENS DISTORTED VAPOR
+  EFFECT' heat-haze word against sliceWave/chroma; Sony/Canon
+  fisheye-lens promos are hardware marketing, not techniques;
+  Blender/Maya fisheye camera tutorials are 3-D tooling;
+  Premiere/InVideo fisheye how-tos are tooling for the filed
+  fisheye itself. With this, the backlog is empty again.

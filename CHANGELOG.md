@@ -2,6 +2,59 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.82.0] — 2026-11-24
+
+### Added — `fisheye` primitive + `fisheye` composition
+
+- **`fisheye(frame, { html, at?, dur?, mode?, strength?, radius?, cx?, cy?, x?, y?, w?, h?, fn? })`** —
+  radial lens distortion over wrapped HTML: the picture bends as if
+  shot through a fisheye lens, the centre bulging toward the viewer
+  while the edges hold — the one effect in the Remotion effects reel
+  with no shipped counterpart (noise → fx, vignette → fx, blur →
+  frost, chromaticAberration → chroma, shine → shine, gridlines →
+  patternField). `mode:'in'` (default) bends the picture in over
+  `dur`, eased on `fn` (cubicOut default); `mode:'out'` unbends it
+  back to flat; `mode:'sustain'` holds the full bend permanently
+  (`at`/`dur` ignored). `strength` (default 0.6, clamped to ±0.9)
+  is the lens power — positive bulges (barrel), negative shrinks
+  (pincushion). `radius` is the lens radius in px (default the
+  distance from (`cx`, `cy`) to the farthest region corner);
+  `cx`/`cy` is the lens centre (default the region centre).
+  `x`/`y`/`w`/`h` confines the lens to a region (default the whole
+  stage); the wrapped html keeps its stage coordinates. The warp is
+  a true radial displacement — output pixel at radius r samples the
+  source at r·(1 − strength·(1−(r/R)²)²) — driven by an SVG
+  feDisplacementMap whose map is a procedurally generated PNG (a
+  pure-TS encoder: RGB8, filter 0 per row, DEFLATE stored blocks —
+  no assets, no dependencies, cached per geometry); the animation
+  rides the filter's `scale` attribute, so the map never changes
+  with the frame. Before `at` an 'in' fisheye passes the html
+  through untouched; after `at + dur` the full bend stands.
+  Source: the Remotion effects reel
+  (https://www.instagram.com/reel/DZ47wmCinCV/), corroborated
+  2026-11-24 by @motion.easyy's AE Fish Eye text (Warp FishEye +
+  Optics Compensation FOV 100,
+  https://www.instagram.com/reel/Dcdsbn4tmqs/), @janek_crtv's
+  fisheye text animation
+  (https://www.instagram.com/reel/DGTZcCTKhw4/), @deyfilmit's
+  Premiere Lens Distortion tutorial
+  (https://www.instagram.com/p/De8_QP8GRq0/) and
+  @kirill.blokhin_'s UIKit fisheye lens experiment
+  (https://www.threads.com/@kirill.blokhin_/post/DfX0pk7DdBo).
+  Distinct from `iris` (a circular clip, no warp), from `chroma`
+  (RGB channel ghosts, no warp) and from `edgeBoil` (noise wobble,
+  no radial field).
+- Demo card (hero word bending in + sub-line pincushion) +
+  `fisheye` composition (150 f, coral hero bends in 10–55, cream
+  sub-line pincushions 60–100, the title unbends 110–150) + Prompt
+  Gallery entry. With this, the backlog is empty again.
+- Fixed during verification: the SVG filter id now carries the
+  animated `scale` — two fisheyes with the same geometry but
+  different amounts used to share one filter id, and the browser
+  resolves url(#id) to the first definition, so frame 30 rendered
+  at frame 55's full bend. Caught on the verification stills
+  (frames 30 and 55 byte-identical); regression test added.
+
 ## [0.81.0] — 2026-11-23
 
 ### Added — `echo` primitive + `echo` composition

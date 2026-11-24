@@ -749,6 +749,69 @@ test('echo: AE Echo-style ghost stack — N copies at fixed offsets along an ang
   assert.equal(M.echo(25, o), M.echo(25, o)); // determinism
 });
 
+test('fisheye: radial lens distortion — feDisplacementMap with a procedurally generated PNG map; in bends in, out unbends, sustain holds; negative strength is pincushion', () => {
+  const o = { at: 10, dur: 30, html: '<b>X</b>', strength: 0.6 };
+  const scaleOf = (h) => parseFloat(h.match(/scale="([\d.]+)"/)[1]);
+  const uriOf = (h) => h.match(/href="(data:image\/png;base64,[^"]+)"/)[1];
+  assert.equal(M.fisheye(10, { html: '' }), '');
+  // before at the html passes through untouched — no filter at all
+  assert.equal(M.fisheye(10, o), '<b>X</b>');
+  assert.equal(M.fisheye(0, o), '<b>X</b>');
+  // window start is amount 0, so it is still a clean passthrough
+  assert.equal(M.fisheye(10, { ...o, at: 10 }), '<b>X</b>');
+  // settled (frame 40, past the window): the filter is on, driven by
+  // an feDisplacementMap whose map is a data-URI PNG in sRGB
+  const settled = M.fisheye(40, o);
+  assert.ok(settled.includes('<feDisplacementMap'), 'has a displacement map, got: ' + settled.slice(0, 200));
+  assert.ok(settled.includes('<feImage'), 'has an feImage map source');
+  assert.ok(settled.includes('color-interpolation-filters="sRGB"'), 'map read in sRGB, not linearRGB');
+  assert.ok(settled.includes('primitiveUnits="userSpaceOnUse"'), 'filter region in user space');
+  assert.ok(settled.includes('xChannelSelector="R" yChannelSelector="G"'), 'R=x, G=y displacement');
+  const uri = uriOf(settled);
+  assert.ok(uri.startsWith('data:image/png;base64,'), 'map is a data-URI PNG');
+  // the PNG bytes are a real PNG: signature + IHDR with the map size
+  const png = Buffer.from(uri.slice('data:image/png;base64,'.length), 'base64');
+  assert.deepEqual([...png.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10], 'PNG signature');
+  assert.equal(png.readUInt32BE(16), 160, 'map width is w/8');
+  assert.equal(png.readUInt32BE(20), 90, 'map height is h/8');
+  assert.equal(M.fisheye(41, o), settled, 'settled exactly at at + dur');
+  // mid-window the scale rides the cubicOut ease: frame 25 is p=0.5
+  // -> ease 0.875, so the scale is 0.875 x the settled scale
+  const mid = scaleOf(M.fisheye(25, o)), full = scaleOf(settled);
+  assert.ok(full > 200 && full < 260, 'full scale is the analytic S0 ~252, got: ' + full);
+  assert.ok(Math.abs(mid / full - 0.875) < 0.01, 'mid-window scale is 0.875x settled, got: ' + mid / full);
+  // out: full bend before at, flat again after the window
+  assert.equal(scaleOf(M.fisheye(9, { ...o, mode: 'out' })), full, 'out starts fully bent');
+  assert.equal(M.fisheye(40, { ...o, mode: 'out' }), '<b>X</b>', 'out ends clean');
+  // sustain: full bend at every frame, at/dur ignored
+  assert.equal(M.fisheye(0, { ...o, mode: 'sustain' }), settled, 'sustain ignores at');
+  assert.equal(M.fisheye(100, { ...o, mode: 'sustain' }), settled, 'sustain never settles away');
+  // negative strength is the pincushion map, not the bulge map — the
+  // scale stays positive, the sign lives in the map pixels
+  const neg = M.fisheye(40, { ...o, strength: -0.6 });
+  assert.ok(scaleOf(neg) > 0, 'negative strength still scales positive');
+  assert.notEqual(uriOf(neg), uri, 'pincushion map differs from the bulge map');
+  // strength clamps to +-0.9: 5 behaves exactly like 0.9
+  assert.equal(M.fisheye(40, { ...o, strength: 5 }), M.fisheye(40, { ...o, strength: 0.9 }), 'strength clamps at 0.9');
+  // a smaller radius is a different (tighter) lens
+  assert.notEqual(uriOf(M.fisheye(40, { ...o, radius: 300 })), uri, 'radius changes the map');
+  // sub-region: the wrapper sits on the region rect, the content is
+  // offset back to stage coordinates inside it (the mosaic convention)
+  const sub = M.fisheye(40, { ...o, x: 200, y: 100, w: 880, h: 520 });
+  assert.ok(sub.includes('left:200px;top:100px;width:880px;height:520px'), 'wrapper on the region rect, got: ' + sub.slice(0, 200));
+  assert.ok(sub.includes('left:-200.0px;top:-100.0px'), 'content offset back to stage origin');
+  assert.notEqual(uriOf(sub), uri, 'sub-region map differs from the full-stage map');
+  // the filter id carries the animated scale: two fisheyes with the
+  // same geometry but different amounts must not share one filter —
+  // url(#id) resolves to the FIRST definition in the document, so a
+  // shared id would pin every lens to whichever scale came first
+  // (regression: frame 30 once rendered at frame 55's full scale)
+  const idOf = (h) => h.match(/filter id="([^"]+)"/)[1];
+  assert.notEqual(idOf(M.fisheye(25, o)), idOf(M.fisheye(40, o)), 'mid-window and settled filters differ');
+  assert.equal(idOf(M.fisheye(40, o)), idOf(M.fisheye(41, o)), 'same geometry + same scale shares one filter');
+  assert.equal(M.fisheye(25, o), M.fisheye(25, o)); // determinism
+});
+
 test('textWarp: field-warped kinetic type — arch bends the line and rotates letters to the tangent, ripple mirrors from the centre', () => {
   const spans = (h) => [...h.matchAll(/translate\((-?[\d.]+)px,(-?[\d.]+)px\) rotate\((-?[\d.]+)deg\)/g)]
     .map((m) => ({ x: parseFloat(m[1]), y: parseFloat(m[2]), a: parseFloat(m[3]) }));

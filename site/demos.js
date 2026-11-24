@@ -673,6 +673,18 @@
       },
     },
     {
+      name: 'fisheye', desc: 'Radial lens distortion — the picture bends as if shot through a fisheye lens, the centre bulging toward the viewer while the edges hold; `mode` bends it in, unbends it back to flat, or holds the bend standing, `strength` sets the lens power (negative is pincushion).',
+      code: 'M.fisheye(frame, { html, strength })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        const word = '<div style="position:absolute;left:280px;top:140px;transform:translate(-50%,-50%);font:800 46px system-ui;color:#FF6B81;white-space:nowrap;">LENS</div>';
+        const sub = '<div style="position:absolute;left:280px;top:220px;transform:translate(-50%,-50%);font:500 20px system-ui;color:#FBF6EC;white-space:nowrap;">bent light, flat edges</div>';
+        return '<div style="position:absolute;inset:0;background:#26221F;"></div>' +
+          M.fisheye(lf, { html: word, at: 30, dur: 45, strength: 0.6 }) +
+          M.fisheye(lf, { html: sub, at: 85, dur: 40, strength: -0.6 });
+      },
+    },
+    {
       name: 'dotText', desc: 'Halftone dot-filled text — the letterforms are a field of dots clipped by a text mask, so the word reads as a printed poster; `mode` grows the dots in on a hash stagger, breathes them on a pulse, or shrinks them away.',
       code: 'M.dotText(frame, { text, mode, gap, dot })', cycle: 150,
       draw(f) {

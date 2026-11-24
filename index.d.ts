@@ -203,6 +203,8 @@ export function shatter(frame: number, o: { html: string; at?: number; dur?: num
 export function flicker(frame: number, o: { html: string; at?: number; dur?: number; mode?: 'on' | 'sustain' | 'pulse' | 'blink'; glow?: string; amount?: number; dim?: number; seed?: number; step?: number; rate?: number }): string;
 /** AE Echo-style ghost stack: the wrapped content is repeated as `echoes` (default 8) copies at fixed offsets along `angle` (default 0, +x; 90 = +y), each fainter than the last — echo i sits at `decay`^i opacity (`decay` default 0.8) and i * `step` px (default 12) away. `mode:'in'` (default) stretches the train out from the content over `dur`, eased on `fn`; `mode:'out'` collapses a standing train back into the content; `mode:'sustain'` holds the full train permanently (`at`/`dur` ignored). The original is drawn last, on top, at full opacity. Before `at` an 'in' echo passes the input HTML through untouched; after `at + dur` an 'out' echo does the same. */
 export function echo(frame: number, o: { html: string; at?: number; dur?: number; mode?: 'in' | 'out' | 'sustain'; echoes?: number; step?: number; angle?: number; decay?: number; fn?: string }): string;
+/** Radial lens distortion: the picture bends as if shot through a fisheye lens, the centre bulging toward the viewer while the edges hold. `mode:'in'` (default) bends the picture in over `dur`, eased on `fn`; `mode:'out'` unbends it back to flat; `mode:'sustain'` holds the full bend permanently (`at`/`dur` ignored). `strength` (default 0.6, clamped to ±0.9) is the lens power — positive bulges (barrel), negative shrinks (pincushion). `radius` is the lens radius in px (default the distance from (`cx`, `cy`) to the farthest region corner); `cx`/`cy` is the lens centre (default the region centre). `x`/`y`/`w`/`h` confines the lens to a region (default the whole stage); the wrapped html keeps its stage coordinates. Before `at` an 'in' fisheye passes the input HTML through untouched; after `at + dur` the full bend stands. */
+export function fisheye(frame: number, o: { html: string; at?: number; dur?: number; mode?: 'in' | 'out' | 'sustain'; strength?: number; radius?: number; cx?: number; cy?: number; x?: number; y?: number; w?: number; h?: number; fn?: string }): string;
 /** Where a frame sits in a BPM grid: beat index, phase, decay pulse, bar position. */
 export function beatGrid(frame: number, o: { bpm: number; at?: number; fps?: number; perBar?: number }): { beat: number; index: number; phase: number; pulse: number; bar: number; inBar: number };
 /** The BPM grid as frame numbers — SFX score events and cut points. */
@@ -291,6 +293,7 @@ declare const Motion: {
   shatter: typeof shatter;
   flicker: typeof flicker;
   echo: typeof echo;
+  fisheye: typeof fisheye;
   beatGrid: typeof beatGrid; beatFrames: typeof beatFrames; inertia: typeof inertia; anticipate: typeof anticipate; followThrough: typeof followThrough; velocitySkew: typeof velocitySkew;
   morphPoly: typeof morphPoly;
   splitText: typeof splitText;

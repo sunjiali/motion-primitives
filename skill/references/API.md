@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (111 functions)
+# motion-primitives API — the full catalog (112 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -721,6 +721,14 @@ M.echo(frame: number, o: { html: string; at?: number; dur?: number; mode?: 'in' 
 ```
 
 AE Echo-style ghost stack: the wrapped content is repeated as `echoes` (default 8) copies at fixed offsets along `angle` (default 0, +x; 90 = +y), each fainter than the last — echo i sits at `decay`^i opacity (`decay` default 0.8) and i * `step` px (default 12) away. `mode:'in'` (default) stretches the train out from the content over `dur`, eased on `fn`; `mode:'out'` collapses a standing train back into the content; `mode:'sustain'` holds the full train permanently (`at`/`dur` ignored). The original is drawn last, on top, at full opacity. Before `at` an 'in' echo passes the input HTML through untouched; after `at + dur` an 'out' echo does the same.
+
+### `fisheye`
+
+```ts
+M.fisheye(frame: number, o: { html: string; at?: number; dur?: number; mode?: 'in' | 'out' | 'sustain'; strength?: number; radius?: number; cx?: number; cy?: number; x?: number; y?: number; w?: number; h?: number; fn?: string }): string
+```
+
+Radial lens distortion: the picture bends as if shot through a fisheye lens, the centre bulging toward the viewer while the edges hold. `mode:'in'` (default) bends the picture in over `dur`, eased on `fn`; `mode:'out'` unbends it back to flat; `mode:'sustain'` holds the full bend permanently (`at`/`dur` ignored). `strength` (default 0.6, clamped to ±0.9) is the lens power — positive bulges (barrel), negative shrinks (pincushion). `radius` is the lens radius in px (default the distance from (`cx`, `cy`) to the farthest region corner); `cx`/`cy` is the lens centre (default the region centre). `x`/`y`/`w`/`h` confines the lens to a region (default the whole stage); the wrapped html keeps its stage coordinates. Before `at` an 'in' fisheye passes the input HTML through untouched; after `at + dur` the full bend stands.
 
 ### `spotlight`
 
