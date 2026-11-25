@@ -2,6 +2,59 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.83.0] — 2026-11-25
+
+### Added — `waveWarp` primitive + `wavewarp` composition
+
+- **`waveWarp(frame, { html, at?, dur?, mode?, angle?, wl?, amp?, speed?, phase?, x?, y?, w?, h?, fn? })`** —
+  smooth sinusoidal displacement over wrapped HTML — the AE Wave
+  Warp / Alight Motion Wave Warp effect: the picture ripples as if
+  seen through travelling water, the displacement running
+  perpendicular to the wave's travel direction, the phase scrolling
+  with the frame. `mode:'in'` (default) warps the picture in over
+  `dur`, eased on `fn` (cubicOut default); `mode:'out'` unwraps it
+  back to flat; `mode:'sustain'` holds the full travelling wave
+  permanently (`at`/`dur` ignored) — the phase keeps scrolling in
+  every mode, only the amplitude rides the envelope, so an 'in'
+  warp keeps travelling after its window. `angle` (default 0) is
+  the propagation direction in degrees (0 = waves travel +x,
+  displacing vertically — the flag-wave look; 90 = travel +y,
+  displacing horizontally); `wl` (default 160) is the wavelength
+  in px; `amp` (default 24) the peak displacement in px; `speed`
+  (default 0.12) the phase advance in radians per frame; `phase`
+  the starting phase in radians (default 0). The displacement
+  fades to zero within `amp` px of the region's edges along the
+  displacement axis, so no transparent sliver is ever sampled from
+  outside the region. `x`/`y`/`w`/`h` confines the warp to a
+  region (default the whole stage); the wrapped html keeps its
+  stage coordinates. The warp is a true continuous displacement —
+  output pixels sample the source along a sine field — driven by an
+  SVG feDisplacementMap whose map is a procedurally generated PNG
+  (the fisheye encoder: RGB8, filter 0 per row, DEFLATE stored
+  blocks — no assets, no dependencies); unlike fisheye the map
+  carries the phase, so it regenerates per frame (cached per
+  geometry + phase) while the amplitude rides the filter's `scale`
+  attribute. The phase is wrapped to [0, 2π), so the map is exactly
+  periodic in the frame. Before `at` an 'in' waveWarp passes the
+  html through untouched; after `at + dur` the full wave stands
+  travelling. Source: @yune75's Alight Motion Wave Warp tutorial
+  (https://www.facebook.com/reel/969024968876400/ — Wave Warp
+  Phase/Angle/Spacing/Magnitude on a red-haired shape). Distinct
+  from `slitScan` (discrete bands), from `sliceWave` (discrete
+  slices) and from `textWarp` (text-only arch/ripple).
+- Demo card (hero word warping in + sub-line horizontal wave) +
+  `wavewarp` composition (150 f, coral hero warps in 10–55, cream
+  sub-line waves horizontally 60–100, the title unwraps 110–150) +
+  Prompt Gallery entry. With this, the backlog holds five filed
+  items for the next rounds (`ribbedGlass`, `gooey`, `radialBlur`,
+  `hueCycle`, `hudTrack`).
+- Fixed during verification: the angle-90 test caught a cos(π/2)
+  floating-point residue (6.1e-17) flipping the 127.5 rounding
+  boundary to 127 in the map's G channel — the encoder is
+  unchanged, the assertion allows ±1 LSB with a comment. The
+  filter id carries phase AND scale, so two waveWarps with the same
+  geometry but different phases never share one filter.
+
 ## [0.82.0] — 2026-11-24
 
 ### Added — `fisheye` primitive + `fisheye` composition

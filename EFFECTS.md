@@ -6,6 +6,50 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### FX (v0.83)
+- `waveWarp` — smooth sinusoidal displacement over wrapped HTML:
+  the picture ripples as if seen through travelling water, the
+  displacement running perpendicular to the wave's travel
+  direction, the phase scrolling with the frame — a true continuous
+  displacement (output pixels sample the source along a sine
+  field), driven by an SVG feDisplacementMap whose map is a
+  procedurally generated PNG (the fisheye encoder — RGB8, filter 0
+  per row, DEFLATE stored blocks, no assets, no dependencies);
+  unlike fisheye the map carries the phase, so it regenerates per
+  frame (cached per geometry + phase) while the amplitude rides
+  the filter's `scale` attribute, and the phase is wrapped to
+  [0, 2π) so the map is exactly periodic in the frame.
+  `mode:'in'` (default) warps the picture in over the window,
+  eased on `fn` (cubicOut default); `mode:'out'` unwraps it back
+  to flat; `mode:'sustain'` holds the full travelling wave
+  permanently (`at`/`dur` ignored) — the phase keeps scrolling in
+  every mode, only the amplitude rides the envelope, so an 'in'
+  warp keeps travelling after its window. `angle` (default 0) is
+  the propagation direction in degrees (0 travels +x, displacing
+  vertically — the flag-wave look; 90 travels +y, displacing
+  horizontally); `wl` (default 160) the wavelength in px; `amp`
+  (default 24) the peak displacement in px; `speed` (default
+  0.12) the phase advance in radians per frame; `phase` the
+  starting phase. The displacement fades to zero within `amp` px
+  of the region's edges along the displacement axis, so no
+  transparent sliver is ever sampled from outside the region.
+  `x`/`y`/`w`/`h` confines the warp to a region (default the whole
+  stage) while the wrapped html keeps its stage coordinates. The
+  filter id carries phase AND scale, so two waveWarps with the same
+  geometry but different phases never share one filter (the
+  fisheye lesson, extended). Source: @yune75's Alight Motion Wave
+  Warp tutorial
+  (https://www.facebook.com/reel/969024968876400/ — Wave Warp
+  Phase/Angle/Spacing/Magnitude on a red-haired shape). Distinct
+  from `slitScan` (discrete bands), from `sliceWave` (discrete
+  slices) and from `textWarp` (text-only arch/ripple). Demo card
+  (hero word warping in + sub-line horizontal wave) + `wavewarp`
+  composition (150 f, coral hero warps in 10–55, cream sub-line
+  waves horizontally 60–100, the title unwraps 110–150) + Prompt
+  Gallery entry. With this, the backlog holds five filed items for
+  the next rounds (`ribbedGlass`, `gooey`, `radialBlur`,
+  `hueCycle`, `hudTrack`).
+
 ### FX (v0.82)
 - `fisheye` — radial lens distortion over wrapped HTML: the picture
   bends as if shot through a fisheye lens, the centre bulging toward
@@ -1550,3 +1594,89 @@ one. Sources and dedup notes in research/x-motion-sweep-log.md.
   Blender/Maya fisheye camera tutorials are 3-D tooling;
   Premiere/InVideo fisheye how-tos are tooling for the filed
   fisheye itself. With this, the backlog is empty again.
+
+## Backlog — 2026-11-25 sweep (rotated social.search: motion graphics
+techniques / animation breakdown / GSAP tips / Remotion + Lottie /
+easing curves / text animation / spring physics UI; ~110 results
+across 2 calls; + GitHub skills sweep)
+
+- ~~`waveWarp`~~ — shipped in v0.83.0: smooth sinusoidal displacement
+  over wrapped HTML (AE Wave Warp / Alight Motion Wave Warp) —
+  feDisplacementMap + procedurally generated PNG sine field, phase
+  scrolling per frame, amplitude on the filter's `scale`, edge
+  falloff within `amp` px of the region's borders. Source: @yune75
+  (https://www.facebook.com/reel/969024968876400/).
+- `ribbedGlass` — @sonduckfilm's Cine Techniques
+  (https://www.instagram.com/reel/DcOm2jGTkHP/): a "Glass Map"
+  composition — a white solid with repeated thin vertical lines —
+  applied as a Displacement Map over the main composition, giving a
+  distorted ribbed-glass texture. A periodic stripe displacement
+  field over wrapped HTML; a waveWarp cousin with a square-ish
+  profile — consider a `shape:'ribbed'` variant of waveWarp before
+  building it standalone. The same tutorial's CC Radial Blur half
+  is filed separately as `radialBlur` below; its Wiggle Paths +
+  4-Color Gradient background dedupes against edgeBoil + meshBg.
+- `gooey` — @sonduckfilm's liquid morphing
+  (https://www.instagram.com/reel/DeNAowePvi7/): dark-blue shape
+  layers with circular paths, Gaussian Blur + Simple Choker so the
+  blobs soften and merge into one liquid mass, then Glow/Noise/
+  Curves for the cinematic finish. An SVG blur + alpha-contrast
+  (feColorMatrix) filter over animated blobs — the classic gooey
+  merge — distinct from `liquidMetal` (WebGL raymarched chrome).
+- `radialBlur` — @sonduckfilm's Cine Techniques
+  (https://www.instagram.com/reel/DcOm2jGTkHP/): CC Radial Blur
+  centred on a point, amount animated by expression — a zoom-blur
+  burst from a focal point. No radial blur exists in the API;
+  the fake is a stack of scaled copies of the content at falling
+  opacity (the echo trick, but scaling from the centre instead of
+  translating); a research spike before building, to check the
+  copy count / opacity falloff that reads as blur rather than
+  discrete ghosts.
+- `hueCycle` — LottieFiles' "12 Principles of UI in Motion"
+  (https://www.instagram.com/p/DQRfo65j3nm/): the "Value Change"
+  panel — a multicolour ring cycling through hues. A hue-rotate
+  animation over wrapped HTML (CSS filter hue-rotate), mode
+  in/out/sustain; the rest of that carousel dedupes (Offset & Delay
+  → stagger, Dolly & Zoom → kenBurns, Parallax → parallax,
+  Transformation → morphShape/morphPoly, Obscuration → noiseGlow,
+  Masking → maskReveal, Easing → fn system, Parenting → relay,
+  Dimensionality → flipIn/orbit, Overlay → wipeReveal, Cloning →
+  echo).
+- `hudTrack` — Magnific's "Motion Trends with move"
+  (https://www.instagram.com/p/DfVKp0uiK8P/): the Tracking Effect
+  panel — HUD corner brackets + a label that follows a subject
+  across the frame. Corner-bracket overlay + label riding a
+  keyframed path (pathFly); the rest of that listicle dedupes
+  (Paper Echo → echo, Focus Reveal → frost/iris, 3D Text → flipIn,
+  Kinetic Typography → the text kit, Reality Split / Pop
+  Silhouette / Window Cascade are compositing, out of scope).
+
+Not taken this round: Chris Moran's edge-boil tutorial re-appears
+(https://www.instagram.com/reel/DZdCD2YNk4d/ — edgeBoil shipped
+v0.75); @sonduckfilm's top-5 techniques re-appear
+(https://www.instagram.com/reel/DdY60NUBmGL/ — CC Ball Action
+dots → dotText, trim-path strokes → drawOn, DOF focus distance →
+frost, orbiting ring → orbit, auto-orient → pathFly heading);
+match-cut breakdowns re-appear (matchCut shipped v0.40); 3D text
+Y-axis stacks (https://www.facebook.com/reel/1751338989610094/)
+dedupe against flipIn; LottieFiles State Machines / Theming /
+easing-101 / spring-curve posts are tooling or director guidance,
+not primitives; Figma Motion physics springs + animation-style
+presets (Burst/Ignite/Sweep/Slam/Descend/Magnify) are tooling;
+GSAP stagger tutorials restate the shipped stagger primitive and
+the house stagger rule; Claude/Remotion/AI-workflow reels
+(@sferro.ai, Aasil Khan, @d370, @5d9f, @a117, @42e6) are workflow,
+not techniques; kinetic-typography re-appears (PowerPoint kinetic
+type, @d46f Kernference type, @tsgoodlaz breakdowns) all dedupe
+against the shipped text kit; @isometricked / Blender 3-D
+spheres-on-tracks are the iso kit / 3-D tooling; stop-motion and
+puppet-compositing breakdowns are craft, out of scope.
+
+GitHub skill leads (not implemented, noted for later):
+social-media-skills/remotion-shorts-skill (kinetic-text shorts for
+TikTok/Reels/Shorts, updated 2026-11-23 — a recipe source for
+future text-kit compositions, not a primitive);
+LottieFiles/motion-design-skill and PHANTOMTONYT/motion-design-skills
+already noted in earlier rounds; buainoai/remotion-skills and
+jincheng2026/jc-remotion-skills are Remotion workflow skills, no
+new frame-pure primitive.

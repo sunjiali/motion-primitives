@@ -685,6 +685,18 @@
       },
     },
     {
+      name: 'waveWarp', desc: 'Smooth sinusoidal displacement — the picture ripples as if seen through travelling water, the displacement running perpendicular to the wave\'s travel direction and the phase scrolling with the frame; `mode` warps it in, unwraps it back to flat, or holds the travelling wave standing, `angle` picks the travel direction, `wl` the wavelength, `amp` the peak displacement.',
+      code: 'M.waveWarp(frame, { html, angle, wl, amp })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        const word = '<div style="position:absolute;left:280px;top:140px;transform:translate(-50%,-50%);font:800 46px system-ui;color:#FF6B81;white-space:nowrap;">WAVE</div>';
+        const sub = '<div style="position:absolute;left:280px;top:220px;transform:translate(-50%,-50%);font:500 20px system-ui;color:#FBF6EC;white-space:nowrap;">sine in the picture, not slices</div>';
+        return '<div style="position:absolute;inset:0;background:#26221F;"></div>' +
+          M.waveWarp(lf, { html: word, at: 30, dur: 45, angle: 0, wl: 80, amp: 12, speed: 0.12 }) +
+          M.waveWarp(lf, { html: sub, at: 85, dur: 40, angle: 90, wl: 80, amp: 12, speed: 0.12 });
+      },
+    },
+    {
       name: 'dotText', desc: 'Halftone dot-filled text — the letterforms are a field of dots clipped by a text mask, so the word reads as a printed poster; `mode` grows the dots in on a hash stagger, breathes them on a pulse, or shrinks them away.',
       code: 'M.dotText(frame, { text, mode, gap, dot })', cycle: 150,
       draw(f) {

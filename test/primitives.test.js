@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'chroma', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet', 'waveText', 'shine', 'frost', 'edgeBoil', 'dominoReveal', 'varFont', 'tvOff', 'venetianBlinds', 'shatter', 'flicker', 'echo'];
+  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'chroma', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet', 'waveText', 'shine', 'frost', 'edgeBoil', 'dominoReveal', 'varFont', 'tvOff', 'venetianBlinds', 'shatter', 'flicker', 'echo', 'fisheye', 'waveWarp'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -810,6 +810,100 @@ test('fisheye: radial lens distortion — feDisplacementMap with a procedurally 
   assert.notEqual(idOf(M.fisheye(25, o)), idOf(M.fisheye(40, o)), 'mid-window and settled filters differ');
   assert.equal(idOf(M.fisheye(40, o)), idOf(M.fisheye(41, o)), 'same geometry + same scale shares one filter');
   assert.equal(M.fisheye(25, o), M.fisheye(25, o)); // determinism
+});
+
+test('waveWarp: smooth sinusoidal displacement — feDisplacementMap with a per-frame sine PNG map; in warps in, out unwraps, sustain holds a travelling wave', () => {
+  const zlib = require('node:zlib');
+  const o = { at: 10, dur: 30, html: '<b>X</b>', wl: 160, amp: 24 };
+  const scaleOf = (h) => parseFloat(h.match(/scale="([\d.]+)"/)[1]);
+  const uriOf = (h) => h.match(/href="(data:image\/png;base64,[^"]+)"/)[1];
+  const idOf = (h) => h.match(/filter id="([^"]+)"/)[1];
+  // Decode the stored-block PNG map back to pixels: h rows of
+  // (filter byte 0 + w*3 RGB bytes).
+  const pixelsOf = (h) => {
+    const png = Buffer.from(uriOf(h).slice('data:image/png;base64,'.length), 'base64');
+    let off = 8; const idat = []; let w = 0, hh = 0;
+    while (off < png.length) {
+      const len = png.readUInt32BE(off), type = png.toString('ascii', off + 4, off + 8);
+      if (type === 'IHDR') { w = png.readUInt32BE(off + 8); hh = png.readUInt32BE(off + 12); }
+      if (type === 'IDAT') idat.push(png.subarray(off + 8, off + 8 + len));
+      off += 12 + len;
+    }
+    const raw = zlib.inflateSync(Buffer.concat(idat));
+    return { w, h: hh, at: (x, y) => { const p = y * (1 + w * 3) + 1 + x * 3; return [raw[p], raw[p + 1], raw[p + 2]]; } };
+  };
+  assert.equal(M.waveWarp(10, { html: '' }), '');
+  assert.equal(M.waveWarp(10, o), '<b>X</b>', 'before at: passthrough');
+  assert.equal(M.waveWarp(0, o), '<b>X</b>');
+  assert.equal(M.waveWarp(10, { ...o, at: 10 }), '<b>X</b>', 'window start is amount 0');
+  assert.equal(M.waveWarp(40, { ...o, amp: 0 }), '<b>X</b>', 'amp 0 is a no-op');
+  const settled = M.waveWarp(40, o);
+  assert.ok(settled.includes('<feDisplacementMap'), 'has a displacement map');
+  assert.ok(settled.includes('<feImage'), 'has an feImage map source');
+  assert.ok(settled.includes('color-interpolation-filters="sRGB"'), 'map read in sRGB');
+  assert.ok(settled.includes('primitiveUnits="userSpaceOnUse"'), 'filter region in user space');
+  assert.ok(settled.includes('xChannelSelector="R" yChannelSelector="G"'), 'R=x, G=y displacement');
+  const png = Buffer.from(uriOf(settled).slice('data:image/png;base64,'.length), 'base64');
+  assert.deepEqual([...png.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10], 'PNG signature');
+  assert.equal(png.readUInt32BE(16), 160, 'map width is w/8');
+  assert.equal(png.readUInt32BE(20), 90, 'map height is h/8');
+  // angle 0 displaces vertically only: every R channel is the
+  // zero-displacement 128, while G carries the sine wave
+  const px = pixelsOf(settled);
+  let rDeviates = 0, gMaxDev = 0;
+  for (let y = 0; y < px.h; y++) for (let x = 0; x < px.w; x++) {
+    const [r, g] = px.at(x, y);
+    if (r !== 128) rDeviates++;
+    gMaxDev = Math.max(gMaxDev, Math.abs(g - 128));
+  }
+  assert.equal(rDeviates, 0, 'angle 0: no horizontal displacement anywhere');
+  assert.ok(gMaxDev > 100, 'the sine wave reaches near-full displacement, got max dev: ' + gMaxDev);
+  // edge falloff: the top map row (4 px in, inside the amp band)
+  // barely moves, the middle row rides the full wave
+  const rowMean = (y) => { let s = 0; for (let x = 0; x < px.w; x++) s += Math.abs(px.at(x, y)[1] - 128); return s / px.w; };
+  assert.ok(rowMean(0) < 12, 'top row stays near flat, mean dev: ' + rowMean(0));
+  assert.ok(rowMean(45) > 40, 'middle row rides the wave, mean dev: ' + rowMean(45));
+  assert.ok(rowMean(0) < rowMean(45) * 0.5, 'edge falloff is real');
+  // angle 90 is the mirror: displacement horizontal only — the G
+  // check allows ±1 LSB because cos(π/2) is 6.1e-17 in floating
+  // point, not 0, so a negative half-wave rounds 127.5 down to 127
+  const px90 = pixelsOf(M.waveWarp(40, { ...o, angle: 90 }));
+  let gDeviates = 0, rMaxDev = 0;
+  for (let y = 0; y < px90.h; y++) for (let x = 0; x < px90.w; x++) {
+    const [r, g] = px90.at(x, y);
+    if (Math.abs(g - 128) > 1) gDeviates++;
+    rMaxDev = Math.max(rMaxDev, Math.abs(r - 128));
+  }
+  assert.equal(gDeviates, 0, 'angle 90: no vertical displacement anywhere (beyond 1 LSB)');
+  assert.ok(rMaxDev > 100, 'angle 90 displaces horizontally');
+  // the phase travels: frame 41 is a different map from frame 40,
+  // but with speed 2π/30 the map is exactly periodic over 30 frames
+  // (frames 15 and 45 share a phase — both inside/at the window so
+  // both render a filter; frame 0 would be a pre-window passthrough)
+  assert.notEqual(uriOf(M.waveWarp(41, o)), uriOf(settled), 'phase scrolls the map');
+  assert.equal(uriOf(M.waveWarp(45, { ...o, speed: Math.PI * 2 / 30 })), uriOf(M.waveWarp(15, { ...o, speed: Math.PI * 2 / 30 })), 'map is exactly periodic');
+  // mid-window the scale rides the cubicOut ease (p=0.5 -> 0.875);
+  // the ratio is approximate because s0 rides the travelling phase
+  const mid = scaleOf(M.waveWarp(25, o)), full = scaleOf(settled);
+  assert.ok(full > 46 && full < 49, 'full scale is amp·s0 ~47.5, got: ' + full);
+  assert.ok(Math.abs(mid / full - 0.875) < 0.02, 'mid-window scale is ~0.875x settled, got: ' + mid / full);
+  // out: full wave before at, clean again after the window (same
+  // frame, same phase: out at frame 9 scales exactly like sustain)
+  assert.equal(scaleOf(M.waveWarp(9, { ...o, mode: 'out' })), scaleOf(M.waveWarp(9, { ...o, mode: 'sustain' })), 'out starts at full warp');
+  assert.equal(M.waveWarp(40, { ...o, mode: 'out' }), '<b>X</b>', 'out ends clean');
+  // sustain: warped at every frame (phase differs, so the strings
+  // differ — only the presence of the warp is asserted), at ignored
+  assert.ok(M.waveWarp(0, { ...o, mode: 'sustain' }).includes('<feDisplacementMap'), 'sustain ignores at');
+  assert.ok(M.waveWarp(100, { ...o, mode: 'sustain' }).includes('<feDisplacementMap'), 'sustain never settles away');
+  // sub-region: the wrapper sits on the region rect, the content is
+  // offset back to stage coordinates inside it
+  const sub = M.waveWarp(40, { ...o, x: 200, y: 100, w: 880, h: 520 });
+  assert.ok(sub.includes('left:200px;top:100px;width:880px;height:520px'), 'wrapper on the region rect');
+  assert.ok(sub.includes('left:-200.0px;top:-100.0px'), 'content offset back to stage origin');
+  // the filter id carries phase AND scale: mid-window and settled
+  // differ, and the same frame is deterministic
+  assert.notEqual(idOf(M.waveWarp(25, o)), idOf(M.waveWarp(40, o)), 'mid-window and settled filters differ');
+  assert.equal(M.waveWarp(25, o), M.waveWarp(25, o)); // determinism
 });
 
 test('textWarp: field-warped kinetic type — arch bends the line and rotates letters to the tangent, ripple mirrors from the centre', () => {

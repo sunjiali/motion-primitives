@@ -3121,6 +3121,148 @@ __root.Motion = (function () {
             '<div style="position:absolute;left:0;top:0;width:' + w + 'px;height:' + h + 'px;filter:url(#' + id + ');">' +
             '<div style="position:absolute;width:' + w + 'px;height:' + h + 'px;left:' + (-x).toFixed(1) + 'px;top:' + (-y).toFixed(1) + 'px;">' + html + '</div></div></div>';
     }
+    // Displacement-map cache for waveWarp: one entry per (geometry,
+    // phase) — the map carries the travelling phase, so unlike the
+    // fisheye map it changes with the frame; the cache only pays off
+    // for repeated calls in the same frame. `uri` is the data-URI PNG,
+    // `s0` the reference scale — feDisplacementMap scale = amp · s0.
+    const waveWarpMapCache = {};
+    function waveWarpMap(w, h, angleDeg, wl, amp, phase) {
+        const mw = Math.min(320, Math.max(8, Math.round(w / 8)));
+        const mh = Math.min(320, Math.max(8, Math.round(h / 8)));
+        const key = w + '|' + h + '|' + angleDeg.toFixed(1) + '|' + wl.toFixed(1) + '|' + amp.toFixed(2) + '|' + phase.toFixed(3);
+        const hit = waveWarpMapCache[key];
+        if (hit)
+            return hit;
+        // The wave propagates along (cos th, sin th) and displaces
+        // perpendicular to it, (-sin th, cos th): at stage position
+        // (x, y), s = x·cos th + y·sin th is the position along the
+        // propagation axis and d = sin(2π·s/wl + phase) the signed wave
+        // height. The displacement fades to zero within `amp` px of the
+        // region's edges along the displacement axis (smoothstep band),
+        // so the warp never samples outside the region — without the
+        // falloff the edge pixels would pull in transparent slivers.
+        const th = angleDeg * Math.PI / 180;
+        const ca = Math.cos(th), sa = Math.sin(th);
+        const ux = -sa, uy = ca;
+        const t00 = 0, t10 = w * ux, t01 = h * uy, t11 = w * ux + h * uy;
+        const tmin = Math.min(t00, t10, t01, t11), tmax = Math.max(t00, t10, t01, t11);
+        const band = Math.max(1, Math.min(amp, (tmax - tmin) / 2));
+        const smooth = (t) => { const u = t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t); return u; };
+        const k = (Math.PI * 2) / Math.max(1, wl);
+        const dxs = [], dys = [];
+        let maxComp = 0;
+        for (let my = 0; my < mh; my++) {
+            for (let mx = 0; mx < mw; mx++) {
+                const x = (mx + 0.5) * (w / mw), y = (my + 0.5) * (h / mh);
+                const s = x * ca + y * sa;
+                const d = Math.sin(k * s + phase);
+                const t = x * ux + y * uy;
+                const f = smooth((t - tmin) / band) * smooth((tmax - t) / band);
+                const dx = ux * d * f, dy = uy * d * f;
+                dxs.push(dx);
+                dys.push(dy);
+                maxComp = Math.max(maxComp, Math.abs(dx), Math.abs(dy));
+            }
+        }
+        // s0 is the scale that expresses the full-strength map: channel
+        // values are d/s0 + 0.5, so |d| ≤ s0/2 never clips. Guard the
+        // amp-0 map (maxComp 0) with s0 = 1.
+        const s0 = maxComp > 0 ? 2 * maxComp : 1;
+        const rgb = [];
+        for (let i = 0; i < mw * mh; i++) {
+            rgb.push(Math.max(0, Math.min(255, Math.round((dxs[i] / s0 + 0.5) * 255))));
+            rgb.push(Math.max(0, Math.min(255, Math.round((dys[i] / s0 + 0.5) * 255))));
+            rgb.push(128);
+        }
+        const entry = { uri: 'data:image/png;base64,' + fisheyeB64(fisheyePng(mw, mh, rgb)), s0: s0 };
+        waveWarpMapCache[key] = entry;
+        return entry;
+    }
+    // waveWarp — smooth sinusoidal displacement over wrapped HTML:
+    // the AE Wave Warp / Alight Motion Wave Warp effect. The picture
+    // ripples as if seen through travelling water — a true continuous
+    // displacement, not sliced bands. `mode:'in'` (default) warps the
+    // picture in over `dur`, eased on `fn` (cubicOut default);
+    // `mode:'out'` unwraps it back to flat; `mode:'sustain'` holds
+    // the full travelling wave permanently (`at`/`dur` ignored). The
+    // phase keeps scrolling in every mode (phase = `phase` + frame ·
+    // `speed`, wrapped to [0, 2π)), so an 'in' warp keeps travelling
+    // after its window; only the amplitude rides the envelope.
+    // `angle` (default 0) is the propagation direction in degrees —
+    // 0 travels +x and displaces vertically (the flag-wave look), 90
+    // travels +y and displaces horizontally. `wl` (default 160) is
+    // the wavelength in px, `amp` (default 24) the peak displacement
+    // in px, `speed` (default 0.12) the phase advance in radians per
+    // frame. Before `at` an 'in' waveWarp passes the html through
+    // untouched; after `at + dur` the full wave stands travelling,
+    // and an 'out' waveWarp is clean again. Caveat: like every
+    // SVG-filter primitive, the first filtered frame flips text
+    // antialiasing from subpixel to grayscale — geometry is
+    // pixel-identical at scale 0. Distinct from `slitScan` (discrete
+    // bands), `sliceWave` (discrete slices) and `textWarp` (text-only
+    // arch/ripple). From the 2026-11-25 sweep: @yune75's Alight
+    // Motion Wave Warp tutorial
+    // (https://www.facebook.com/reel/969024968876400/).
+    function waveWarp(frame, o) {
+        o = o || {};
+        const html = o.html || '';
+        if (!html)
+            return '';
+        const mode = o.mode || 'in';
+        const at = o.at || 0, dur = Math.max(1, o.dur || 30);
+        const w = o.w || 1280, h = o.h || 720;
+        const x = o.x || 0, y = o.y || 0;
+        const angle = o.angle == null ? 0 : o.angle;
+        const wl = Math.max(4, o.wl == null ? 160 : o.wl);
+        const amp = Math.max(0, o.amp == null ? 24 : o.amp);
+        const speed = o.speed == null ? 0.12 : o.speed;
+        const phase0 = o.phase || 0;
+        const ease = Easing[o.fn || 'cubicOut'] || Easing.cubicOut;
+        let amount;
+        if (mode === 'sustain') {
+            amount = 1;
+        }
+        else if (mode === 'out') {
+            if (frame >= at + dur)
+                return html;
+            amount = frame <= at ? 1 : 1 - ease(clamp01((frame - at) / dur));
+        }
+        else {
+            if (frame < at)
+                return html;
+            amount = frame >= at + dur ? 1 : ease(clamp01((frame - at) / dur));
+        }
+        if (amount <= 0 || amp <= 0)
+            return html;
+        // Phase is wrapped to [0, 2π) so the map — and the filter id —
+        // are exactly periodic in the frame (frame f and f + 2π/speed
+        // render byte-identical maps).
+        const TWO_PI = Math.PI * 2;
+        const phase = ((phase0 + frame * speed) % TWO_PI + TWO_PI) % TWO_PI;
+        const map = waveWarpMap(w, h, angle, wl, amp, phase);
+        const scale = amount * amp * map.s0;
+        // Filter id: deterministic from the geometry, the wave and the
+        // current phase AND scale — the scale is animated and the map
+        // travels, so two waveWarps with the same geometry but different
+        // amounts or phases must not share a filter (the fisheye
+        // lesson: url(#id) resolves to the FIRST definition in the
+        // document). Same geometry + same phase + same scale still
+        // shares one filter, as it should.
+        const key = w + '|' + h + '|' + angle.toFixed(1) + '|' + wl.toFixed(1) + '|' + amp.toFixed(2) + '|' + phase.toFixed(3) + '|' + scale.toFixed(2);
+        let folded = 0;
+        for (let k = 0; k < key.length; k++)
+            folded = (folded * 31 + key.charCodeAt(k)) >>> 0;
+        const id = 'ww' + Math.floor(hash(folded) * 1e9).toString(36);
+        return '<div style="position:absolute;left:' + x + 'px;top:' + y + 'px;width:' + w + 'px;height:' + h + 'px;overflow:hidden;">' +
+            '<svg width="0" height="0" style="position:absolute;"><defs>' +
+            '<filter id="' + id + '" x="0" y="0" width="' + w + '" height="' + h + '" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">' +
+            '<feImage href="' + map.uri + '" x="0" y="0" width="' + w + '" height="' + h + '" preserveAspectRatio="none" result="map"/>' +
+            '<feDisplacementMap in="SourceGraphic" in2="map" scale="' + scale.toFixed(2) + '" xChannelSelector="R" yChannelSelector="G"/>' +
+            '</filter></defs></svg>' +
+            '<div style="position:absolute;left:0;top:0;width:' + w + 'px;height:' + h + 'px;filter:url(#' + id + ');">' +
+            '<div style="position:absolute;width:' + w + 'px;height:' + h + 'px;left:' + (-x).toFixed(1) + 'px;top:' + (-y).toFixed(1) + 'px;">' + html + '</div></div></div>';
+    }
     // dotText — halftone dot-filled text: the letterforms are a field of
     // dots, not a solid fill. An SVG dot grid over the stage is clipped
     // by a text mask, so the word reads as a printed halftone poster.
@@ -3691,7 +3833,7 @@ __root.Motion = (function () {
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
         paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost, edgeBoil, dominoReveal, iris, clockWipe,
-        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, varFont, dotText, tvOff, venetianBlinds, shatter, flicker, echo, fisheye,
+        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, varFont, dotText, tvOff, venetianBlinds, shatter, flicker, echo, fisheye, waveWarp,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
         scramble, splitFlap, kenBurns, breathe, fx, hash,

@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (112 functions)
+# motion-primitives API — the full catalog (113 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -729,6 +729,14 @@ M.fisheye(frame: number, o: { html: string; at?: number; dur?: number; mode?: 'i
 ```
 
 Radial lens distortion: the picture bends as if shot through a fisheye lens, the centre bulging toward the viewer while the edges hold. `mode:'in'` (default) bends the picture in over `dur`, eased on `fn`; `mode:'out'` unbends it back to flat; `mode:'sustain'` holds the full bend permanently (`at`/`dur` ignored). `strength` (default 0.6, clamped to ±0.9) is the lens power — positive bulges (barrel), negative shrinks (pincushion). `radius` is the lens radius in px (default the distance from (`cx`, `cy`) to the farthest region corner); `cx`/`cy` is the lens centre (default the region centre). `x`/`y`/`w`/`h` confines the lens to a region (default the whole stage); the wrapped html keeps its stage coordinates. Before `at` an 'in' fisheye passes the input HTML through untouched; after `at + dur` the full bend stands.
+
+### `waveWarp`
+
+```ts
+M.waveWarp(frame: number, o: { html: string; at?: number; dur?: number; mode?: 'in' | 'out' | 'sustain'; angle?: number; wl?: number; amp?: number; speed?: number; phase?: number; x?: number; y?: number; w?: number; h?: number; fn?: string }): string
+```
+
+Smooth sinusoidal displacement over wrapped HTML — the AE Wave Warp / Alight Motion Wave Warp effect: the picture ripples as if seen through travelling water, the displacement running perpendicular to the wave's travel direction, the phase scrolling with the frame. `mode:'in'` (default) warps the picture in over `dur`, eased on `fn`; `mode:'out'` unwraps it back to flat; `mode:'sustain'` holds the full travelling wave permanently (`at`/`dur` ignored) — the phase keeps scrolling in every mode, only the amplitude rides the envelope, so an 'in' warp keeps travelling after its window. `angle` (default 0) is the propagation direction in degrees (0 = waves travel +x, displacing vertically — the flag-wave look; 90 = travel +y, displacing horizontally); `wl` (default 160) is the wavelength in px; `amp` (default 24) the peak displacement in px; `speed` (default 0.12) the phase advance in radians per frame; `phase` the starting phase in radians (default 0). The displacement fades to zero within `amp` px of the region's edges along the displacement axis, so no transparent sliver is ever sampled from outside the region. `x`/`y`/`w`/`h` confines the warp to a region (default the whole stage); the wrapped html keeps its stage coordinates. Before `at` an 'in' waveWarp passes the input HTML through untouched; after `at + dur` the full wave stands travelling.
 
 ### `spotlight`
 
