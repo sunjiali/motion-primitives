@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (113 functions)
+# motion-primitives API — the full catalog (114 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -737,6 +737,14 @@ M.waveWarp(frame: number, o: { html: string; at?: number; dur?: number; mode?: '
 ```
 
 Smooth sinusoidal displacement over wrapped HTML — the AE Wave Warp / Alight Motion Wave Warp effect: the picture ripples as if seen through travelling water, the displacement running perpendicular to the wave's travel direction, the phase scrolling with the frame. `mode:'in'` (default) warps the picture in over `dur`, eased on `fn`; `mode:'out'` unwraps it back to flat; `mode:'sustain'` holds the full travelling wave permanently (`at`/`dur` ignored) — the phase keeps scrolling in every mode, only the amplitude rides the envelope, so an 'in' warp keeps travelling after its window. `angle` (default 0) is the propagation direction in degrees (0 = waves travel +x, displacing vertically — the flag-wave look; 90 = travel +y, displacing horizontally); `wl` (default 160) is the wavelength in px; `amp` (default 24) the peak displacement in px; `speed` (default 0.12) the phase advance in radians per frame; `phase` the starting phase in radians (default 0). The displacement fades to zero within `amp` px of the region's edges along the displacement axis, so no transparent sliver is ever sampled from outside the region. `x`/`y`/`w`/`h` confines the warp to a region (default the whole stage); the wrapped html keeps its stage coordinates. Before `at` an 'in' waveWarp passes the input HTML through untouched; after `at + dur` the full wave stands travelling.
+
+### `ribbedGlass`
+
+```ts
+M.ribbedGlass(frame: number, o: { html: string; at?: number; dur?: number; mode?: 'in' | 'out' | 'sustain'; axis?: 'x' | 'y'; spacing?: number; amp?: number; soft?: number; scroll?: number; x?: number; y?: number; w?: number; h?: number; fn?: string }): string
+```
+
+Ribbed / fluted-glass displacement over wrapped HTML — the picture refracts as if seen through reeded glass, a periodic stripe field (the square-ish-profile cousin of waveWarp's sine). `mode:'in'` (default) ribs the picture in over `dur`, eased on `fn`; `mode:'out'` unribs it back to flat; `mode:'sustain'` holds the full ribbed look permanently (`at`/`dur` ignored). `axis:'x'` (default) is vertical ribs displacing horizontally — the classic reeded look; `axis:'y'` horizontal ribs displacing vertically. `spacing` (default 24) is the rib pitch in px; `amp` (default 24) the peak displacement in px; `soft` (default 0) blends the triangle rib profile toward a sine (1 = fully soft); `scroll` (default 0) slides the ribs along their axis in px per frame. The displacement fades to zero within `amp` px of the region's edges along the displacement axis, so no transparent sliver is ever sampled from outside the region. `x`/`y`/`w`/`h` confines the warp to a region (default the whole stage); the wrapped html keeps its stage coordinates. Before `at` an 'in' ribbedGlass passes the input HTML through untouched; after `at + dur` the full ribbed look stands.
 
 ### `spotlight`
 

@@ -697,6 +697,18 @@
       },
     },
     {
+      name: 'ribbedGlass', desc: 'Ribbed / fluted-glass displacement — the picture refracts as if seen through reeded glass, a periodic stripe field whose triangle-wave profile is the square-ish cousin of waveWarp’s sine; `mode` ribs it in, unribs it back to flat, or holds the fluted look standing, `axis` picks the rib direction, `spacing` the rib pitch, `scroll` slides the ribs.',
+      code: 'M.ribbedGlass(frame, { html, axis, spacing, amp })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        const word = '<div style="position:absolute;left:280px;top:140px;transform:translate(-50%,-50%);font:800 46px system-ui;color:#FF6B81;white-space:nowrap;">RIBBED</div>';
+        const sub = '<div style="position:absolute;left:280px;top:220px;transform:translate(-50%,-50%);font:500 20px system-ui;color:#FBF6EC;white-space:nowrap;">flutes, not slices</div>';
+        return '<div style="position:absolute;inset:0;background:#26221F;"></div>' +
+          M.ribbedGlass(lf, { html: word, at: 30, dur: 45, axis: 'x', spacing: 12, amp: 12, scroll: 0.4 }) +
+          M.ribbedGlass(lf, { html: sub, at: 85, dur: 40, axis: 'y', spacing: 12, amp: 12, scroll: 0.4 });
+      },
+    },
+    {
       name: 'dotText', desc: 'Halftone dot-filled text — the letterforms are a field of dots clipped by a text mask, so the word reads as a printed poster; `mode` grows the dots in on a hash stagger, breathes them on a pulse, or shrinks them away.',
       code: 'M.dotText(frame, { text, mode, gap, dot })', cycle: 150,
       draw(f) {

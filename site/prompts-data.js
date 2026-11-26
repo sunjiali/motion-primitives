@@ -539,4 +539,20 @@ window.PROMPT_GALLERY = [
 `,
     notes: '回填条目：成片随 v0.83.0 发布（waveWarp 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧标题全波、hero 与小字平直、代码行在位 / 30 帧 hero 波浪约 0.83 倍、标题仍波 / 55 帧 hero 完整波浪 / 80 帧小字横向波浪过半、呈斜切状 / 100 帧小字完整横向波浪 / 130 帧标题基本回正、只剩轻微起伏 / 149 帧标题平直、hero 与小字波浪站立）通过；成片 mp4 抽帧（30 / 80 帧）与静帧像素比对均值通道差 1.79 与 1.74（H.264 压缩噪声级），ffprobe 150 帧 = durationInFrames，整片渲染 27.4 秒。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡待同一浏览器验证（见报告）。研发手记：单测曾抓到 cos(π/2) 的浮点残差（6.1e-17）把 127.5 的舍入边界翻到 127，导致 angle 90 的 G 通道半数像素偏 1 LSB——未改编码器，断言放宽到 ±1 LSB 并留注释；另注意 waveWarp 的 map 随相位逐帧重建，sustain 模式下同帧不同相位的字符串必然不同，断言只验 filter 在位。',
   },
+  {
+    id: 'ribbedglass',
+    title: 'RibbedGlass — Flutes, Not Slices',
+    blurb: 'The hero word refracts in through vertical ribs, the sub-line shows the horizontal mirror, and the title unribs back to flat at the end — one primitive, three modes.',
+    video: 'videos/ribbedglass.mp4',
+    tags: ['fx', 'ribbedglass', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.84',
+    prompt:
+`用 motion-primitives 做一条 5 秒的肋纹玻璃畸变展示片，composition 名 ribbedglass，核心只用一个新原语 M.ribbedGlass。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。深墨底 #26221F、奶油字 #FBF6EC、珊瑚字 #FF6B81；画面上方一行大字「RIBBEDGLASS」（64px，800 字重，奶油色）全程在位，110–150 帧以 'out' 模式从肋纹中回正（axis 'x', spacing 24, amp 24）——开场标题是碎成竖条纹的玻璃字、结尾收回成干净平直的字；中央一行大字「RIBBED」（120px，800 字重，珊瑚色，居中于 640,330），在 10–55 帧以 'in' 模式弯进肋纹（axis 'x', spacing 24, amp 24, scroll 0.8）——字从平直渐变为被竖向肋纹撕开的折射字、肋纹同时横向滑动；下方一行小字「flutes, not slices」（36px，500 字重，奶油色，居中于 640,500），在 60–100 帧以 'in' 模式展示横向肋纹（axis 'y', spacing 24, amp 24, scroll 0.8）——字被横向肋纹上下撕成三行重影；左下角一行等宽小字「M.ribbedGlass(frame, { axis: 'x', spacing: 24, amp: 24 })」（22px，奶油 55% 透明）全程静止。
+
+纪律：肋纹是真连续位移——输出像素沿三角波场采样源像素、不是切片平移冒充；'in' 模式窗口前内容原样返回、窗口结束完整肋纹站立；'out' 模式窗口前完整肋纹、窗口结束内容平直；axis 'y' 是横向肋纹、不是纵向肋纹旋转 90 度冒充；除标题、两行字、左下角代码行外不许加别的元素；不许渐变背景、相机运动、颗粒噪点、音效。
+`,
+    notes: '回填条目：成片随 v0.84.0 发布（ribbedGlass 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧标题全肋纹、hero 与小字平直、代码行在位 / 30 帧 hero 肋纹约 0.83 倍 / 55 帧 hero 完整肋纹、字被竖条纹撕开 / 80 帧小字横向肋纹约 0.88 倍、呈三行重影 / 100 帧小字完整横向肋纹 / 130 帧标题基本回正、只剩末尾轻微起伏 / 149 帧标题平直、hero 与小字肋纹站立）通过；成片 mp4 抽帧（30 / 80 帧）与静帧像素比对均值通道差 1.85 与 1.83（H.264 压缩噪声级），ffprobe 150 帧 = durationInFrames，整片渲染 27.1 秒。站点演示卡已在同一 chrome-headless-shell 里验证：滚入视口后卡片渲染出 feDisplacementMap、900ms 内 stage 内容变化、控制台 0 报错。研发手记：单测第一版在 map 第 0 列采样肋纹谷值，撞上边缘衰减带读到 118 而非约 0——改在第 20/29/25 列采样一整根肋纹之后，衰减另有列均值断言覆盖；另注意 amp 与 spacing 相等时字会被撕得很碎，这是肋纹玻璃的本色（与 @dsouzanirmala.in、@teamui_in 的源教程一致），不是 bug。',
+  },
 ];

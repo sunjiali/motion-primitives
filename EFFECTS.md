@@ -6,6 +6,65 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### FX (v0.84)
+- `ribbedGlass` — ribbed / fluted-glass displacement over wrapped
+  HTML: the picture refracts as if seen through reeded glass, a
+  periodic stripe field — the square-ish-profile cousin of
+  waveWarp's sine. The displacement is a triangle wave over the
+  position inside each rib (rises linearly across the rib, falls
+  back, sharp crease at each rib boundary — the flute's edge);
+  `soft` blends the triangle toward a sine (1 = fully soft).
+  `mode:'in'` (default) ribs the picture in over the window, eased
+  on `fn` (cubicOut default); `mode:'out'` unribs it back to flat;
+  `mode:'sustain'` holds the full ribbed look permanently
+  (`at`/`dur` ignored). `axis:'x'` (default) is vertical ribs
+  displacing horizontally — the classic reeded look; `axis:'y'`
+  horizontal ribs displacing vertically. `spacing` (default 24)
+  is the rib pitch in px; `amp` (default 24) the peak displacement
+  in px; `scroll` (default 0) slides the ribs along their axis in
+  px per frame — the animated-stripe look of the
+  @dsouzanirmala.in tutorial — and the scroll offset is wrapped to
+  [0, spacing), so the map is exactly periodic in the frame. The
+  displacement fades to zero within `amp` px of the region's edges
+  along the displacement axis, so no transparent sliver is ever
+  sampled from outside the region. `x`/`y`/`w`/`h` confines the
+  warp to a region (default the whole stage) while the wrapped
+  html keeps its stage coordinates. The warp is a true continuous
+  displacement (output pixels sample the source along a
+  triangle-wave field), driven by an SVG feDisplacementMap whose
+  map is a procedurally generated PNG (the fisheye encoder — RGB8,
+  filter 0 per row, DEFLATE stored blocks, no assets, no
+  dependencies); the map carries the scroll offset, so it
+  regenerates per frame (cached per geometry + offset) while the
+  amplitude rides the filter's `scale` attribute. The filter id
+  carries geometry, rib profile, scroll offset AND scale, so two
+  ribbedGlass calls with the same geometry but different amounts
+  or offsets never share one filter (the fisheye lesson,
+  extended). Built standalone, not as a `shape:'ribbed'` variant
+  of waveWarp: the map profile, the knobs (spacing / soft /
+  scroll) and the rib-axis semantics differ, and the shared piece
+  — the PNG encoder and the filter-id discipline — is reused
+  as-is. Source: @sonduckfilm's Cine Techniques Glass Map
+  (https://www.instagram.com/reel/DcOm2jGTkHP/ — a white solid
+  with repeated thin vertical lines as a Displacement Map),
+  corroborated 2026-11-26 by @dsouzanirmala.in's animated stripe
+  displacement map (https://www.instagram.com/reel/DbLgHytN-zX/),
+  @creationeffects' ribbed (fluted) glass
+  (https://www.instagram.com/reel/DTBlmyLjvHo/),
+  @thenotorious.rgb's SVG ribbed glass
+  (https://www.instagram.com/reel/DfrUEOYhmYA/), @teamui_in's
+  "REEEDED" (https://www.instagram.com/reel/DG7WKREzD0q/) and
+  @jaidrenj's refracted glass
+  (https://www.instagram.com/reel/DNGWB1lvReA/). Distinct from
+  `waveWarp` (a smooth sine field), from `slitScan` (discrete
+  bands) and from `frost` (a blur, no refraction). Demo card
+  (hero word ribbing in + sub-line horizontal ribs) +
+  `ribbedglass` composition (150 f, coral hero ribs in 10–55 with
+  travelling ribs, cream sub-line ribs horizontally 60–100, the
+  title unribs 110–150) + Prompt Gallery entry. With this, the
+  remaining backlog is `gooey` / `radialBlur` / `hueCycle` /
+  `hudTrack`.
+
 ### FX (v0.83)
 - `waveWarp` — smooth sinusoidal displacement over wrapped HTML:
   the picture ripples as if seen through travelling water, the
@@ -1606,16 +1665,22 @@ across 2 calls; + GitHub skills sweep)
   scrolling per frame, amplitude on the filter's `scale`, edge
   falloff within `amp` px of the region's borders. Source: @yune75
   (https://www.facebook.com/reel/969024968876400/).
-- `ribbedGlass` — @sonduckfilm's Cine Techniques
-  (https://www.instagram.com/reel/DcOm2jGTkHP/): a "Glass Map"
-  composition — a white solid with repeated thin vertical lines —
-  applied as a Displacement Map over the main composition, giving a
-  distorted ribbed-glass texture. A periodic stripe displacement
-  field over wrapped HTML; a waveWarp cousin with a square-ish
-  profile — consider a `shape:'ribbed'` variant of waveWarp before
-  building it standalone. The same tutorial's CC Radial Blur half
-  is filed separately as `radialBlur` below; its Wiggle Paths +
-  4-Color Gradient background dedupes against edgeBoil + meshBg.
+- ~~`ribbedGlass`~~ — shipped in v0.84.0: ribbed / fluted-glass
+  displacement over wrapped HTML — a periodic stripe field with a
+  triangle-wave profile, the square-ish cousin of waveWarp's sine
+  (see Implemented). Built standalone after considering the
+  `shape:'ribbed'` variant: the map profile, the knobs (spacing /
+  soft / scroll) and the rib-axis semantics differ, the PNG
+  encoder and filter-id discipline are reused as-is. Corroborated
+  2026-11-26 by @dsouzanirmala.in's animated stripe displacement
+  map (https://www.instagram.com/reel/DbLgHytN-zX/),
+  @creationeffects' ribbed glass
+  (https://www.instagram.com/reel/DTBlmyLjvHo/),
+  @thenotorious.rgb's SVG ribbed glass
+  (https://www.instagram.com/reel/DfrUEOYhmYA/), @teamui_in's
+  "REEEDED" (https://www.instagram.com/reel/DG7WKREzD0q/) and
+  @jaidrenj's refracted glass
+  (https://www.instagram.com/reel/DNGWB1lvReA/).
 - `gooey` — @sonduckfilm's liquid morphing
   (https://www.instagram.com/reel/DeNAowePvi7/): dark-blue shape
   layers with circular paths, Gaussian Blur + Simple Choker so the
@@ -1650,6 +1715,24 @@ across 2 calls; + GitHub skills sweep)
   (Paper Echo → echo, Focus Reveal → frost/iris, 3D Text → flipIn,
   Kinetic Typography → the text kit, Reality Split / Pop
   Silhouette / Window Cascade are compositing, out of scope).
+  Corroborated 2026-11-26: @mehulsen.in's glowing HUD circle
+  tracked onto a moving watch
+  (https://www.instagram.com/reel/DSKdaS_iIbl/ — Track Motion →
+  null → HUD overlay parented, Screen blend, Deep Glow),
+  @oblivixn.studios' OVN Trace auto colour-tracking HUD
+  (https://www.instagram.com/reel/DaaKN6piKkT/ — corner-bracket
+  focus rectangles + dashed lines follow the subject, no
+  keyframes), @shcreativedept's "Trace Overlays"
+  (https://www.instagram.com/reel/DUleg-NkW1K/ — red tracking
+  boxes + dotted trace paths + coordinate readouts),
+  @lottie.files' Heatmap HUD plugin
+  (https://www.instagram.com/p/DeJ2T8Xj9oz/ — bounding boxes,
+  tracking lines, coordinates, heatmaps), @brokemypencils'
+  motion-analysis tracker
+  (https://www.instagram.com/reel/DboVYecugbU/ — 'TD 01' bounding
+  boxes + telemetry + connecting lines) and aescripts' Tracery 2
+  (https://www.facebook.com/reel/1029709906624353/ — colour/motion
+  tracking FUI overlays).
 
 Not taken this round: Chris Moran's edge-boil tutorial re-appears
 (https://www.instagram.com/reel/DZdCD2YNk4d/ — edgeBoil shipped

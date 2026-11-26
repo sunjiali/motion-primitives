@@ -9,7 +9,7 @@ const API = ['pop', 'ease', 'fadeUp', 'pulse', 'breathe', 'countUp', 'stagger',
   'fly', 'trail', 'smear', 'squash', 'dot', 'ripple', 'burst', 'badge', 'targetSlot',
   'scene', 'transition', 'wiggle', 'typewriter', 'hash', 'beat', 'drop',
   'travel', 'shake', 'punch', 'flash', 'camera', 'parallax', 'meshBg', 'drawOn', 'poly',
-  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'chroma', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet', 'waveText', 'shine', 'frost', 'edgeBoil', 'dominoReveal', 'varFont', 'tvOff', 'venetianBlinds', 'shatter', 'flicker', 'echo', 'fisheye', 'waveWarp'];
+  'bars', 'scramble', 'splitFlap', 'kenBurns', 'fx', 'paperEl', 'pivot', 'stepped', 'onTwos', 'whip', 'pathFly', 'flipIn', 'counterRoll', 'drawText', 'particleField', 'morphShape', 'glitch', 'chroma', 'beatGrid', 'beatFrames', 'morphPoly', 'splitText', 'wipeReveal', 'confetti', 'cursor', 'isoBox', 'isoCylinder', 'isoWedge', 'isoPipe', 'isoGear', 'isoCone', 'isoBolt', 'isoTerrain', 'isoSort', 'orbit', 'swing', 'marquee', 'marchingAnts', 'highlightBox', 'waveLine', 'spotlight', 'maskReveal', 'matchCut', 'inertia', 'pixelDissolve', 'charGrid', 'assembleText', 'textOnPath', 'patternField', 'slitScan', 'sliceWave', 'letterTrack', 'speedLines', 'liquidMetal', 'liquidMetalDraw', 'anticipate', 'followThrough', 'velocitySkew', 'noiseGlow', 'relay', 'portalWipe', 'rings', 'mosaic', 'springSheet', 'waveText', 'shine', 'frost', 'edgeBoil', 'dominoReveal', 'varFont', 'tvOff', 'venetianBlinds', 'shatter', 'flicker', 'echo', 'fisheye', 'waveWarp', 'ribbedGlass'];
 
 test('package entry exposes the full public API', () => {
   for (const name of API) assert.equal(typeof M[name], 'function', `missing: ${name}`);
@@ -904,6 +904,114 @@ test('waveWarp: smooth sinusoidal displacement — feDisplacementMap with a per-
   // differ, and the same frame is deterministic
   assert.notEqual(idOf(M.waveWarp(25, o)), idOf(M.waveWarp(40, o)), 'mid-window and settled filters differ');
   assert.equal(M.waveWarp(25, o), M.waveWarp(25, o)); // determinism
+});
+
+test('ribbedGlass: ribbed / fluted-glass displacement — feDisplacementMap with a per-frame triangle-wave PNG map; in ribs in, out unribs, sustain holds, scroll travels the ribs', () => {
+  const zlib = require('node:zlib');
+  const o = { at: 10, dur: 30, html: '<b>X</b>', spacing: 160, amp: 24 };
+  const scaleOf = (h) => parseFloat(h.match(/scale="([\d.]+)"/)[1]);
+  const uriOf = (h) => h.match(/href="(data:image\/png;base64,[^"]+)"/)[1];
+  const idOf = (h) => h.match(/filter id="([^"]+)"/)[1];
+  // Decode the stored-block PNG map back to pixels: h rows of
+  // (filter byte 0 + w*3 RGB bytes).
+  const pixelsOf = (h) => {
+    const png = Buffer.from(uriOf(h).slice('data:image/png;base64,'.length), 'base64');
+    let off = 8; const idat = []; let w = 0, hh = 0;
+    while (off < png.length) {
+      const len = png.readUInt32BE(off), type = png.toString('ascii', off + 4, off + 8);
+      if (type === 'IHDR') { w = png.readUInt32BE(off + 8); hh = png.readUInt32BE(off + 12); }
+      if (type === 'IDAT') idat.push(png.subarray(off + 8, off + 8 + len));
+      off += 12 + len;
+    }
+    const raw = zlib.inflateSync(Buffer.concat(idat));
+    return { w, h: hh, at: (x, y) => { const p = y * (1 + w * 3) + 1 + x * 3; return [raw[p], raw[p + 1], raw[p + 2]]; } };
+  };
+  assert.equal(M.ribbedGlass(10, { html: '' }), '');
+  assert.equal(M.ribbedGlass(10, o), '<b>X</b>', 'before at: passthrough');
+  assert.equal(M.ribbedGlass(0, o), '<b>X</b>');
+  assert.equal(M.ribbedGlass(10, { ...o, at: 10 }), '<b>X</b>', 'window start is amount 0');
+  assert.equal(M.ribbedGlass(40, { ...o, amp: 0 }), '<b>X</b>', 'amp 0 is a no-op');
+  const settled = M.ribbedGlass(40, o);
+  assert.ok(settled.includes('<feDisplacementMap'), 'has a displacement map');
+  assert.ok(settled.includes('<feImage'), 'has an feImage map source');
+  assert.ok(settled.includes('color-interpolation-filters="sRGB"'), 'map read in sRGB');
+  assert.ok(settled.includes('primitiveUnits="userSpaceOnUse"'), 'filter region in user space');
+  assert.ok(settled.includes('xChannelSelector="R" yChannelSelector="G"'), 'R=x, G=y displacement');
+  const png = Buffer.from(uriOf(settled).slice('data:image/png;base64,'.length), 'base64');
+  assert.deepEqual([...png.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10], 'PNG signature');
+  assert.equal(png.readUInt32BE(16), 160, 'map width is w/8');
+  assert.equal(png.readUInt32BE(20), 90, 'map height is h/8');
+  // axis 'x' (vertical ribs) displaces horizontally only: every G
+  // channel is the zero-displacement 128, while R carries the
+  // triangle wave — spacing 160 over a 160-wide map is one rib per
+  // 20 map px: valley at x=20 (u=0.025, tri -0.9 -> R 0), peak at
+  // x=29 (u~0.5, tri 0.9 -> R 255), near-zero at x=25 (u=0.275,
+  // tri 0.1 -> R ~142). (x=0 is inside the edge-falloff band, so
+  // the valley there reads flattened — the falloff check below
+  // covers that column instead.)
+  const px = pixelsOf(settled);
+  let gDeviates = 0, rMaxDev = 0;
+  for (let y = 0; y < px.h; y++) for (let x = 0; x < px.w; x++) {
+    const [r, g] = px.at(x, y);
+    if (g !== 128) gDeviates++;
+    rMaxDev = Math.max(rMaxDev, Math.abs(r - 128));
+  }
+  assert.equal(gDeviates, 0, 'axis x: no vertical displacement anywhere');
+  assert.ok(rMaxDev > 100, 'the triangle wave reaches near-full displacement, got max dev: ' + rMaxDev);
+  assert.ok(px.at(20, 45)[0] < 15, 'rib valley is near 0, got: ' + px.at(20, 45)[0]);
+  assert.ok(px.at(29, 45)[0] > 240, 'rib peak is near 255, got: ' + px.at(29, 45)[0]);
+  assert.ok(px.at(25, 45)[0] > 130 && px.at(25, 45)[0] < 155, 'quarter-rib is near the zero crossing, got: ' + px.at(25, 45)[0]);
+  // soft 1 is a sine, not a triangle: at the quarter rib (u=0.275)
+  // the sine is at its peak, so the same pixel reads near 255
+  const pxSoft = pixelsOf(M.ribbedGlass(40, { ...o, soft: 1 }));
+  assert.ok(pxSoft.at(25, 45)[0] > 240, 'soft 1 peaks at the quarter rib, got: ' + pxSoft.at(25, 45)[0]);
+  // edge falloff runs along the displacement axis (x): the first
+  // map column (4 px in, inside the amp band) barely moves, the
+  // middle column rides the full wave
+  const colMean = (x) => { let s = 0; for (let y = 0; y < px.h; y++) s += Math.abs(px.at(x, y)[0] - 128); return s / px.h; };
+  assert.ok(colMean(0) < 12, 'first column stays near flat, mean dev: ' + colMean(0));
+  assert.ok(colMean(80) > 40, 'middle column rides the wave, mean dev: ' + colMean(80));
+  assert.ok(colMean(0) < colMean(80) * 0.5, 'edge falloff is real');
+  // axis 'y' is the mirror: displacement vertical only
+  const pxY = pixelsOf(M.ribbedGlass(40, { ...o, axis: 'y' }));
+  let rDeviatesY = 0, gMaxDevY = 0;
+  for (let y = 0; y < pxY.h; y++) for (let x = 0; x < pxY.w; x++) {
+    const [r, g] = pxY.at(x, y);
+    if (r !== 128) rDeviatesY++;
+    gMaxDevY = Math.max(gMaxDevY, Math.abs(g - 128));
+  }
+  assert.equal(rDeviatesY, 0, 'axis y: no horizontal displacement anywhere');
+  assert.ok(gMaxDevY > 100, 'axis y displaces vertically');
+  // the scroll travels the ribs: frame 41 is a different map from
+  // frame 40, but with scroll spacing/30 the map is exactly
+  // periodic over 30 frames (frames 15 and 45 share an offset —
+  // both inside/at the window so both render a filter; frame 0
+  // would be a pre-window passthrough)
+  assert.notEqual(uriOf(M.ribbedGlass(41, { ...o, scroll: 160 / 30 })), uriOf(settled), 'scroll moves the map');
+  assert.equal(uriOf(M.ribbedGlass(45, { ...o, scroll: 160 / 30 })), uriOf(M.ribbedGlass(15, { ...o, scroll: 160 / 30 })), 'map is exactly periodic');
+  // mid-window the scale rides the cubicOut ease (p=0.5 -> 0.875);
+  // full scale is amp·s0 = 24 · 1.8 (triangle peak 0.9 sampled at
+  // pixel centres) = 43.2
+  const mid = scaleOf(M.ribbedGlass(25, o)), full = scaleOf(settled);
+  assert.ok(full > 42 && full < 44.5, 'full scale is amp·s0 ~43.2, got: ' + full);
+  assert.ok(Math.abs(mid / full - 0.875) < 0.02, 'mid-window scale is ~0.875x settled, got: ' + mid / full);
+  // out: full rib before at, clean again after the window (same
+  // frame, same offset: out at frame 9 scales exactly like sustain)
+  assert.equal(scaleOf(M.ribbedGlass(9, { ...o, mode: 'out' })), scaleOf(M.ribbedGlass(9, { ...o, mode: 'sustain' })), 'out starts at full rib');
+  assert.equal(M.ribbedGlass(40, { ...o, mode: 'out' }), '<b>X</b>', 'out ends clean');
+  // sustain: ribbed at every frame (offset differs with scroll, so
+  // only the presence of the warp is asserted), at ignored
+  assert.ok(M.ribbedGlass(0, { ...o, mode: 'sustain' }).includes('<feDisplacementMap'), 'sustain ignores at');
+  assert.ok(M.ribbedGlass(100, { ...o, mode: 'sustain' }).includes('<feDisplacementMap'), 'sustain never settles away');
+  // sub-region: the wrapper sits on the region rect, the content is
+  // offset back to stage coordinates inside it
+  const sub = M.ribbedGlass(40, { ...o, x: 200, y: 100, w: 880, h: 520 });
+  assert.ok(sub.includes('left:200px;top:100px;width:880px;height:520px'), 'wrapper on the region rect');
+  assert.ok(sub.includes('left:-200.0px;top:-100.0px'), 'content offset back to stage origin');
+  // the filter id carries offset AND scale: mid-window and settled
+  // differ, and the same frame is deterministic
+  assert.notEqual(idOf(M.ribbedGlass(25, o)), idOf(M.ribbedGlass(40, o)), 'mid-window and settled filters differ');
+  assert.equal(M.ribbedGlass(25, o), M.ribbedGlass(25, o)); // determinism
 });
 
 test('textWarp: field-warped kinetic type — arch bends the line and rotates letters to the tangent, ripple mirrors from the centre', () => {

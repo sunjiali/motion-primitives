@@ -3263,6 +3263,164 @@ __root.Motion = (function () {
             '<div style="position:absolute;left:0;top:0;width:' + w + 'px;height:' + h + 'px;filter:url(#' + id + ');">' +
             '<div style="position:absolute;width:' + w + 'px;height:' + h + 'px;left:' + (-x).toFixed(1) + 'px;top:' + (-y).toFixed(1) + 'px;">' + html + '</div></div></div>';
     }
+    // Displacement-map cache for ribbedGlass: one entry per (geometry,
+    // rib profile, scroll offset) — the map carries the scroll offset,
+    // so like waveWarp it changes with the frame; the cache only pays
+    // off for repeated calls in the same frame. `uri` is the data-URI
+    // PNG, `s0` the reference scale — feDisplacementMap scale =
+    // amp · s0.
+    const ribbedGlassMapCache = {};
+    function ribbedGlassMap(w, h, axis, spacing, amp, soft, offset) {
+        const mw = Math.min(320, Math.max(8, Math.round(w / 8)));
+        const mh = Math.min(320, Math.max(8, Math.round(h / 8)));
+        const key = w + '|' + h + '|' + axis + '|' + spacing.toFixed(1) + '|' + amp.toFixed(2) + '|' + soft.toFixed(3) + '|' + offset.toFixed(3);
+        const hit = ribbedGlassMapCache[key];
+        if (hit)
+            return hit;
+        // The ribs run perpendicular to `axis`: axis 'x' is vertical
+        // ribs (the stripes vary along x) displacing horizontally, axis
+        // 'y' horizontal ribs displacing vertically. At stage position s
+        // along the rib axis, u = (s + offset) / spacing mod 1 is the
+        // position inside one rib, and the displacement is a triangle
+        // wave over u — a fluted-glass profile: the displacement rises
+        // linearly across each rib and falls back, the sharp crease at
+        // each rib boundary being the flute's edge. `soft` blends the
+        // triangle toward a sine (soft 1 = the waveWarp profile), so the
+        // ribs read rounder. The displacement fades to zero within
+        // `amp` px of the region's edges along the displacement axis
+        // (smoothstep band), so the warp never samples outside the
+        // region — without the falloff the edge pixels would pull in
+        // transparent slivers.
+        const horizontal = axis !== 'y';
+        const span = horizontal ? w : h;
+        const band = Math.max(1, Math.min(amp, span / 2));
+        const smooth = (t) => { const u = t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t); return u; };
+        const TWO_PI = Math.PI * 2;
+        const dxs = [], dys = [];
+        let maxComp = 0;
+        for (let my = 0; my < mh; my++) {
+            for (let mx = 0; mx < mw; mx++) {
+                const x = (mx + 0.5) * (w / mw), y = (my + 0.5) * (h / mh);
+                const s = horizontal ? x : y;
+                let u = ((s + offset) / spacing) % 1;
+                if (u < 0)
+                    u += 1;
+                const tri = 1 - 4 * Math.abs(u - 0.5);
+                const d = (1 - soft) * tri + soft * Math.sin(TWO_PI * u);
+                const f = smooth(s / band) * smooth((span - s) / band);
+                const dx = horizontal ? d * f : 0, dy = horizontal ? 0 : d * f;
+                dxs.push(dx);
+                dys.push(dy);
+                maxComp = Math.max(maxComp, Math.abs(dx), Math.abs(dy));
+            }
+        }
+        // s0 is the scale that expresses the full-strength map: channel
+        // values are d/s0 + 0.5, so |d| ≤ s0/2 never clips. Guard the
+        // amp-0 map (maxComp 0) with s0 = 1.
+        const s0 = maxComp > 0 ? 2 * maxComp : 1;
+        const rgb = [];
+        for (let i = 0; i < mw * mh; i++) {
+            rgb.push(Math.max(0, Math.min(255, Math.round((dxs[i] / s0 + 0.5) * 255))));
+            rgb.push(Math.max(0, Math.min(255, Math.round((dys[i] / s0 + 0.5) * 255))));
+            rgb.push(128);
+        }
+        const entry = { uri: 'data:image/png;base64,' + fisheyeB64(fisheyePng(mw, mh, rgb)), s0: s0 };
+        ribbedGlassMapCache[key] = entry;
+        return entry;
+    }
+    // ribbedGlass — ribbed / fluted-glass displacement over wrapped
+    // HTML: the picture refracts as if seen through reeded glass —
+    // a periodic stripe field, the square-ish-profile cousin of
+    // waveWarp's sine. `mode:'in'` (default) ribs the picture in
+    // over `dur`, eased on `fn` (cubicOut default); `mode:'out'`
+    // unribs it back to flat; `mode:'sustain'` holds the full ribbed
+    // look permanently (`at`/`dur` ignored). `axis:'x'` (default) is
+    // vertical ribs displacing horizontally — the classic reeded
+    // look; `axis:'y'` is horizontal ribs displacing vertically.
+    // `spacing` (default 24) is the rib pitch in px, `amp` (default
+    // 24) the peak displacement in px, `soft` (default 0) blends the
+    // triangle rib profile toward a sine (1 = fully soft), `scroll`
+    // (default 0) slides the ribs along their axis in px per frame —
+    // the animated-stripe look of the @dsouzanirmala.in tutorial.
+    // The scroll offset is wrapped to [0, spacing), so the map is
+    // exactly periodic in the frame. Before `at` an 'in' ribbedGlass
+    // passes the html through untouched; after `at + dur` the full
+    // ribbed look stands, and an 'out' ribbedGlass is clean again.
+    // Caveat: like every SVG-filter primitive, the first filtered
+    // frame flips text antialiasing from subpixel to grayscale —
+    // geometry is pixel-identical at scale 0. Distinct from `waveWarp`
+    // (a smooth sine field — ribbedGlass is the periodic stripe
+    // field), from `slitScan` (discrete bands) and from `frost` (a
+    // blur, no refraction). From the 2026-11-25 sweep: @sonduckfilm's
+    // Cine Techniques Glass Map
+    // (https://www.instagram.com/reel/DcOm2jGTkHP/), corroborated
+    // 2026-11-26 by @dsouzanirmala.in's animated stripe displacement
+    // map (https://www.instagram.com/reel/DbLgHytN-zX/),
+    // @creationeffects' ribbed glass
+    // (https://www.instagram.com/reel/DTBlmyLjvHo/),
+    // @thenotorious.rgb's SVG ribbed glass
+    // (https://www.instagram.com/reel/DfrUEOYhmYA/),
+    // @teamui_in's "REEEDED"
+    // (https://www.instagram.com/reel/DG7WKREzD0q/) and @jaidrenj's
+    // refracted glass (https://www.instagram.com/reel/DNGWB1lvReA/).
+    function ribbedGlass(frame, o) {
+        o = o || {};
+        const html = o.html || '';
+        if (!html)
+            return '';
+        const mode = o.mode || 'in';
+        const at = o.at || 0, dur = Math.max(1, o.dur || 30);
+        const w = o.w || 1280, h = o.h || 720;
+        const x = o.x || 0, y = o.y || 0;
+        const axis = o.axis || 'x';
+        const spacing = Math.max(4, o.spacing == null ? 24 : o.spacing);
+        const amp = Math.max(0, o.amp == null ? 24 : o.amp);
+        const soft = Math.min(1, Math.max(0, o.soft == null ? 0 : o.soft));
+        const scroll = o.scroll || 0;
+        const ease = Easing[o.fn || 'cubicOut'] || Easing.cubicOut;
+        let amount;
+        if (mode === 'sustain') {
+            amount = 1;
+        }
+        else if (mode === 'out') {
+            if (frame >= at + dur)
+                return html;
+            amount = frame <= at ? 1 : 1 - ease(clamp01((frame - at) / dur));
+        }
+        else {
+            if (frame < at)
+                return html;
+            amount = frame >= at + dur ? 1 : ease(clamp01((frame - at) / dur));
+        }
+        if (amount <= 0 || amp <= 0)
+            return html;
+        // The scroll offset is wrapped to [0, spacing) so the map —
+        // and the filter id — are exactly periodic in the frame (frame
+        // f and f + spacing/scroll render byte-identical maps).
+        const offset = ((frame * scroll) % spacing + spacing) % spacing;
+        const map = ribbedGlassMap(w, h, axis, spacing, amp, soft, offset);
+        const scale = amount * amp * map.s0;
+        // Filter id: deterministic from the geometry, the rib profile,
+        // the scroll offset AND scale — the scale is animated and the
+        // ribs travel, so two ribbedGlass calls with the same geometry
+        // but different amounts or offsets must not share a filter (the
+        // fisheye lesson: url(#id) resolves to the FIRST definition in
+        // the document). Same geometry + same offset + same scale still
+        // shares one filter, as it should.
+        const key = w + '|' + h + '|' + axis + '|' + spacing.toFixed(1) + '|' + amp.toFixed(2) + '|' + soft.toFixed(3) + '|' + offset.toFixed(3) + '|' + scale.toFixed(2);
+        let folded = 0;
+        for (let k = 0; k < key.length; k++)
+            folded = (folded * 31 + key.charCodeAt(k)) >>> 0;
+        const id = 'rg' + Math.floor(hash(folded) * 1e9).toString(36);
+        return '<div style="position:absolute;left:' + x + 'px;top:' + y + 'px;width:' + w + 'px;height:' + h + 'px;overflow:hidden;">' +
+            '<svg width="0" height="0" style="position:absolute;"><defs>' +
+            '<filter id="' + id + '" x="0" y="0" width="' + w + '" height="' + h + '" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">' +
+            '<feImage href="' + map.uri + '" x="0" y="0" width="' + w + '" height="' + h + '" preserveAspectRatio="none" result="map"/>' +
+            '<feDisplacementMap in="SourceGraphic" in2="map" scale="' + scale.toFixed(2) + '" xChannelSelector="R" yChannelSelector="G"/>' +
+            '</filter></defs></svg>' +
+            '<div style="position:absolute;left:0;top:0;width:' + w + 'px;height:' + h + 'px;filter:url(#' + id + ');">' +
+            '<div style="position:absolute;width:' + w + 'px;height:' + h + 'px;left:' + (-x).toFixed(1) + 'px;top:' + (-y).toFixed(1) + 'px;">' + html + '</div></div></div>';
+    }
     // dotText — halftone dot-filled text: the letterforms are a field of
     // dots, not a solid fill. An SVG dot grid over the stage is clipped
     // by a text mask, so the word reads as a printed halftone poster.
@@ -3833,7 +3991,7 @@ __root.Motion = (function () {
     return {
         pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
         paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost, edgeBoil, dominoReveal, iris, clockWipe,
-        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, varFont, dotText, tvOff, venetianBlinds, shatter, flicker, echo, fisheye, waveWarp,
+        beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, varFont, dotText, tvOff, venetianBlinds, shatter, flicker, echo, fisheye, waveWarp, ribbedGlass,
         dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
         beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
         scramble, splitFlap, kenBurns, breathe, fx, hash,

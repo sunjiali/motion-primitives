@@ -2,6 +2,78 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.84.0] — 2026-11-26
+
+### Added — `ribbedGlass` primitive + `ribbedglass` composition
+
+- **`ribbedGlass(frame, { html, at?, dur?, mode?, axis?, spacing?, amp?, soft?, scroll?, x?, y?, w?, h?, fn? })`** —
+  ribbed / fluted-glass displacement over wrapped HTML: the picture
+  refracts as if seen through reeded glass — a periodic stripe
+  field, the square-ish-profile cousin of waveWarp's sine. The
+  displacement is a triangle wave over the position inside each rib
+  (rises linearly across the rib, falls back, sharp crease at each
+  rib boundary — the flute's edge); `soft` blends the triangle
+  toward a sine (1 = fully soft). `mode:'in'` (default) ribs the
+  picture in over `dur`, eased on `fn` (cubicOut default);
+  `mode:'out'` unribs it back to flat; `mode:'sustain'` holds the
+  full ribbed look permanently (`at`/`dur` ignored).
+  `axis:'x'` (default) is vertical ribs displacing horizontally —
+  the classic reeded look; `axis:'y'` horizontal ribs displacing
+  vertically. `spacing` (default 24) is the rib pitch in px; `amp`
+  (default 24) the peak displacement in px; `scroll` (default 0)
+  slides the ribs along their axis in px per frame — the
+  animated-stripe look of the @dsouzanirmala.in tutorial. The
+  displacement fades to zero within `amp` px of the region's edges
+  along the displacement axis, so no transparent sliver is ever
+  sampled from outside the region. `x`/`y`/`w`/`h` confines the
+  warp to a region (default the whole stage); the wrapped html
+  keeps its stage coordinates. The warp is a true continuous
+  displacement — output pixels sample the source along a
+  triangle-wave field — driven by an SVG feDisplacementMap whose
+  map is a procedurally generated PNG (the fisheye encoder: RGB8,
+  filter 0 per row, DEFLATE stored blocks — no assets, no
+  dependencies); the map carries the scroll offset, so it
+  regenerates per frame (cached per geometry + offset) while the
+  amplitude rides the filter's `scale` attribute. The scroll offset
+  is wrapped to [0, spacing), so the map is exactly periodic in the
+  frame. Before `at` an 'in' ribbedGlass passes the html through
+  untouched; after `at + dur` the full ribbed look stands. Source:
+  @sonduckfilm's Cine Techniques Glass Map
+  (https://www.instagram.com/reel/DcOm2jGTkHP/ — a white solid
+  with repeated thin vertical lines as a Displacement Map),
+  corroborated 2026-11-26 by @dsouzanirmala.in's animated stripe
+  displacement map (https://www.instagram.com/reel/DbLgHytN-zX/ —
+  Gradient Ramp + Motion Tile stripes, position animated across 40
+  frames, Displacement Map Red channel horizontal),
+  @creationeffects' ribbed (fluted) glass
+  (https://www.instagram.com/reel/DTBlmyLjvHo/),
+  @thenotorious.rgb's SVG ribbed glass
+  (https://www.instagram.com/reel/DfrUEOYhmYA/ — feTurbulence +
+  feDisplacementMap, split baseFrequency makes the ribbed
+  pattern), @teamui_in's "REEEDED"
+  (https://www.instagram.com/reel/DG7WKREzD0q/) and @jaidrenj's
+  refracted glass (https://www.instagram.com/reel/DNGWB1lvReA/ —
+  Colorama at 30 cycle repetitions makes the stripe map).
+  Distinct from `waveWarp` (a smooth sine field — ribbedGlass is
+  the periodic stripe field), from `slitScan` (discrete bands) and
+  from `frost` (a blur, no refraction). Built standalone, not as a
+  `shape:'ribbed'` variant of waveWarp: the map profile, the knobs
+  (spacing / soft / scroll) and the rib-axis semantics differ, and
+  the shared piece — the PNG encoder and the filter-id discipline
+  — is reused as-is.
+- Demo card (hero word ribbing in + sub-line horizontal ribs) +
+  `ribbedglass` composition (150 f, coral hero ribs in 10–55 with
+  travelling ribs, cream sub-line ribs horizontally 60–100, the
+  title unribs 110–150) + Prompt Gallery entry. With this, the
+  remaining backlog is `gooey` / `radialBlur` / `hueCycle` /
+  `hudTrack`.
+- Fixed during verification: the first cut of the triangle-profile
+  test sampled the rib valley at map column 0, which sits inside
+  the edge-falloff band and reads flattened (R 118, not ~0) — the
+  assertions now sample the valley / peak / quarter-rib at columns
+  20 / 29 / 25, one full rib in, and the falloff has its own
+  column-mean check.
+
 ## [0.83.0] — 2026-11-25
 
 ### Added — `waveWarp` primitive + `wavewarp` composition
