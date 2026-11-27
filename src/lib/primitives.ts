@@ -468,6 +468,44 @@ interface RibbedGlassOpts {
   axis?: 'x' | 'y'; spacing?: number; amp?: number; soft?: number; scroll?: number;
   x?: number; y?: number; w?: number; h?: number; fn?: EasingName;
 }
+// GooeyOpts: liquid blobs that melt into one mass — the classic gooey
+// / metaball look: circles passed through an SVG blur + alpha-threshold
+// filter (feGaussianBlur, then feColorMatrix with the alpha row
+// `0 0 0 k -b`), so overlapping halos fuse into one continuous membrane
+// with a curved neck. `mode:'merge'` (default) pulls the blobs from a
+// spread ring into one fused mass over `dur`, eased on `fn` (cubicOut
+// default); 'split' is the mirror (one mass breaks apart); 'orbit'
+// keeps the blobs circling the centre forever, merging and splitting
+// as they pass (`at`/`dur` ignored). `blobs` (default 5) is the blob
+// count, `r` (default 46) the base radius in px, `spread` (default
+// 150) the ring radius the blobs start on, `blur` (default 12) the
+// Gaussian stdDeviation in px, `k` (default 20) the threshold
+// steepness and `b` (default 9) its offset — the alpha cut sits at
+// b/k, so b ≈ k/2 keeps blobs at their drawn size. `speed` (default
+// 0.02) is the orbit angular speed in rad/frame, `seed` (default 1)
+// the deterministic layout seed. `color` (default '#FF6B81') is the
+// blob colour, `colors` a per-blob palette (same-family colours merge
+// cleanest — the neck blends whatever the blobs are). `cx`/`cy` is
+// the cluster centre (default the region centre); `x`/`y`/`w`/`h`
+// confines the cluster to a region (default the whole stage). Distinct
+// from `liquidMetal` (WebGL raymarched chrome — a material, not a
+// merge) and from `particleField` (ambient dots that never fuse).
+// From the 2026-11-25 sweep: @sonduckfilm's liquid morphing
+// (https://www.instagram.com/reel/DeNAowePvi7/), corroborated
+// 2026-11-27 by Animation Patterns' gooey-blob construction, Miguel
+// de Mora's Liquid Spheres (alpha maths 28A−10), sunsided's Gooey
+// (k=20, b=9) and Hamza Syrage's Gooey Cursor (links in the
+// implementation comment below).
+interface GooeyOpts {
+  at?: number; dur?: number;
+  mode?: 'merge' | 'split' | 'orbit';
+  blobs?: number; r?: number; spread?: number;
+  blur?: number; k?: number; b?: number;
+  speed?: number; seed?: number;
+  color?: string; colors?: string[];
+  cx?: number; cy?: number;
+  x?: number; y?: number; w?: number; h?: number; fn?: EasingName;
+}
 interface DotTextOpts {
   text?: string; x?: number; y?: number; w?: number; h?: number;
   size?: number; weight?: number; fontFamily?: string;
@@ -3781,6 +3819,123 @@ __root.Motion = (function () {
       '<div style="position:absolute;width:' + w + 'px;height:' + h + 'px;left:' + (-x).toFixed(1) + 'px;top:' + (-y).toFixed(1) + 'px;">' + html + '</div></div></div>';
   }
 
+  // gooey — liquid blobs that melt into one mass: N circles inside a
+  // region, passed through one SVG filter — feGaussianBlur softens
+  // every edge into an alpha ramp, then feColorMatrix snaps the alpha
+  // back through a steep threshold (alpha row `0 0 0 k -b`, the cut at
+  // b/k) — so where two halos overlap their alpha adds up past the
+  // cut and the gap fills with a curved neck instead of two outlines.
+  // That neck is the whole effect: blur so the alpha spills, threshold
+  // so the spill snaps into a shape (the metaball trick, no canvas, no
+  // JS at render time). `mode:'merge'` (default) pulls the blobs from
+  // a spread ring into one fused mass over `dur`, eased on `fn`; the
+  // fused mass keeps breathing (a slow sin wobble on each blob's fused
+  // offset, scaled by the merge amount, so the mass stays alive after
+  // the window). 'split' is the exact mirror; 'orbit' circles the
+  // blobs forever at hash-varied speeds and directions, merging and
+  // splitting as they pass (`at`/`dur` ignored). Blob sizes, ring
+  // radii, fused offsets and orbit phases all derive from
+  // hash(seed, i), so the layout is frame-pure. The filter id is
+  // derived from blur/k/b only — the filter itself never changes with
+  // the frame, so same knobs share one filter (unlike fisheye's
+  // animated scale). `blur` 0 skips the filter and returns plain
+  // circles. Caveat: like every SVG-filter primitive, the first
+  // filtered frame flips text antialiasing — gooey draws blobs, not
+  // text, so nothing visible changes. Distinct from `liquidMetal`
+  // (WebGL chrome) and from `particleField` (dots that never fuse).
+  // From the 2026-11-25 sweep (@sonduckfilm's liquid morphing,
+  // https://www.instagram.com/reel/DeNAowePvi7/ — Gaussian Blur +
+  // Simple Choker over dark-blue shape layers), corroborated
+  // 2026-11-27 by Animation Patterns' gooey-blob construction
+  // (https://animationpatterns.art/animations/gooey-blob-construction/
+  // — blur + threshold 18/-7, three circles converging through a
+  // shared filter region), Miguel de Mora's Liquid Spheres
+  // (https://www.mdemora.com/writing/liquid-spheres-svgs — the alpha
+  // maths: A_out = 28A − 10, solid above 0.393 / gone below 0.357;
+  // orbiting satellites at different speeds), sunsided's Gooey
+  // (https://sunsided.github.io/web-visual-fx/gooey — k=20, b=9,
+  // b ≈ k/2 keeps shapes at their original size, filter region
+  // -20%/140% so the blur never clips) and Hamza Syrage's Gooey
+  // Cursor (https://hamza-syrage-portfolio.vercel.app/labs/gooey-cursor
+  // — a blob trail melting together, spring follow at different
+  // stiffnesses).
+  function gooey(frame: number, o: GooeyOpts): string {
+    o = o || ({} as GooeyOpts);
+    const n = Math.max(0, Math.floor(o.blobs == null ? 5 : o.blobs));
+    if (n === 0) return '';
+    const mode = o.mode || 'merge';
+    const at = o.at || 0, dur = Math.max(1, o.dur || 30);
+    const w = o.w || 1280, h = o.h || 720;
+    const x = o.x || 0, y = o.y || 0;
+    const cx = o.cx == null ? x + w / 2 : o.cx;
+    const cy = o.cy == null ? y + h / 2 : o.cy;
+    const r = Math.max(1, o.r == null ? 46 : o.r);
+    const spread = Math.max(0, o.spread == null ? 150 : o.spread);
+    const blur = Math.max(0, o.blur == null ? 12 : o.blur);
+    const k = o.k == null ? 20 : o.k;
+    const b = o.b == null ? 9 : o.b;
+    const speed = o.speed == null ? 0.02 : o.speed;
+    const seed = o.seed == null ? 1 : o.seed;
+    const ease = Easing[o.fn || 'cubicOut'] || Easing.cubicOut;
+    // Merge progress m: 0 = spread on the ring, 1 = one fused mass.
+    let m: number;
+    if (mode === 'orbit') {
+      m = 0; // unused: orbit positions are pure frame orbits
+    } else if (mode === 'split') {
+      if (frame <= at) m = 1;
+      else if (frame >= at + dur) m = 0;
+      else m = 1 - ease(clamp01((frame - at) / dur));
+    } else {
+      if (frame <= at) m = 0;
+      else if (frame >= at + dur) m = 1;
+      else m = ease(clamp01((frame - at) / dur));
+    }
+    // Filter id: deterministic from the filter knobs only — the
+    // filter never changes with the frame, so same knobs share one
+    // filter (the fisheye lesson does not apply here: no animated
+    // scale, no per-frame map).
+    const key = blur.toFixed(2) + '|' + k.toFixed(3) + '|' + b.toFixed(3);
+    let folded = 0;
+    for (let i = 0; i < key.length; i++) folded = (folded * 31 + key.charCodeAt(i)) >>> 0;
+    const id = 'gy' + Math.floor(hash(folded) * 1e9).toString(36);
+    const TWO_PI = Math.PI * 2;
+    let blobs = '';
+    for (let i = 0; i < n; i++) {
+      const ang = hash(seed * 31 + i * 7.3) * TWO_PI;
+      const rho = spread * (0.55 + 0.45 * hash(seed * 23 + i * 5.1));
+      const rad = r * (0.7 + 0.6 * hash(seed * 41 + i * 11.3));
+      const fx = (hash(seed * 17 + i * 3.1) - 0.5) * r * 0.8;
+      const fy = (hash(seed * 13 + i * 9.7) - 0.5) * r * 0.8;
+      const phase = hash(seed * 19 + i * 4.7) * TWO_PI;
+      const color = (o.colors && o.colors.length ? o.colors[i % o.colors.length] : o.color) || '#FF6B81';
+      let px: number, py: number;
+      if (mode === 'orbit') {
+        const sp = speed * (0.6 + 0.8 * hash(seed * 7 + i * 2.9)) * (hash(seed * 3 + i * 6.1) > 0.5 ? 1 : -1);
+        px = cx + rho * Math.cos(ang + frame * sp);
+        py = cy + rho * Math.sin(ang + frame * sp);
+      } else {
+        // The fused mass breathes: a slow wobble on each blob's fused
+        // offset, scaled by m so the spread ring stands still.
+        const bx = fx + 6 * Math.sin(frame * 0.05 + phase);
+        const by = fy + 6 * Math.cos(frame * 0.045 + phase);
+        px = cx + rho * Math.cos(ang) * (1 - m) + bx * m;
+        py = cy + rho * Math.sin(ang) * (1 - m) + by * m;
+      }
+      const d = (rad * 2).toFixed(1);
+      blobs += '<div style="position:absolute;left:' + (px - x - rad).toFixed(1) + 'px;top:' + (py - y - rad).toFixed(1) + 'px;width:' + d + 'px;height:' + d + 'px;border-radius:50%;background:' + color + ';"></div>';
+    }
+    if (blur <= 0) {
+      return '<div style="position:absolute;left:' + x + 'px;top:' + y + 'px;width:' + w + 'px;height:' + h + 'px;">' + blobs + '</div>';
+    }
+    return '<div style="position:absolute;left:' + x + 'px;top:' + y + 'px;width:' + w + 'px;height:' + h + 'px;">' +
+      '<svg width="0" height="0" style="position:absolute;"><defs>' +
+      '<filter id="' + id + '" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">' +
+      '<feGaussianBlur in="SourceGraphic" stdDeviation="' + blur + '" result="blur"/>' +
+      '<feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 ' + k + ' ' + (-b) + '"/>' +
+      '</filter></defs></svg>' +
+      '<div style="position:absolute;left:0;top:0;width:' + w + 'px;height:' + h + 'px;filter:url(#' + id + ');">' + blobs + '</div></div>';
+  }
+
   // dotText — halftone dot-filled text: the letterforms are a field of
   // dots, not a solid fill. An SVG dot grid over the stage is clipped
   // by a text mask, so the word reads as a printed halftone poster.
@@ -4349,7 +4504,7 @@ __root.Motion = (function () {
   return {
     pop, ease, fadeUp, pulse, countUp, stagger, fly, trail, smear, squash,
     paperEl, pivot, stepped, onTwos, whip, pathFly, orbit, swing, marquee, marchingAnts, highlightBox, waveLine, spotlight, relay, maskReveal, matchCut, pixelDissolve, charGrid, assembleText, textOnPath, patternField, slitScan, sliceWave, letterTrack, speedLines, portalWipe, rings, mosaic, springSheet, liquidMetal, liquidMetalDraw, flipIn, counterRoll, drawText, particleField, noiseGlow, morphShape, glitch, chroma, shine, frost, edgeBoil, dominoReveal, iris, clockWipe,
-    beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, varFont, dotText, tvOff, venetianBlinds, shatter, flicker, echo, fisheye, waveWarp, ribbedGlass,
+    beatGrid, beatFrames, inertia, anticipate, followThrough, velocitySkew, morphPoly, splitText, wipeReveal, confetti, cursor, isoBox, isoCylinder, isoWedge, isoPipe, isoGear, isoCone, isoBolt, isoTerrain, isoSort, waveText, textWarp, varFont, dotText, tvOff, venetianBlinds, shatter, flicker, echo, fisheye, waveWarp, ribbedGlass, gooey,
     dot, ripple, burst, badge, targetSlot, scene, transition, wiggle, typewriter,
     beat, drop, travel, shake, punch, flash, camera, parallax, meshBg, drawOn, poly, bars,
     scramble, splitFlap, kenBurns, breathe, fx, hash,

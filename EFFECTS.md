@@ -6,6 +6,49 @@ ships as a versioned release with a CHANGELOG entry and a verified demo.
 
 ## Implemented
 
+### FX (v0.85)
+- `gooey` — liquid blobs that melt into one mass: N circles inside a
+  region, passed through one SVG filter — feGaussianBlur softens
+  every edge into an alpha ramp, then feColorMatrix snaps the alpha
+  back through a steep threshold (alpha row `0 0 0 k -b`, the cut at
+  b/k) — so where two halos overlap their alpha adds up past the cut
+  and the gap fills with a curved neck instead of two outlines.
+  `mode:'merge'` (default) pulls the blobs from a spread ring into
+  one fused mass over the window, eased on `fn` (cubicOut default),
+  and the fused mass keeps breathing on a slow sin wobble so it stays
+  alive after the window; `mode:'split'` is the exact mirror;
+  `mode:'orbit'` circles the blobs forever at hash-varied speeds and
+  directions, merging and splitting as they pass (`at`/`dur`
+  ignored). `blobs` (default 5) is the blob count, `r` (default 46)
+  the base radius in px, `spread` (default 150) the ring radius the
+  blobs start on, `blur` (default 12) the Gaussian stdDeviation in
+  px, `k` (default 20) the threshold steepness and `b` (default 9)
+  its offset — the alpha cut sits at b/k, so b ≈ k/2 keeps blobs at
+  their drawn size. `speed` (default 0.02) is the orbit angular
+  speed in rad/frame, `seed` (default 1) the deterministic layout
+  seed. `color` (default '#FF6B81') is the blob colour, `colors` a
+  per-blob palette. `cx`/`cy` is the cluster centre (default the
+  region centre); `x`/`y`/`w`/`h` confines the cluster to a region
+  (default the whole stage). The filter id is derived from blur/k/b
+  only — the filter never changes with the frame, so same knobs
+  share one filter; `blur` 0 skips the filter and returns plain
+  circles. Source: @sonduckfilm's liquid morphing
+  (https://www.instagram.com/reel/DeNAowePvi7/), corroborated
+  2026-11-27 by Animation Patterns' gooey-blob construction
+  (https://animationpatterns.art/animations/gooey-blob-construction/),
+  Miguel de Mora's Liquid Spheres
+  (https://www.mdemora.com/writing/liquid-spheres-svgs), sunsided's
+  Gooey (https://sunsided.github.io/web-visual-fx/gooey) and Hamza
+  Syrage's Gooey Cursor
+  (https://hamza-syrage-portfolio.vercel.app/labs/gooey-cursor).
+  Distinct from `liquidMetal` (WebGL raymarched chrome) and from
+  `particleField` (dots that never fuse). Demo card (hero cluster
+  merging in + small orbiting cluster) + `gooey` composition (150 f,
+  coral hero merges 10–55, teal/cream orbit cluster lower-left all
+  film, small coral cluster splits top-right 110–150) + Prompt
+  Gallery entry. With this, the remaining backlog is `radialBlur` /
+  `hueCycle` / `hudTrack`.
+
 ### FX (v0.84)
 - `ribbedGlass` — ribbed / fluted-glass displacement over wrapped
   HTML: the picture refracts as if seen through reeded glass, a
@@ -1681,13 +1724,13 @@ across 2 calls; + GitHub skills sweep)
   "REEEDED" (https://www.instagram.com/reel/DG7WKREzD0q/) and
   @jaidrenj's refracted glass
   (https://www.instagram.com/reel/DNGWB1lvReA/).
-- `gooey` — @sonduckfilm's liquid morphing
-  (https://www.instagram.com/reel/DeNAowePvi7/): dark-blue shape
-  layers with circular paths, Gaussian Blur + Simple Choker so the
-  blobs soften and merge into one liquid mass, then Glow/Noise/
-  Curves for the cinematic finish. An SVG blur + alpha-contrast
-  (feColorMatrix) filter over animated blobs — the classic gooey
-  merge — distinct from `liquidMetal` (WebGL raymarched chrome).
+- ~~`gooey`~~ — shipped in v0.85.0: liquid blobs that melt into one
+  mass — an SVG blur + alpha-contrast (feColorMatrix) filter over
+  animated blobs, the classic gooey merge (see Implemented above).
+  Corroborated 2026-11-27 by Animation Patterns, Miguel de Mora's
+  Liquid Spheres, sunsided's Gooey and Hamza Syrage's Gooey Cursor
+  (links in the Implemented entry). With this, the remaining backlog
+  is `radialBlur` / `hueCycle` / `hudTrack`.
 - `radialBlur` — @sonduckfilm's Cine Techniques
   (https://www.instagram.com/reel/DcOm2jGTkHP/): CC Radial Blur
   centred on a point, amount animated by expression — a zoom-blur
@@ -1763,3 +1806,52 @@ LottieFiles/motion-design-skill and PHANTOMTONYT/motion-design-skills
 already noted in earlier rounds; buainoai/remotion-skills and
 jincheng2026/jc-remotion-skills are Remotion workflow skills, no
 new frame-pure primitive.
+
+## Backlog — 2026-11-27 sweep (gooey effect animation / HUD tracking overlay)
+
+Backlog was `gooey` / `radialBlur` / `hueCycle` / `hudTrack` after
+ribbedGlass shipped (v0.84.0); this round's fresh sweep (rotated
+queries: gooey effect animation + HUD tracking overlay — social.search
+was upstream-unavailable tonight, both calls timed out after internal
+retries and were not retried; fallback browser.search over the public
+web, 2 queries) filed 0 new buildable primitives — it corroborated
+the already-filed `gooey` (top of backlog) with 4 fresh web sources
+instead of finding a new one. Sources and dedup notes in
+research/x-motion-sweep-log.md.
+
+- `gooey` corroboration (shipped this round, v0.85.0): Animation
+  Patterns' "SVG Gooey Blob Effect with feGaussianBlur and
+  feColorMatrix"
+  (https://animationpatterns.art/animations/gooey-blob-construction/
+  — blur + threshold 18/-7 and 21/-7, three circles converging
+  through a shared filter region until their alpha fields fuse, then
+  breathing back apart); Miguel de Mora's "Liquid Spheres SVGs"
+  (https://www.mdemora.com/writing/liquid-spheres-svgs — the full
+  alpha maths: A_out = 28A − 10, solid above 0.393 / gone below
+  0.357, plus the orbiting-mass loop with satellites at different
+  speeds); sunsided's "Gooey" Visual FX
+  (https://sunsided.github.io/web-visual-fx/gooey — k=20, b=9,
+  b ≈ k/2 keeps shapes at their original size, filter region
+  -20%/140% so the blur never clips); Hamza Syrage's Gooey Cursor
+  (https://hamza-syrage-portfolio.vercel.app/labs/gooey-cursor — a
+  trail of blobs melting into each other, spring follow at different
+  stiffnesses, blur 10px).
+- `hudTrack` corroboration (all tooling/templates, hudTrack already
+  filed): velements' HUD Animations store
+  (https://velements.store/transitions/hud — brackets snap onto a
+  target, the reticle blinks locked, a status label types itself
+  out); BeamTracer's HUD plates
+  (https://beamtracer.com/docs/viz/fx-rack/specimen — tracked
+  points, graph panels, zoomed insets, titles); runcomfy's HUD
+  Overlay node
+  (https://www.runcomfy.com/comfyui-nodes/msch-comfyui-nodes/hud-overlay
+  — corner brackets, crosshairs, scanlines, seeded jitter/flicker).
+- Not taken this round: Effect.Labs' liquid-morph roundup
+  (https://effect-labs.com/en/pages/liquid.html — Metaballs / Blob
+  Morph / Lava Lamp are the gooey recipe or CSS keyframes, dedupe
+  against the filed `gooey`); the OlafMotion Editing Widget template
+  is an AE template, not a primitive. Coverage caveat: social.search
+  was upstream-unavailable tonight, so the sweep ran over the public
+  web instead of the social corpus — no genuine X post was retrieved
+  tonight. With this, the remaining backlog is `radialBlur` /
+  `hueCycle` / `hudTrack`.

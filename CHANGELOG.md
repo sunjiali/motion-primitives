@@ -2,6 +2,74 @@
 
 All notable changes to motion-primitives are documented here.
 
+## [0.85.0] — 2026-11-27
+
+### Added — `gooey` primitive + `gooey` composition
+
+- **`gooey(frame, { at?, dur?, mode?, blobs?, r?, spread?, blur?, k?, b?, speed?, seed?, color?, colors?, cx?, cy?, x?, y?, w?, h?, fn? })`** —
+  liquid blobs that melt into one mass — the classic gooey /
+  metaball look: N circles inside a region, passed through one SVG
+  filter — feGaussianBlur softens every edge into an alpha ramp,
+  then feColorMatrix snaps the alpha back through a steep threshold
+  (alpha row `0 0 0 k -b`, the cut at b/k) — so where two halos
+  overlap their alpha adds up past the cut and the gap fills with a
+  curved neck instead of two outlines. `mode:'merge'` (default)
+  pulls the blobs from a spread ring into one fused mass over
+  `dur`, eased on `fn` (cubicOut default); the fused mass keeps
+  breathing (a slow sin wobble on each blob's fused offset, scaled
+  by the merge amount, so the mass stays alive after the window).
+  `mode:'split'` is the exact mirror (one mass breaks apart);
+  `mode:'orbit'` keeps the blobs circling the centre forever at
+  hash-varied speeds and directions, merging and splitting as they
+  pass (`at`/`dur` ignored). `blobs` (default 5) is the blob
+  count, `r` (default 46) the base radius in px, `spread`
+  (default 150) the ring radius the blobs start on, `blur`
+  (default 12) the Gaussian stdDeviation in px, `k` (default 20)
+  the threshold steepness and `b` (default 9) its offset — the
+  alpha cut sits at b/k, so b ≈ k/2 keeps blobs at their drawn
+  size. `speed` (default 0.02) is the orbit angular speed in
+  rad/frame, `seed` (default 1) the deterministic layout seed.
+  `color` (default '#FF6B81') is the blob colour, `colors` a
+  per-blob palette (same-family colours merge cleanest — the neck
+  blends whatever the blobs are). `cx`/`cy` is the cluster centre
+  (default the region centre); `x`/`y`/`w`/`h` confines the
+  cluster to a region (default the whole stage). The filter id is
+  derived from blur/k/b only — the filter never changes with the
+  frame, so same knobs share one filter; `blur` 0 skips the filter
+  and returns plain circles. Source: @sonduckfilm's liquid
+  morphing (https://www.instagram.com/reel/DeNAowePvi7/ —
+  Gaussian Blur + Simple Choker over dark-blue shape layers),
+  corroborated 2026-11-27 by Animation Patterns' gooey-blob
+  construction
+  (https://animationpatterns.art/animations/gooey-blob-construction/
+  — blur + threshold 18/-7, three circles converging through a
+  shared filter region), Miguel de Mora's Liquid Spheres
+  (https://www.mdemora.com/writing/liquid-spheres-svgs — the alpha
+  maths: A_out = 28A − 10, solid above 0.393 / gone below 0.357;
+  orbiting satellites at different speeds), sunsided's Gooey
+  (https://sunsided.github.io/web-visual-fx/gooey — k=20, b=9,
+  b ≈ k/2 keeps shapes at their original size, filter region
+  -20%/140% so the blur never clips) and Hamza Syrage's Gooey
+  Cursor
+  (https://hamza-syrage-portfolio.vercel.app/labs/gooey-cursor — a
+  blob trail melting together, spring follow at different
+  stiffnesses). Distinct from `liquidMetal` (WebGL raymarched
+  chrome — a material, not a merge) and from `particleField`
+  (ambient dots that never fuse).
+- Demo card (hero cluster merging in + small orbiting cluster) +
+  `gooey` composition (150 f, coral hero merges 10–55, teal/cream
+  orbit cluster circling lower-left all film, small coral cluster
+  splitting top-right 110–150) + Prompt Gallery entry. With this,
+  the remaining backlog is `radialBlur` / `hueCycle` / `hudTrack`.
+- Fixed during verification: the demo card's first cut put the
+  orbiting cluster at cy 250, past the 560×260 card stage's bottom
+  edge — the blobs were clipped by the stage's overflow:hidden
+  (caught on the card screenshot, not by any test). The cluster
+  now sits at cy 205 with the region set to 560×260. Also fixed
+  in passing: the site header's live-demo count still said 81 —
+  the v0.84.0 round added the 82nd card without bumping it; it now
+  says 83.
+
 ## [0.84.0] — 2026-11-26
 
 ### Added — `ribbedGlass` primitive + `ribbedglass` composition

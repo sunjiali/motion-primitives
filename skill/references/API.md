@@ -1,4 +1,4 @@
-# motion-primitives API — the full catalog (114 functions)
+# motion-primitives API — the full catalog (115 functions)
 
 Generated from `index.d.ts` by `scripts/gen-api-doc.mjs` — do not
 edit by hand. All functions hang off `window.Motion` (alias `M`)
@@ -745,6 +745,14 @@ M.ribbedGlass(frame: number, o: { html: string; at?: number; dur?: number; mode?
 ```
 
 Ribbed / fluted-glass displacement over wrapped HTML — the picture refracts as if seen through reeded glass, a periodic stripe field (the square-ish-profile cousin of waveWarp's sine). `mode:'in'` (default) ribs the picture in over `dur`, eased on `fn`; `mode:'out'` unribs it back to flat; `mode:'sustain'` holds the full ribbed look permanently (`at`/`dur` ignored). `axis:'x'` (default) is vertical ribs displacing horizontally — the classic reeded look; `axis:'y'` horizontal ribs displacing vertically. `spacing` (default 24) is the rib pitch in px; `amp` (default 24) the peak displacement in px; `soft` (default 0) blends the triangle rib profile toward a sine (1 = fully soft); `scroll` (default 0) slides the ribs along their axis in px per frame. The displacement fades to zero within `amp` px of the region's edges along the displacement axis, so no transparent sliver is ever sampled from outside the region. `x`/`y`/`w`/`h` confines the warp to a region (default the whole stage); the wrapped html keeps its stage coordinates. Before `at` an 'in' ribbedGlass passes the input HTML through untouched; after `at + dur` the full ribbed look stands.
+
+### `gooey`
+
+```ts
+M.gooey(frame: number, o: { at?: number; dur?: number; mode?: 'merge' | 'split' | 'orbit'; blobs?: number; r?: number; spread?: number; blur?: number; k?: number; b?: number; speed?: number; seed?: number; color?: string; colors?: string[]; cx?: number; cy?: number; x?: number; y?: number; w?: number; h?: number; fn?: string }): string
+```
+
+Liquid blobs that melt into one mass — the classic gooey / metaball look: circles passed through an SVG blur + alpha-threshold filter (feGaussianBlur, then feColorMatrix with the alpha row `0 0 0 k -b`), so overlapping halos fuse into one continuous membrane with a curved neck. `mode:'merge'` (default) pulls the blobs from a spread ring into one fused mass over `dur`, eased on `fn`; `mode:'split'` is the mirror (one mass breaks apart); `mode:'orbit'` keeps the blobs circling the centre forever, merging and splitting as they pass (`at`/`dur` ignored). `blobs` (default 5) is the blob count, `r` (default 46) the base radius in px, `spread` (default 150) the ring radius the blobs start on, `blur` (default 12) the Gaussian stdDeviation in px, `k` (default 20) the threshold steepness and `b` (default 9) its offset — the alpha cut sits at b/k, so b ≈ k/2 keeps blobs at their drawn size. `speed` (default 0.02) is the orbit angular speed in rad/frame, `seed` (default 1) the deterministic layout seed. `color` (default '#FF6B81') is the blob colour, `colors` a per-blob palette. `cx`/`cy` is the cluster centre (default the region centre); `x`/`y`/`w`/`h` confines the cluster to a region (default the whole stage). The fused mass keeps breathing after the window. `blur` 0 skips the filter and returns plain circles.
 
 ### `spotlight`
 

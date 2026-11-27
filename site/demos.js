@@ -709,6 +709,16 @@
       },
     },
     {
+      name: 'gooey', desc: 'Liquid blobs that melt into one mass — circles passed through an SVG blur + alpha-threshold filter, so overlapping halos fuse into one continuous membrane with a curved neck; `mode` pulls the ring into one breathing mass, breaks it apart, or keeps the blobs orbiting and merging as they pass.',
+      code: 'M.gooey(frame, { mode, blobs, r, spread })', cycle: 150,
+      draw(f) {
+        const lf = f % 150;
+        return '<div style="position:absolute;inset:0;background:#26221F;"></div>' +
+          M.gooey(lf, { mode: 'merge', at: 30, dur: 45, blobs: 5, r: 30, spread: 80, cx: 280, cy: 135, w: 560, h: 260 }) +
+          M.gooey(lf, { mode: 'orbit', blobs: 3, r: 12, spread: 28, cx: 110, cy: 205, colors: ['#3FB6FF', '#FBF6EC', '#3FB6FF'], speed: 0.03, w: 560, h: 260 });
+      },
+    },
+    {
       name: 'dotText', desc: 'Halftone dot-filled text — the letterforms are a field of dots clipped by a text mask, so the word reads as a printed poster; `mode` grows the dots in on a hash stagger, breathes them on a pulse, or shrinks them away.',
       code: 'M.dotText(frame, { text, mode, gap, dot })', cycle: 150,
       draw(f) {

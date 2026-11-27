@@ -1014,6 +1014,64 @@ test('ribbedGlass: ribbed / fluted-glass displacement — feDisplacementMap with
   assert.equal(M.ribbedGlass(25, o), M.ribbedGlass(25, o)); // determinism
 });
 
+test('gooey: liquid blobs that melt into one mass — SVG blur + alpha-threshold filter; merge pulls the ring in, split breaks it apart, orbit circles forever', () => {
+  const o = { at: 10, dur: 30, blobs: 5 };
+  // Blob centres, parsed from the blob divs (the only divs with
+  // border-radius:50%); the wrapper and filter divs carry no radius.
+  const centres = (h) => [...h.matchAll(/left:(-?[\d.]+)px;top:(-?[\d.]+)px;width:([\d.]+)px;height:[\d.]+px;border-radius:50%/g)]
+    .map((m) => ({ x: parseFloat(m[1]) + parseFloat(m[3]) / 2, y: parseFloat(m[2]) + parseFloat(m[3]) / 2 }));
+  const dist = (p) => Math.hypot(p.x - 640, p.y - 360);
+  const idOf = (h) => h.match(/filter id="([^"]+)"/)[1];
+  assert.equal(M.gooey(10, { blobs: 0 }), '', 'no blobs returns nothing');
+  const before = M.gooey(10, o);
+  assert.equal(centres(before).length, 5, 'five blobs by default');
+  assert.ok(before.includes('<feGaussianBlur'), 'has the blur step');
+  assert.ok(before.includes('<feColorMatrix'), 'has the threshold step');
+  assert.ok(before.includes('values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -9"'), 'default alpha row is k=20, b=9');
+  assert.ok(before.includes('color-interpolation-filters="sRGB"'), 'threshold math in sRGB');
+  assert.ok(before.includes('x="-20%" y="-20%" width="140%" height="140%"'), 'filter region overscans so the blur never clips');
+  // merge: spread ring before the window (spread 150, ring factor
+  // 0.55–1.0, so every blob sits 82–150 px from the centre), one
+  // fused mass after it (fused offset ≤ 0.4r per axis + 6 px breathe
+  // per axis, worst-case diagonal ≈ 34.5 px)
+  const spreadD = centres(before).map(dist);
+  assert.ok(spreadD.every((d) => d > 80 && d <= 150), 'spread ring before at, got: ' + spreadD.map((d) => d.toFixed(1)).join(' '));
+  const settledD = centres(M.gooey(40, o)).map(dist);
+  assert.ok(settledD.every((d) => d <= 35), 'fused mass after at+dur, got: ' + settledD.map((d) => d.toFixed(1)).join(' '));
+  // mid-window the merge rides the cubicOut ease (p=0.5 -> 0.875):
+  // blob 0 travels 87.5% of the way in, so its distance is ~0.125x
+  // its spread distance plus the fused offset's share
+  const ratio = dist(centres(M.gooey(25, o))[0]) / dist(centres(before)[0]);
+  assert.ok(ratio > 0.05 && ratio < 0.35, 'mid-window merge is ~0.875 eased, ratio: ' + ratio.toFixed(3));
+  // split is the mirror: fused before at, spread after the window
+  const splitBefore = centres(M.gooey(10, { ...o, mode: 'split' })).map(dist);
+  assert.ok(splitBefore.every((d) => d <= 35), 'split starts fused, got: ' + splitBefore.map((d) => d.toFixed(1)).join(' '));
+  const splitAfter = centres(M.gooey(40, { ...o, mode: 'split' })).map(dist);
+  assert.ok(splitAfter.every((d) => d > 80 && d <= 150), 'split ends spread');
+  // orbit: positions move every frame, deterministically, at ignored
+  assert.notEqual(M.gooey(10, { mode: 'orbit' }), M.gooey(11, { mode: 'orbit' }), 'orbit moves');
+  assert.equal(M.gooey(33, { mode: 'orbit' }), M.gooey(33, { mode: 'orbit' }), 'orbit is deterministic');
+  assert.equal(M.gooey(0, { mode: 'orbit' }), M.gooey(0, { mode: 'orbit', at: 99, dur: 99 }), 'orbit ignores at/dur');
+  // the filter id carries the knobs only (the filter never changes
+  // with the frame): same knobs share one id across frames, different
+  // blur gets a different id
+  assert.equal(idOf(M.gooey(25, o)), idOf(M.gooey(40, o)), 'same knobs share the filter id');
+  assert.notEqual(idOf(M.gooey(25, o)), idOf(M.gooey(25, { ...o, blur: 18 })), 'different blur gets a different filter id');
+  assert.equal(M.gooey(25, o), M.gooey(25, o)); // determinism
+  // custom k/b land in the alpha row; blur 0 skips the filter
+  assert.ok(M.gooey(25, { ...o, k: 28, b: 10 }).includes('0 0 0 28 -10'), 'custom k/b in the alpha row');
+  assert.ok(!M.gooey(25, { ...o, blur: 0 }).includes('<feGaussianBlur'), 'blur 0 is plain circles');
+  assert.equal(centres(M.gooey(25, { ...o, blur: 0 })).length, 5, 'blur 0 still draws the blobs');
+  // per-blob palette: colors cycle across the blobs
+  const pal = M.gooey(25, { ...o, colors: ['#FF6B81', '#3FB6FF'] });
+  assert.ok(pal.includes('background:#FF6B81;') && pal.includes('background:#3FB6FF;'), 'colors cycle per blob');
+  // sub-region: the wrapper sits on the region rect, and the blob
+  // centres (parsed region-relative: left + width/2) stay inside it
+  const sub = M.gooey(40, { ...o, x: 200, y: 100, w: 880, h: 520 });
+  assert.ok(sub.includes('left:200px;top:100px;width:880px;height:520px'), 'wrapper on the region rect');
+  assert.ok(centres(sub).every((p) => p.x >= 0 && p.x <= 880 && p.y >= 0 && p.y <= 520), 'settled blobs stay inside the region');
+});
+
 test('textWarp: field-warped kinetic type — arch bends the line and rotates letters to the tangent, ripple mirrors from the centre', () => {
   const spans = (h) => [...h.matchAll(/translate\((-?[\d.]+)px,(-?[\d.]+)px\) rotate\((-?[\d.]+)deg\)/g)]
     .map((m) => ({ x: parseFloat(m[1]), y: parseFloat(m[2]), a: parseFloat(m[3]) }));

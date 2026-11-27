@@ -555,4 +555,20 @@ window.PROMPT_GALLERY = [
 `,
     notes: '回填条目：成片随 v0.84.0 发布（ribbedGlass 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧标题全肋纹、hero 与小字平直、代码行在位 / 30 帧 hero 肋纹约 0.83 倍 / 55 帧 hero 完整肋纹、字被竖条纹撕开 / 80 帧小字横向肋纹约 0.88 倍、呈三行重影 / 100 帧小字完整横向肋纹 / 130 帧标题基本回正、只剩末尾轻微起伏 / 149 帧标题平直、hero 与小字肋纹站立）通过；成片 mp4 抽帧（30 / 80 帧）与静帧像素比对均值通道差 1.85 与 1.83（H.264 压缩噪声级），ffprobe 150 帧 = durationInFrames，整片渲染 27.1 秒。站点演示卡已在同一 chrome-headless-shell 里验证：滚入视口后卡片渲染出 feDisplacementMap、900ms 内 stage 内容变化、控制台 0 报错。研发手记：单测第一版在 map 第 0 列采样肋纹谷值，撞上边缘衰减带读到 118 而非约 0——改在第 20/29/25 列采样一整根肋纹之后，衰减另有列均值断言覆盖；另注意 amp 与 spacing 相等时字会被撕得很碎，这是肋纹玻璃的本色（与 @dsouzanirmala.in、@teamui_in 的源教程一致），不是 bug。',
   },
+  {
+    id: 'gooey',
+    title: 'Gooey — Melt Into One Mass',
+    blurb: 'The hero cluster melts from a spread ring into one breathing mass, a lower cluster orbits forever (merging as the blobs pass), and a small cluster splits apart at the end — one primitive, three modes.',
+    video: 'videos/gooey.mp4',
+    tags: ['fx', 'gooey', '16:9', '5s'],
+    rounds: '复现 prompt · shipped in v0.85',
+    prompt:
+`用 motion-primitives 做一条 5 秒的液态 blob 融合展示片，composition 名 gooey，核心只用一个新原语 M.gooey。
+
+规格：1280×720，30fps，150 帧，无声，全程硬切。深墨底 #26221F、奶油字 #FBF6EC、珊瑚色 #FF6B81、蓝色 #3FB6FF；画面上方一行大字「GOOEY」（64px，800 字重，奶油色）全程在位；中央一簇 5 枚珊瑚色圆点（r 48、spread 130，中心 640,390），在 10–55 帧以 'merge' 模式从散开的环收拢融成一团呼吸的液态团块——圆点互相靠近、光晕重叠处拉出弯曲的颈部融为一体、合拢后团块缓慢呼吸变形；左下一簇 4 枚小圆点（r 20、spread 55，中心 300,570，蓝白相间），全程以 'orbit' 模式绕圈——经过时互相融并、离开时拉断；右上一簇 3 枚珊瑚色圆点（r 30、spread 90，中心 1050,170），开场是一团融合的圆点，在 110–150 帧以 'split' 模式散开——颈部拉细拉断、三枚分开；左下角一行等宽小字「M.gooey(frame, { mode: 'merge', blobs: 5 })」（22px，奶油 55% 透明）全程静止。
+
+纪律：融合是真液体合并——圆点先过 SVG 模糊+透明度阈值滤镜（feGaussianBlur 再 feColorMatrix，透明度行 0 0 0 k -b），光晕重叠处才融成一膜、不是缩放或透明度淡入冒充；'merge' 模式窗口前圆点散在环上、窗口结束融成一团；'split' 模式窗口前是一团、窗口结束散开；'orbit' 模式圆点绕中心转、经过即融、离开即断；除标题、三簇圆点、左下角代码行外不许加别的元素；不许渐变背景、相机运动、颗粒噪点、音效。
+`,
+    notes: '回填条目：成片随 v0.85.0 发布（gooey 原语首发配套 composition），本 prompt 按已上线源码逐段转写，标注「复现 prompt」。静帧审查（0 帧 hero 五枚散开、两枚已拉出颈部、orbit 簇蓝白相融、split 簇单团、标题与代码行在位 / 30 帧 hero 融成有机团块、orbit 簇融成蓝白渐变长条 / 55 帧 hero 完整团块呼吸、orbit 簇横卧胶囊 / 80 帧 hero 团块换形、split 簇仍单团 / 120 帧 split 簇拉成哑铃形、颈部还在 / 149 帧 split 簇三枚拉开、两枚间仍有细颈在拉断、hero 团块站立、orbit 簇分开）通过；成片 mp4 抽帧（30 / 80 帧）与静帧像素比对均值通道差 1.69 与 1.69（H.264 压缩噪声级），ffprobe 150 帧 = durationInFrames，整片渲染 24.9 秒。渲染门说明：本地 /opt/meta-chromium 因 Hatch WebGL 策略无法启动，本轮沿用仓库 CI 同款 npx @puppeteer/browsers 装的 chrome-headless-shell（linux-157.0.8103.38）渲染通过，站点演示卡也在同一浏览器里验证：83 卡、gooey 卡滚入视口后在动（900ms 内 stage 内容变化）、真鼠标 hover 重播 150ms 内复位到散开环、0 控制台报错。研发手记：卡片初版把 orbit 簇放在 cy 250，撞上演示卡 560×260 的舞台高度下沿被裁——改到 cy 205、区域改 560×260 后贴合；hover 验证不要用合成 mouseenter 事件派发（本轮实测派发后不复位），真鼠标移动才可靠；内联 node -e 写正则会被 shell 转义，探针一律写文件再跑。',
+  },
 ];
